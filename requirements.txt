@@ -5,6 +5,7 @@ autopep8==1.6.0
 backports.zoneinfo==0.2.1
 dj-database-url==0.5.0
 Django==3.2.12
+django-cors-headers==3.11.0
 django-debug-toolbar==3.2.4
 django-filter==21.1
 django-graphiql-debug-toolbar==0.2.0

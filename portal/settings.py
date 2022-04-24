@@ -14,7 +14,9 @@ PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", ]
 
 INTERNAL_IPS = ["127.0.0.1"]
 
@@ -33,6 +35,7 @@ INSTALLED_APPS = [
     'portal.session',
     'portal.vehicle',
     # libs
+    'corsheaders',
     'django_filters',
     'debug_toolbar',
     'graphene_django',
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
