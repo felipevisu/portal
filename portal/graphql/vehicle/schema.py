@@ -1,6 +1,7 @@
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 
+from ..utils.sorting import sort_queryset_resolver
 from .mutations import (
     CategoryCreate,
     CategoryDelete,
@@ -9,7 +10,13 @@ from .mutations import (
     VehicleDelete,
     VehicleUpdate,
 )
-from .resolvers import resolve_category, resolve_vehicle, resolve_vehicles
+from .resolvers import (
+    resolve_categories,
+    resolve_category,
+    resolve_vehicle,
+    resolve_vehicles,
+)
+from .sorters import CategorySortingInput
 from .types import Category, Vehicle
 
 
@@ -19,7 +26,10 @@ class Query(graphene.ObjectType):
         id=graphene.Argument(graphene.ID),
         slug=graphene.String(),
     )
-    categories = DjangoFilterConnectionField(Category)
+    categories = DjangoFilterConnectionField(
+        Category,
+        sort_by=CategorySortingInput()
+    )
     vehicle = graphene.Field(
         Vehicle,
         id=graphene.Argument(graphene.ID),
@@ -29,6 +39,11 @@ class Query(graphene.ObjectType):
 
     def resolve_category(self, info, id=None, slug=None):
         return resolve_category(info, id, slug)
+
+    def resolve_categories(self, info, *args, **kwargs):
+        qs = resolve_categories()
+        qs = sort_queryset_resolver(qs, kwargs)
+        return qs
 
     def resolve_vehicles(self, info, *args, **kwargs):
         return resolve_vehicles(info)

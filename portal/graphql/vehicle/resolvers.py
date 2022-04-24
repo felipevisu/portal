@@ -11,6 +11,10 @@ def resolve_category(_, global_category_id=None, slug=None):
     return category
 
 
+def resolve_categories():
+    return models.Category.objects.all()
+
+
 def resolve_vehicle(info, global_vehicle_id=None, slug=None):
     user = info.context.user
     if global_vehicle_id:

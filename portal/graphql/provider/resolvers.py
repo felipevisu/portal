@@ -2,6 +2,10 @@ from ...provider import models
 from ..core.utils import from_global_id_or_error
 
 
+def resolve_segments():
+    return models.Segment.objects.all()
+
+
 def resolve_segment(_, global_segment_id=None, slug=None):
     if global_segment_id:
         _, segment_pk = from_global_id_or_error(global_segment_id)
