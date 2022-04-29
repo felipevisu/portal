@@ -78,11 +78,11 @@ WSGI_APPLICATION = 'portal.wsgi.application'
 
 DATABASE_CONNECTION_DEFAULT_NAME = "default"
 
-DB_USER = config("DB_USER")
+DB_USER = config("DB_USER", "")
 
-DB_PASSWORD = config("DB_PASSWORD")
+DB_PASSWORD = config("DB_PASSWORD", "")
 
-DB_NAME = config("DB_NAME")
+DB_NAME = config("DB_NAME", "")
 
 DATABASES = {
     DATABASE_CONNECTION_DEFAULT_NAME: dj_database_url.config(
