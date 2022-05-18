@@ -1,13 +1,15 @@
-from django_filters import FilterSet
+import django_filters
 
 from ...provider.models import Document, Provider, Segment
+from ..core.filters import search_filter
 
 
-class DocumentFilter(FilterSet):
+class DocumentFilter(django_filters.FilterSet):
+    search = django_filters.CharFilter(method=search_filter)
+
     class Meta:
         model = Document
         fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
             'is_published': ['exact'],
             'expires': ['exact'],
             'begin_date': ['lte', 'gte', 'exact'],
@@ -15,19 +17,19 @@ class DocumentFilter(FilterSet):
         }
 
 
-class ProviderFilter(FilterSet):
+class ProviderFilter(django_filters.FilterSet):
+    search = django_filters.CharFilter(method=search_filter)
+
     class Meta:
         model = Provider
         fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
-            'document_number': ['exact'],
             'is_published': ['exact'],
         }
 
 
-class SegmentFilter(FilterSet):
+class SegmentFilter(django_filters.FilterSet):
+    search = django_filters.CharFilter(method=search_filter)
+
     class Meta:
         model = Segment
-        fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
-        }
+        fields = ['search']

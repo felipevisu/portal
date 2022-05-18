@@ -1,21 +1,22 @@
-from django_filters import FilterSet
+import django_filters
 
 from ...vehicle.models import Category, Vehicle
+from ..core.filters import search_filter
 
 
-class CategoryFilter(FilterSet):
+class CategoryFilter(django_filters.FilterSet):
+    search = django_filters.CharFilter(method=search_filter)
+
     class Meta:
         model = Category
-        fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
-        }
+        fields = ['search']
 
 
-class VehicleFilter(FilterSet):
+class VehicleFilter(django_filters.FilterSet):
+    search = django_filters.CharFilter(method=search_filter)
+
     class Meta:
         model = Vehicle
         fields = {
-            'name': ['exact', 'icontains', 'istartswith'],
-            'document_number': ['exact'],
             'is_published': ['exact'],
         }
