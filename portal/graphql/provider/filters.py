@@ -22,9 +22,7 @@ class ProviderFilter(django_filters.FilterSet):
 
     class Meta:
         model = Provider
-        fields = {
-            'is_published': ['exact'],
-        }
+        fields = ['is_published', 'segment']
 
 
 class SegmentFilter(django_filters.FilterSet):
