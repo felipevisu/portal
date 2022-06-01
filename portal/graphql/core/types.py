@@ -81,3 +81,11 @@ class SortInputObjectType(graphene.InputObjectType):
                 description=f"Sort {type_name} by the selected field.",
             )
             cls._meta.fields.update({"field": field})
+
+
+class NonNullList(graphene.List):
+    """A list type that automatically adds non-null constraint on contained items."""
+
+    def __init__(self, of_type, *args, **kwargs):
+        of_type = graphene.NonNull(of_type)
+        super(NonNullList, self).__init__(of_type, *args, **kwargs)

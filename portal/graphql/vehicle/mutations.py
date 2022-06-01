@@ -2,7 +2,8 @@ import graphene
 
 from ...core.permissions import VehiclePermissions
 from ...vehicle import models
-from ..core.mutations import ModelDeleteMutation, ModelMutation
+from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
+from ..core.types import NonNullList
 from .types import Category, Vehicle
 
 
@@ -83,4 +84,17 @@ class CategoryDelete(ModelDeleteMutation):
 
     class Meta:
         model = models.Category
+        permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+
+
+class CategoryBulkDelete(ModelBulkDeleteMutation):
+    class Arguments:
+        ids = NonNullList(
+            graphene.ID, required=True, description="List of category IDs to delete."
+        )
+
+    class Meta:
+        description = "Deletes categories."
+        model = models.Category
+        object_type = Category
         permissions = (VehiclePermissions.MANAGE_CATEGORIES,)

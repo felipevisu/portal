@@ -11,6 +11,7 @@ from graphene_django.registry import get_global_registry
 from graphql import GraphQLError
 
 from ...core.exeptions import PermissionDenied
+from ..utils import get_nodes
 from .types import Error, Upload
 from .utils import (
     from_global_id_or_error,
@@ -219,6 +220,16 @@ class BaseMutation(graphene.Mutation):
 
         return node
 
+    @classmethod
+    def get_nodes_or_error(cls, ids, field, only_type=None, qs=None, schema=None):
+        try:
+            instances = get_nodes(ids, only_type, qs=qs, schema=schema)
+        except GraphQLError as e:
+            raise ValidationError(
+                {field: ValidationError(str(e), code="graphql_error")}
+            )
+        return instances
+
 
 class ModelMutation(BaseMutation):
     class Meta:
@@ -389,3 +400,113 @@ class ModelDeleteMutation(ModelMutation):
             instance.id = db_id
 
         return cls.success_response(instance)
+
+
+class BaseBulkMutation(BaseMutation):
+    count = graphene.Int(
+        required=True, description="Returns how many objects were affected."
+    )
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def __init_subclass_with_meta__(
+        cls, model=None, object_type=None, _meta=None, **kwargs
+    ):
+        if not model:
+            raise ImproperlyConfigured("model is required for bulk mutation")
+        if not _meta:
+            _meta = ModelMutationOptions(cls)
+        _meta.model = model
+        _meta.object_type = object_type
+
+        super().__init_subclass_with_meta__(_meta=_meta, **kwargs)
+
+    @classmethod
+    def get_type_for_model(cls):
+        if not cls._meta.object_type:
+            raise ImproperlyConfigured(
+                f"Either GraphQL type for model {cls._meta.model.__name__} needs to be "
+                f"specified on object_type option or {cls.__name__} needs to define "
+                "custom get_type_for_model() method."
+            )
+
+        return cls._meta.object_type
+
+    @classmethod
+    def clean_instance(cls, info, instance):
+        """Perform additional logic.
+        Override this method to raise custom validation error and prevent
+        bulk action on the instance.
+        """
+
+    @classmethod
+    def bulk_action(cls, info, queryset, **kwargs):
+        """Implement action performed on queryset."""
+        raise NotImplementedError
+
+    @classmethod
+    def perform_mutation(cls, _root, info, ids, **data):
+        """Perform a mutation that deletes a list of model instances."""
+        clean_instance_ids, errors = [], {}
+        # Allow to pass empty list for dummy mutation
+        if not ids:
+            return 0, errors
+        instance_model = cls._meta.model
+        model_type = cls.get_type_for_model()
+        if not model_type:
+            raise ImproperlyConfigured(
+                f"GraphQL type for model {cls._meta.model.__name__} could not be "
+                f"resolved for {cls.__name__}"
+            )
+
+        try:
+            instances = cls.get_nodes_or_error(
+                ids, "id", model_type, schema=info.schema
+            )
+        except ValidationError as error:
+            return 0, error
+        for instance, node_id in zip(instances, ids):
+            instance_errors = []
+
+            # catch individual validation errors to raise them later as
+            # a single error
+            try:
+                cls.clean_instance(info, instance)
+            except ValidationError as e:
+                msg = ". ".join(e.messages)
+                instance_errors.append(msg)
+
+            if not instance_errors:
+                clean_instance_ids.append(instance.pk)
+            else:
+                instance_errors_msg = ". ".join(instance_errors)
+                ValidationError({node_id: instance_errors_msg}).update_error_dict(
+                    errors
+                )
+
+        if errors:
+            errors = ValidationError(errors)
+        count = len(clean_instance_ids)
+        if count:
+            qs = instance_model.objects.filter(pk__in=clean_instance_ids)
+            cls.bulk_action(info=info, queryset=qs, **data)
+        return count, errors
+
+    @classmethod
+    def mutate(cls, root, info, **data):
+        count, errors = cls.perform_mutation(root, info, **data)
+        if errors:
+            return cls.handle_errors(errors, count=count)
+
+        return cls(errors=errors, count=count)
+
+
+class ModelBulkDeleteMutation(BaseBulkMutation):
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def bulk_action(cls, info, queryset):
+        queryset.delete()

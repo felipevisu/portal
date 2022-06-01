@@ -3,6 +3,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 from ..utils.sorting import sort_queryset_resolver
 from .mutations import (
+    CategoryBulkDelete,
     CategoryCreate,
     CategoryDelete,
     CategoryUpdate,
@@ -56,6 +57,7 @@ class Mutation(graphene.ObjectType):
     category_create = CategoryCreate.Field()
     category_update = CategoryUpdate.Field()
     category_delete = CategoryDelete.Field()
+    category_bulk_delete = CategoryBulkDelete.Field()
     vehicle_create = VehicleCreate.Field()
     vehicle_update = VehicleUpdate.Field()
     vehicle_delete = VehicleDelete.Field()
