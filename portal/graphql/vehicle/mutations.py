@@ -46,7 +46,20 @@ class VehicleDelete(ModelDeleteMutation):
 
     class Meta:
         model = models.Vehicle
-        permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+        permissions = (VehiclePermissions.MANAGE_VEHICLES,)
+
+
+class VehicleBulkDelete(ModelBulkDeleteMutation):
+    class Arguments:
+        ids = NonNullList(
+            graphene.ID, required=True, description="List of vehicles IDs to delete."
+        )
+
+    class Meta:
+        description = "Deletes vehicles."
+        model = models.Vehicle
+        object_type = Vehicle
+        permissions = (VehiclePermissions.MANAGE_VEHICLES,)
 
 
 class CategoryInput(graphene.InputObjectType):

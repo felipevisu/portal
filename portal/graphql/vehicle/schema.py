@@ -7,6 +7,7 @@ from .mutations import (
     CategoryCreate,
     CategoryDelete,
     CategoryUpdate,
+    VehicleBulkDelete,
     VehicleCreate,
     VehicleDelete,
     VehicleUpdate,
@@ -61,3 +62,4 @@ class Mutation(graphene.ObjectType):
     vehicle_create = VehicleCreate.Field()
     vehicle_update = VehicleUpdate.Field()
     vehicle_delete = VehicleDelete.Field()
+    vehicle_bulk_delete = VehicleBulkDelete.Field()
