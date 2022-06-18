@@ -2,8 +2,8 @@ import graphene
 
 from ...core.permissions import ProviderPermissions
 from ...provider import models
-from ..core.mutations import ModelDeleteMutation, ModelMutation
-from ..core.types import Upload
+from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
+from ..core.types import NonNullList, Upload
 from .types import Document, Provider, Segment
 
 
@@ -129,4 +129,17 @@ class SegmentDelete(ModelDeleteMutation):
 
     class Meta:
         model = models.Segment
+        permissions = (ProviderPermissions.MANAGE_SEGMENTS,)
+
+
+class SegmentBulkDelete(ModelBulkDeleteMutation):
+    class Arguments:
+        ids = NonNullList(
+            graphene.ID, required=True, description="List of category IDs to delete."
+        )
+
+    class Meta:
+        description = "Deletes categories."
+        model = models.Segment
+        object_type = Segment
         permissions = (ProviderPermissions.MANAGE_SEGMENTS,)

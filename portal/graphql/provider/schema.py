@@ -9,6 +9,7 @@ from .mutations import (
     ProviderCreate,
     ProviderDelete,
     ProviderUpdate,
+    SegmentBulkDelete,
     SegmentCreate,
     SegmentDelete,
     SegmentUpdate,
@@ -71,6 +72,7 @@ class Mutation(graphene.ObjectType):
     segment_create = SegmentCreate.Field()
     segment_update = SegmentUpdate.Field()
     segment_delete = SegmentDelete.Field()
+    segment_bulk_delete = SegmentBulkDelete.Field()
     provider_create = ProviderCreate.Field()
     provider_update = ProviderUpdate.Field()
     provider_delete = ProviderDelete.Field()
