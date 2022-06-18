@@ -6,6 +6,7 @@ from .mutations import (
     DocumentCreate,
     DocumentDelete,
     DocumentUpdate,
+    ProviderBulkDelete,
     ProviderCreate,
     ProviderDelete,
     ProviderUpdate,
@@ -76,6 +77,7 @@ class Mutation(graphene.ObjectType):
     provider_create = ProviderCreate.Field()
     provider_update = ProviderUpdate.Field()
     provider_delete = ProviderDelete.Field()
+    provider_bulk_delete = ProviderBulkDelete.Field()
     document_create = DocumentCreate.Field()
     document_update = DocumentUpdate.Field()
     document_delete = DocumentDelete.Field()

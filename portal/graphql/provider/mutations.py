@@ -94,6 +94,19 @@ class ProviderDelete(ModelDeleteMutation):
         permissions = (ProviderPermissions.MANAGE_PROVIDERS,)
 
 
+class ProviderBulkDelete(ModelBulkDeleteMutation):
+    class Arguments:
+        ids = NonNullList(
+            graphene.ID, required=True, description="List of providers IDs to delete."
+        )
+
+    class Meta:
+        description = "Deletes providers."
+        model = models.Provider
+        object_type = Provider
+        permissions = (ProviderPermissions.MANAGE_PROVIDERS,)
+
+
 class SegmentInput(graphene.InputObjectType):
     name = graphene.String()
     slug = graphene.String()
@@ -135,11 +148,11 @@ class SegmentDelete(ModelDeleteMutation):
 class SegmentBulkDelete(ModelBulkDeleteMutation):
     class Arguments:
         ids = NonNullList(
-            graphene.ID, required=True, description="List of category IDs to delete."
+            graphene.ID, required=True, description="List of segments IDs to delete."
         )
 
     class Meta:
-        description = "Deletes categories."
+        description = "Deletes segments."
         model = models.Segment
         object_type = Segment
         permissions = (ProviderPermissions.MANAGE_SEGMENTS,)
