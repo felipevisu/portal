@@ -1,9 +1,11 @@
 import graphene
+from django.core.exceptions import ValidationError
 
 from ...core.permissions import ProviderPermissions
 from ...provider import models
 from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
 from ..core.types import NonNullList, Upload
+from ..core.utils import validate_slug_and_generate_if_needed
 from .types import Document, Provider, Segment
 
 
@@ -71,6 +73,17 @@ class ProviderCreate(ModelMutation):
         model = models.Provider
         permissions = (ProviderPermissions.MANAGE_PROVIDERS,)
 
+    @classmethod
+    def clean_input(cls, info, instance, data, input_cls=None):
+        cleaned_input = super().clean_input(info, instance, data, input_cls)
+        try:
+            cleaned_input = validate_slug_and_generate_if_needed(
+                instance, "name", cleaned_input
+            )
+        except ValidationError as error:
+            raise ValidationError({"slug": error})
+        return cleaned_input
+
 
 class ProviderUpdate(ModelMutation):
     vehicle = graphene.Field(Provider)
@@ -121,6 +134,17 @@ class SegmentCreate(ModelMutation):
     class Meta:
         model = models.Segment
         permissions = (ProviderPermissions.MANAGE_SEGMENTS,)
+
+    @classmethod
+    def clean_input(cls, info, instance, data, input_cls=None):
+        cleaned_input = super().clean_input(info, instance, data, input_cls)
+        try:
+            cleaned_input = validate_slug_and_generate_if_needed(
+                instance, "name", cleaned_input
+            )
+        except ValidationError as error:
+            raise ValidationError({"slug": error})
+        return cleaned_input
 
 
 class SegmentUpdate(ModelMutation):

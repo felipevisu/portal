@@ -1,4 +1,7 @@
 import graphene
+from django.core.exceptions import ValidationError
+
+from portal.graphql.core.utils import validate_slug_and_generate_if_needed
 
 from ...core.permissions import VehiclePermissions
 from ...vehicle import models
@@ -25,6 +28,17 @@ class VehicleCreate(ModelMutation):
     class Meta:
         model = models.Vehicle
         permissions = (VehiclePermissions.MANAGE_VEHICLES,)
+
+    @classmethod
+    def clean_input(cls, info, instance, data, input_cls=None):
+        cleaned_input = super().clean_input(info, instance, data, input_cls)
+        try:
+            cleaned_input = validate_slug_and_generate_if_needed(
+                instance, "name", cleaned_input
+            )
+        except ValidationError as error:
+            raise ValidationError({"slug": error})
+        return cleaned_input
 
 
 class VehicleUpdate(ModelMutation):
@@ -76,6 +90,17 @@ class CategoryCreate(ModelMutation):
     class Meta:
         model = models.Category
         permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+
+    @classmethod
+    def clean_input(cls, info, instance, data, input_cls=None):
+        cleaned_input = super().clean_input(info, instance, data, input_cls)
+        try:
+            cleaned_input = validate_slug_and_generate_if_needed(
+                instance, "name", cleaned_input
+            )
+        except ValidationError as error:
+            raise ValidationError({"slug": error})
+        return cleaned_input
 
 
 class CategoryUpdate(ModelMutation):
