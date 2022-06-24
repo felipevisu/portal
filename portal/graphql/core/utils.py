@@ -4,6 +4,7 @@ from typing import Type, Union
 
 import graphene
 from django.core.exceptions import ValidationError
+from django.db.models import Model
 from django.utils.text import slugify
 from graphene import ObjectType
 from graphql import GraphQLError
@@ -71,7 +72,7 @@ def get_error_code_from_error(error) -> str:
 
 
 def generate_unique_slug(
-    instance: Type["Model"], # type: ignore
+    instance: Type[Model],
     slugable_value: str,
     slug_field_name: str = "slug",
 ) -> str:
@@ -85,7 +86,7 @@ def generate_unique_slug(
         slug_field_name: name of slug field in instance model
     """
     slug = slugify(slugable_value, allow_unicode=True)
-    unique_slug: Union["SafeText", str] = slug # type: ignore
+    unique_slug: str = slug
 
     ModelClass = instance.__class__
     extension = 1
@@ -106,7 +107,7 @@ def generate_unique_slug(
 
 
 def validate_slug_and_generate_if_needed(
-    instance: Type["Model"], # type: ignore
+    instance: Type[Model],
     slugable_field: str,
     cleaned_input: dict,
     slug_field_name: str = "slug",

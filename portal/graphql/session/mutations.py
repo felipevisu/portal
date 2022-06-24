@@ -1,8 +1,10 @@
 import graphene
+from django.core.exceptions import ValidationError
 
 from ...core.permissions import SessionPermissions
 from ...session import models
 from ..core.mutations import ModelDeleteMutation, ModelMutation
+from ..core.utils import validate_slug_and_generate_if_needed
 from .types import Session
 
 
@@ -23,6 +25,17 @@ class SessionCreate(ModelMutation):
     class Meta:
         model = models.Session
         permissions = (SessionPermissions.MANAGE_SESSIONS,)
+
+    @classmethod
+    def clean_input(cls, info, instance, data, input_cls=None):
+        cleaned_input = super().clean_input(info, instance, data, input_cls)
+        try:
+            cleaned_input = validate_slug_and_generate_if_needed(
+                instance, "name", cleaned_input
+            )
+        except ValidationError as error:
+            raise ValidationError({"slug": error})
+        return cleaned_input
 
 
 class SessionUpdate(ModelMutation):

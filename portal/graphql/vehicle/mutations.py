@@ -1,12 +1,11 @@
 import graphene
 from django.core.exceptions import ValidationError
 
-from portal.graphql.core.utils import validate_slug_and_generate_if_needed
-
 from ...core.permissions import VehiclePermissions
 from ...vehicle import models
 from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
 from ..core.types import NonNullList
+from ..core.utils import validate_slug_and_generate_if_needed
 from .types import Category, Vehicle
 
 
