@@ -1,7 +1,7 @@
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 
-from .mutations import SessionCreate, SessionDelete, SessionUpdate
+from .mutations import SessionBulkDelete, SessionCreate, SessionDelete, SessionUpdate
 from .resolvers import resolve_session, resolve_sessions
 from .types import Session
 
@@ -25,3 +25,4 @@ class Mutation(graphene.ObjectType):
     session_create = SessionCreate.Field()
     session_update = SessionUpdate.Field()
     session_delete = SessionDelete.Field()
+    session_bulk_delete = SessionBulkDelete.Field()

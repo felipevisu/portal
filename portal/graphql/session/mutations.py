@@ -3,7 +3,8 @@ from django.core.exceptions import ValidationError
 
 from ...core.permissions import SessionPermissions
 from ...session import models
-from ..core.mutations import ModelDeleteMutation, ModelMutation
+from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
+from ..core.types import NonNullList
 from ..core.utils import validate_slug_and_generate_if_needed
 from .types import Session
 
@@ -57,4 +58,17 @@ class SessionDelete(ModelDeleteMutation):
 
     class Meta:
         model = models.Session
+        permissions = (SessionPermissions.MANAGE_SESSIONS,)
+
+
+class SessionBulkDelete(ModelBulkDeleteMutation):
+    class Arguments:
+        ids = NonNullList(
+            graphene.ID, required=True, description="List of category IDs to delete."
+        )
+
+    class Meta:
+        description = "Deletes sessions."
+        model = models.Session
+        object_type = Session
         permissions = (SessionPermissions.MANAGE_SESSIONS,)
