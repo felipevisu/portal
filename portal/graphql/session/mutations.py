@@ -15,6 +15,7 @@ class SessionInput(graphene.InputObjectType):
     content = graphene.JSONString()
     date = graphene.Date(required=False)
     time = graphene.Time(required=False)
+    is_published = graphene.Boolean(default=False)
 
 
 class SessionCreate(ModelMutation):
