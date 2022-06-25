@@ -13,8 +13,7 @@ class SessionInput(graphene.InputObjectType):
     name = graphene.String()
     slug = graphene.String()
     content = graphene.JSONString()
-    date = graphene.Date(required=False)
-    time = graphene.Time(required=False)
+    date = graphene.DateTime(required=False)
     is_published = graphene.Boolean(default=False)
 
 

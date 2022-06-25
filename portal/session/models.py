@@ -8,8 +8,7 @@ from ..core.utils.editorjs import clean_editor_js
 
 class Session(ModelWithDates, ModelWithSlug, PublishableModel):
     content = SanitizedJSONField(blank=True, null=True, sanitizer=clean_editor_js)
-    date = models.DateField()
-    time = models.TimeField()
+    date = models.DateTimeField()
 
     class Meta:
         ordering = ['-created']
