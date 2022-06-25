@@ -1,11 +1,13 @@
 from django.db import models
 
-from portal.core.models import ModelWithDates, ModelWithSlug, PublishableModel
-from portal.core.permissions import SessionPermissions
+from ..core.db.fields import SanitizedJSONField
+from ..core.models import ModelWithDates, ModelWithSlug, PublishableModel
+from ..core.permissions import SessionPermissions
+from ..core.utils.editorjs import clean_editor_js
 
 
 class Session(ModelWithDates, ModelWithSlug, PublishableModel):
-    content = models.JSONField(blank=True, null=True)
+    content = SanitizedJSONField(blank=True, null=True, sanitizer=clean_editor_js)
     date = models.DateField()
     time = models.TimeField()
 

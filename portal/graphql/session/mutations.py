@@ -18,7 +18,7 @@ class SessionInput(graphene.InputObjectType):
 
 
 class SessionCreate(ModelMutation):
-    vehicle = graphene.Field(Session)
+    session = graphene.Field(Session)
 
     class Arguments:
         input = SessionInput(required=True)
@@ -64,7 +64,7 @@ class SessionDelete(ModelDeleteMutation):
 class SessionBulkDelete(ModelBulkDeleteMutation):
     class Arguments:
         ids = NonNullList(
-            graphene.ID, required=True, description="List of category IDs to delete."
+            graphene.ID, required=True, description="List of sessions IDs to delete."
         )
 
     class Meta:
