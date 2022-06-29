@@ -85,7 +85,7 @@ def generate_unique_slug(
         slugable_value: value used to create slug
         slug_field_name: name of slug field in instance model
     """
-    slug = slugify(slugable_value, allow_unicode=True)
+    slug = slugify(slugable_value)
     unique_slug: str = slug
 
     ModelClass = instance.__class__
