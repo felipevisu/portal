@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from ...investment import models
+from ..core.connection import ContableConnection
 from .dataloaders import ItemsByInvestmentIdLoader
 
 items_loader = ItemsByInvestmentIdLoader()
@@ -13,6 +14,7 @@ class Item(DjangoObjectType):
         model = models.Item
         filter_fields = ['name']
         interfaces = [graphene.relay.Node]
+        connection_class = ContableConnection
 
 
 class Investment(DjangoObjectType):
@@ -22,6 +24,7 @@ class Investment(DjangoObjectType):
         model = models.Investment
         filter_fields = ['mounth', 'year', 'is_published']
         interfaces = [graphene.relay.Node]
+        connection_class = ContableConnection
 
     def resolve_items(self, info):
         return items_loader.load(self.id)

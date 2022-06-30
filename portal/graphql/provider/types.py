@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from ...provider import models
+from ..core.connection import ContableConnection
 from .dataloaders import (
     DocumentsByProviderIdLoader,
     ProvidersBySegmentIdLoader,
@@ -20,11 +21,16 @@ class Document(DjangoObjectType):
         model = models.Document
         filterset_class = DocumentFilter
         interfaces = [graphene.relay.Node]
+        connection_class = ContableConnection
 
 
-class DocumentsConnection(graphene.relay.Connection):
+class DocumentsConnection(graphene.Connection):
+    total_count = graphene.Int()
     class Meta:
         node = Document
+
+    def resolve_total_count(root, info, **kwargs):
+        return len(root.edges)
 
 
 class Provider(DjangoObjectType):
@@ -34,6 +40,7 @@ class Provider(DjangoObjectType):
         model = models.Provider
         filterset_class = ProviderFilter
         interfaces = [graphene.relay.Node]
+        connection_class = ContableConnection
 
     def resolve_segment(self, info):
         if self.segment_id:
@@ -46,9 +53,13 @@ class Provider(DjangoObjectType):
         return documents_loader.load(self.id)
 
 
-class ProvidersConnection(graphene.relay.Connection):
+class ProvidersConnection(graphene.Connection):
+    total_count = graphene.Int()
     class Meta:
         node = Provider
+
+    def resolve_total_count(root, info, **kwargs):
+        return len(root.edges)
 
 
 class Segment(DjangoObjectType):
@@ -58,6 +69,7 @@ class Segment(DjangoObjectType):
         model = models.Segment
         filterset_class = SegmentFilter
         interfaces = [graphene.relay.Node]
+        connection_class = ContableConnection
 
     def resolve_providers(self, info):
         return providers_loader.load(self.id)

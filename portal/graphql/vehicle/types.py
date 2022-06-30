@@ -1,7 +1,9 @@
 import graphene
+from django.db import connection
 from graphene_django import DjangoObjectType
 
 from ...vehicle import models
+from ..core.connection import ContableConnection
 from .dataloaders import CategoryByIdLoader, VehiclesByCategoryIdLoader
 from .filters import CategoryFilter, VehicleFilter
 
@@ -15,6 +17,7 @@ class Vehicle(DjangoObjectType):
         model = models.Vehicle
         filterset_class = VehicleFilter
         interfaces = [graphene.relay.Node]
+        connection_class = ContableConnection
 
     def resolve_category(self, info):
         if self.category_id:
@@ -24,9 +27,14 @@ class Vehicle(DjangoObjectType):
         return category_loader.load(category_id)
 
 
-class VehiclesConnection(graphene.relay.Connection):
+class VehiclesConnection(graphene.Connection):
+    total_count = graphene.Int()
+
     class Meta:
         node = Vehicle
+
+    def resolve_total_count(root, info, **kwargs):
+        return len(root.edges)
 
 
 class Category(DjangoObjectType):
@@ -37,6 +45,7 @@ class Category(DjangoObjectType):
         model = models.Category
         filterset_class = CategoryFilter
         interfaces = [graphene.relay.Node]
+        connection_class = ContableConnection
 
     def resolve_vehicles(self, info):
         return vehicles_loader.load(self.id)
