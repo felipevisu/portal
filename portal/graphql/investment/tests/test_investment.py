@@ -6,10 +6,10 @@ from ...tests.utils import get_graphql_content
 pytestmark = pytest.mark.django_db
 
 QUERY_INVESTMENT = """
-    query Investment($id: ID, $mounth: Int, $year: Int) {
-        investment(id: $id, mounth: $mounth, year: $year) {
+    query Investment($id: ID, $month: Int, $year: Int) {
+        investment(id: $id, month: $month, year: $year) {
             id
-            mounth
+            month
             year
             isPublished
             items{
@@ -27,7 +27,7 @@ QUERY_INVESTMENTS = """
             edges{
                 node{
                     id
-                    mounth
+                    month
                     year
                     items{
                         id
@@ -50,7 +50,7 @@ def test_investment_staff_query_by_id(staff_api_client, investment):
     content = get_graphql_content(response)
     data = content['data']['investment']
 
-    assert data['mounth'] == investment.mounth
+    assert data['month'] == investment.month
     assert data['year'] == investment.year
 
 
@@ -64,16 +64,16 @@ def test_investment_query_by_invalid_id(staff_api_client):
     assert content["data"]["investment"] is None
 
 
-def test_investment_staff_query_by_mounth_and_year(staff_api_client, investment):
+def test_investment_staff_query_by_month_and_year(staff_api_client, investment):
     variables = {
-        "mounth": investment.mounth,
+        "month": investment.month,
         "year": investment.year,
     }
     response = staff_api_client.post_graphql(QUERY_INVESTMENT, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['investment']
 
-    assert data['mounth'] == investment.mounth
+    assert data['month'] == investment.month
     assert data['year'] == investment.year
 
 
@@ -96,7 +96,7 @@ def test_investment_anonymouns_query_published(api_client, published_investment)
     content = get_graphql_content(response)
     data = content['data']['investment']
 
-    assert data['mounth'] == published_investment.mounth
+    assert data['month'] == published_investment.month
     assert data['year'] == published_investment.year
 
 
@@ -138,7 +138,7 @@ CREATE_INVESTMENT_MUTATION = """
         investmentCreate(input: $input){
             investment{
                 id
-                mounth
+                month
                 year
                 items{
                     id
@@ -158,7 +158,7 @@ CREATE_INVESTMENT_MUTATION = """
 
 def test_investment_create_mutation(staff_api_client, permission_manage_investments):
     input = {
-        "mounth": 6,
+        "month": 6,
         "year": 2022
     }
     variables = {"input": input}
@@ -170,7 +170,7 @@ def test_investment_create_mutation(staff_api_client, permission_manage_investme
     content = get_graphql_content(response)
     data = content["data"]["investmentCreate"]
     assert data["errors"] == []
-    assert data["investment"]["mounth"] == input["mounth"]
+    assert data["investment"]["month"] == input["month"]
     assert data["investment"]["year"] == input["year"]
 
 
@@ -178,7 +178,7 @@ def test_investment_create_mutation_missing_params(
     staff_api_client, permission_manage_investments
 ):
     input = {
-        "mounth": 6,
+        "month": 6,
     }
     variables = {"input": input}
     response = staff_api_client.post_graphql(
@@ -198,7 +198,7 @@ def test_investment_create_mutation_duplicated(
     staff_api_client, permission_manage_investments
 ):
     input = {
-        "mounth": 6,
+        "month": 6,
         "year": 2022
     }
     variables = {"input": input}
@@ -225,7 +225,7 @@ UPDATE_INVESTMENT_MUTATION = """
         investmentUpdate(id: $id, input: $input){
             investment{
                 id
-                mounth
+                month
                 year
                 isPublished
                 items{
@@ -249,7 +249,7 @@ def test_investment_update_mutation(
 ):
     investment_id = graphene.Node.to_global_id("Investment", investment.pk)
     input = {
-        "mounth": 12,
+        "month": 12,
         "isPublished": True
     }
     variables = {
@@ -265,7 +265,7 @@ def test_investment_update_mutation(
     data = content["data"]["investmentUpdate"]
     assert data["errors"] == []
     assert data["investment"]["id"] == investment_id
-    assert data["investment"]["mounth"] == input["mounth"]
+    assert data["investment"]["month"] == input["month"]
     assert data["investment"]["isPublished"] == input["isPublished"]
 
 
@@ -274,7 +274,7 @@ def test_investment_update_mutation_invalid_parameter(
 ):
     investment_id = graphene.Node.to_global_id("Investment", investment.pk)
     input = {
-        "mounth": 2,
+        "month": 2,
         "isPublished": True
     }
     variables = {

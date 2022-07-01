@@ -22,7 +22,7 @@ class Investment(DjangoObjectType):
 
     class Meta:
         model = models.Investment
-        filter_fields = ['mounth', 'year', 'is_published']
+        filter_fields = ['month', 'year', 'is_published']
         interfaces = [graphene.relay.Node]
         connection_class = ContableConnection
 

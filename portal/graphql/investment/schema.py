@@ -20,7 +20,7 @@ class Query(graphene.ObjectType):
     investment = graphene.Field(
         Investment,
         id=graphene.Argument(graphene.ID),
-        mounth=graphene.Int(),
+        month=graphene.Int(),
         year=graphene.Int(),
     )
     investments = DjangoFilterConnectionField(Investment)
@@ -28,8 +28,8 @@ class Query(graphene.ObjectType):
     def resolve_investments(self, info, *args, **kwargs):
         return resolve_investments(info)
 
-    def resolve_investment(self, info, id=None, mounth=None, year=None):
-        return resolve_investment(info, id, mounth, year)
+    def resolve_investment(self, info, id=None, month=None, year=None):
+        return resolve_investment(info, id, month, year)
 
 
 class Mutation(graphene.ObjectType):

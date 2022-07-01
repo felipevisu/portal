@@ -17,7 +17,7 @@ from .types import Investment, Item
 
 
 class InvestmentInput(graphene.InputObjectType):
-    mounth = graphene.Int()
+    month = graphene.Int()
     year = graphene.Int()
     is_published = graphene.Boolean()
 
