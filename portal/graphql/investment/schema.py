@@ -2,6 +2,7 @@ import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 
 from portal.graphql.investment.mutations import (
+    InvestmentBulkDelete,
     InvestmentCreate,
     InvestmentDelete,
     InvestmentUpdate,
@@ -35,6 +36,7 @@ class Mutation(graphene.ObjectType):
     investment_create = InvestmentCreate.Field()
     investment_update = InvestmentUpdate.Field()
     investment_delete = InvestmentDelete.Field()
+    investment_bulk_delete = InvestmentBulkDelete.Field()
     item_create = ItemCreate.Field()
     item_bulk_create = ItemBulkCreate.Field()
     item_update = ItemUpdate.Field()

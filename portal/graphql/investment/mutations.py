@@ -6,8 +6,13 @@ from django.forms import ValidationError
 
 from ...core.permissions import InvestmentPermissions
 from ...investment import models
-from ..core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
-from ..core.types import Error
+from ..core.mutations import (
+    BaseMutation,
+    ModelBulkDeleteMutation,
+    ModelDeleteMutation,
+    ModelMutation,
+)
+from ..core.types import Error, NonNullList
 from .types import Investment, Item
 
 
@@ -81,6 +86,19 @@ class ItemUpdate(ModelMutation):
 
     class Meta:
         model = models.Item
+        permissions = (InvestmentPermissions.MANAGE_ITEMS,)
+
+
+class InvestmentBulkDelete(ModelBulkDeleteMutation):
+    class Arguments:
+        ids = NonNullList(
+            graphene.ID, required=True, description="List of segments IDs to delete."
+        )
+
+    class Meta:
+        description = "Deletes segments."
+        model = models.Investment
+        object_type = Investment
         permissions = (InvestmentPermissions.MANAGE_ITEMS,)
 
 
