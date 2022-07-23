@@ -7,22 +7,58 @@ from django.forms import ValidationError
 from ...core.permissions import InvestmentPermissions
 from ...investment import models
 from ..core.mutations import (
-    BaseMutation,
-    ModelBulkDeleteMutation,
-    ModelDeleteMutation,
-    ModelMutation,
-)
+    BaseMutation, ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation)
 from ..core.types import Error, NonNullList
 from .types import Investment, Item
+
+
+class ItemCreateInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    value = graphene.Float(required=True)
 
 
 class InvestmentInput(graphene.InputObjectType):
     month = graphene.Int()
     year = graphene.Int()
     is_published = graphene.Boolean()
+    items = NonNullList(ItemCreateInput)
 
 
-class InvestmentCreate(ModelMutation):
+class ItemsMixin:
+    INVESTMENT_ITEMS_FIELD = None
+
+    @classmethod
+    def clean_items(cls, cleaned_input, investment):
+        items_input = cleaned_input.get(cls.INVESTMENT_ITEMS_FIELD)
+        if items_input is None:
+            return
+
+        for item_data in items_input:
+            cls.validate_item(investment, item_data)
+
+    @classmethod
+    def validate_item(cls, investment, item_data: dict):
+        item = models.Item(**item_data, investment=investment)
+        try:
+            item.full_clean()
+        except ValidationError as validation_errors:
+            print('aqui')
+            for field, err in validation_errors.error_dict.items():
+                if field == "investment":
+                    continue
+                raise ValidationError({cls.INVESTMENT_ITEMS_FIELD: err})
+
+
+    @classmethod
+    def _save_m2m(cls, info, investment, cleaned_data):
+        super()._save_m2m(info, investment, cleaned_data)
+        items = cleaned_data.get(cls.INVESTMENT_ITEMS_FIELD) or []
+        for item in items:
+            investment.items.create(**item)
+
+
+class InvestmentCreate(ItemsMixin, ModelMutation):
+    INVESTMENT_ITEMS_FIELD = "items"
     investment = graphene.Field(Investment)
 
     class Arguments:
@@ -31,6 +67,23 @@ class InvestmentCreate(ModelMutation):
     class Meta:
         model = models.Investment
         permissions = (InvestmentPermissions.MANAGE_INVESTMENTS,)
+
+    @classmethod
+    def perform_mutation(cls, _root, info, **data):
+        input = data.get("input")
+
+        instance = models.Investment()
+
+        cleaned_input = cls.clean_input(info, instance, input)
+        cls.clean_items(cleaned_input, instance)
+        
+        instance = cls.construct_instance(instance, cleaned_input)
+        cls.clean_instance(info, instance)
+        
+        instance.save()
+        cls._save_m2m(info, instance, cleaned_input)
+
+        return InvestmentCreate(investment=instance)
 
 
 class InvestmentUpdate(ModelMutation):
@@ -181,7 +234,7 @@ class ItemBulkCreate(BaseMutation):
         instances = cls.create_items(info, cleaned_inputs, investment, errors)
 
         if errors:
-            raise ValidationError(errors)  # type: ignore
+            raise ValidationError(errors)
 
         for instance in instances:
             instance.save()
