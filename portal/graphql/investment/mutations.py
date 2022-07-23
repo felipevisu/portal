@@ -24,6 +24,14 @@ class InvestmentInput(graphene.InputObjectType):
     items = NonNullList(ItemCreateInput)
 
 
+class InvestmentUpdateInput(graphene.InputObjectType):
+    month = graphene.Int()
+    year = graphene.Int()
+    is_published = graphene.Boolean()
+    add_items = NonNullList(ItemCreateInput)
+    remove_items = NonNullList(graphene.ID)
+
+
 class ItemsMixin:
     INVESTMENT_ITEMS_FIELD = None
 
@@ -47,7 +55,6 @@ class ItemsMixin:
                 if field == "investment":
                     continue
                 raise ValidationError({cls.INVESTMENT_ITEMS_FIELD: err})
-
 
     @classmethod
     def _save_m2m(cls, info, investment, cleaned_data):
@@ -76,26 +83,61 @@ class InvestmentCreate(ItemsMixin, ModelMutation):
 
         cleaned_input = cls.clean_input(info, instance, input)
         cls.clean_items(cleaned_input, instance)
-        
+
         instance = cls.construct_instance(instance, cleaned_input)
         cls.clean_instance(info, instance)
-        
+
         instance.save()
         cls._save_m2m(info, instance, cleaned_input)
 
         return InvestmentCreate(investment=instance)
 
 
-class InvestmentUpdate(ModelMutation):
-    document = graphene.Field(Investment)
+class InvestmentUpdate(ItemsMixin, ModelMutation):
+    INVESTMENT_ITEMS_FIELD = "add_items"
+    investment = graphene.Field(Investment)
 
     class Arguments:
         id = graphene.ID()
-        input = InvestmentInput(required=True)
+        input = InvestmentUpdateInput(required=True)
 
     class Meta:
         model = models.Investment
         permissions = (InvestmentPermissions.MANAGE_INVESTMENTS,)
+
+    @classmethod
+    def clean_remove_items(cls, cleaned_input, instance):
+        remove_items = cleaned_input.get("remove_items", [])
+        for item in remove_items:
+            if item.attribute != instance:
+                msg = "Value %s does not belong to this attribute." % item
+                raise ValidationError(
+                    {
+                        "remove_values": ValidationError(msg)
+                    }
+                )
+        return remove_items
+
+    @classmethod
+    def _save_m2m(cls, info, instance, cleaned_data):
+        super()._save_m2m(info, instance, cleaned_data)
+        for item in cleaned_data.get("remove_items", []):
+            item.delete()
+
+    @classmethod
+    def perform_mutation(cls, _root, info, **data):
+        instance = cls.get_node_or_error(info, id, only_type=Investment)
+
+        cleaned_input = cls.clean_input(info, instance, input)
+        cls.clean_items(cleaned_input, instance)
+        cls.clean_remove_items(cleaned_input, instance)
+
+        instance = cls.construct_instance(instance, cleaned_input)
+        cls.clean_instance(info, instance)
+
+        instance.save()
+        cls._save_m2m(info, instance, cleaned_input)
+        return super().perform_mutation(_root, info, **data)
 
 
 class InvestmentDelete(ModelDeleteMutation):
