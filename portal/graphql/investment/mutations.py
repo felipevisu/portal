@@ -4,6 +4,8 @@ from collections import defaultdict
 import graphene
 from django.forms import ValidationError
 
+from portal import investment
+
 from ...core.permissions import InvestmentPermissions
 from ...investment import models
 from ..core.mutations import (
@@ -124,7 +126,7 @@ class InvestmentUpdate(ItemsMixin, ModelMutation):
             item.delete()
 
     @classmethod
-    def perform_mutation(cls, _root, info, **data):
+    def perform_mutation(cls, _root, info, id, input):
         instance = cls.get_node_or_error(info, id, only_type=Investment)
 
         cleaned_input = cls.clean_input(info, instance, input)
@@ -136,7 +138,7 @@ class InvestmentUpdate(ItemsMixin, ModelMutation):
 
         instance.save()
         cls._save_m2m(info, instance, cleaned_input)
-        return super().perform_mutation(_root, info, **data)
+        return InvestmentUpdate(investment=instance)
 
 
 class InvestmentDelete(ModelDeleteMutation):
