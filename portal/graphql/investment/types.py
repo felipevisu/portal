@@ -3,9 +3,6 @@ from graphene_django import DjangoObjectType
 
 from ...investment import models
 from ..core.connection import ContableConnection
-from .dataloaders import ItemsByInvestmentIdLoader
-
-items_loader = ItemsByInvestmentIdLoader()
 
 
 class Item(DjangoObjectType):
@@ -27,4 +24,4 @@ class Investment(DjangoObjectType):
         connection_class = ContableConnection
 
     def resolve_items(self, info):
-        return items_loader.load(self.id)
+        return info.context.loaders.items_by_investment_loader.load(self.id)

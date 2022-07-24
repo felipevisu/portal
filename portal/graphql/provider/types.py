@@ -4,10 +4,7 @@ from graphene_django import DjangoObjectType
 from ...provider import models
 from ..core.connection import ContableConnection
 from .dataloaders import (
-    DocumentsByProviderIdLoader,
-    ProvidersBySegmentIdLoader,
-    SegmentByIdLoader,
-)
+    DocumentsByProviderIdLoader, ProvidersBySegmentIdLoader, SegmentByIdLoader)
 from .filters import DocumentFilter, ProviderFilter, SegmentFilter
 
 segment_loader = SegmentByIdLoader()

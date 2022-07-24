@@ -10,7 +10,7 @@ class GraphQLView(BaseGraphQLView):
         executor=None,
         middleware=None,
         root_value=None,
-        graphiql=False,
+        graphiql=True,
         pretty=False,
         batch=False,
         backend=None,

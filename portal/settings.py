@@ -115,7 +115,8 @@ GRAPHENE = {
     'SCHEMA_OUTPUT': 'schema.graphql',
     'SCHEMA_INDENT': 2,
     "MIDDLEWARE": [
-        "graphql_jwt.middleware.JSONWebTokenMiddleware"
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+        "portal.graphql.middlewares.LoaderMiddleware"
     ],
 }
 

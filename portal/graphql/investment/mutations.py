@@ -50,7 +50,6 @@ class ItemsMixin:
         try:
             item.full_clean()
         except ValidationError as validation_errors:
-            print('aqui')
             for field, err in validation_errors.error_dict.items():
                 if field == "investment":
                     continue
