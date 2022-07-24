@@ -165,11 +165,23 @@ class ItemCreate(ModelMutation):
     item = graphene.Field(Item)
 
     class Arguments:
+        investment_id = graphene.ID(required=True)
         input = ItemInput(required=True)
 
     class Meta:
         model = models.Investment
         permissions = (InvestmentPermissions.MANAGE_ITEMS,)
+
+    @classmethod
+    def perform_mutation(cls, _root, info, investment_id, input):
+        investment = cls.get_node_or_error(info, investment_id, only_type=Investment)
+        instance = models.Item(investment=investment)
+        cleaned_input = cls.clean_input(info, instance, input)
+        instance = cls.construct_instance(instance, cleaned_input)
+        cls.clean_instance(info, instance)
+        instance.save()
+        cls._save_m2m(info, instance, cleaned_input)
+        return ItemCreate(item=instance)
 
 
 class ItemUpdate(ModelMutation):
