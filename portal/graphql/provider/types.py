@@ -9,7 +9,6 @@ from .filters import DocumentFilter, ProviderFilter, SegmentFilter
 
 segment_loader = SegmentByIdLoader()
 providers_loader = ProvidersBySegmentIdLoader()
-documents_loader = DocumentsByProviderIdLoader()
 
 
 class Document(DjangoObjectType):
@@ -23,6 +22,7 @@ class Document(DjangoObjectType):
 
 class DocumentsConnection(graphene.Connection):
     total_count = graphene.Int()
+
     class Meta:
         node = Document
 
@@ -47,11 +47,12 @@ class Provider(DjangoObjectType):
         return segment_loader.load(segment_id)
 
     def resolve_documents(self, info):
-        return documents_loader.load(self.id)
+        return info.context.loaders.documents_by_provider_loader.load(self.id)
 
 
 class ProvidersConnection(graphene.Connection):
     total_count = graphene.Int()
+
     class Meta:
         node = Provider
 

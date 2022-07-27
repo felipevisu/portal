@@ -1,10 +1,11 @@
 import graphene
 from django.core.exceptions import ValidationError
+from graphene_file_upload.scalars import Upload
 
 from ...core.permissions import ProviderPermissions
 from ...provider import models
 from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
-from ..core.types import NonNullList, Upload
+from ..core.types import NonNullList
 from ..core.utils import validate_slug_and_generate_if_needed
 from .types import Document, Provider, Segment
 
@@ -29,7 +30,10 @@ class DocumentCreate(ModelMutation):
 
     class Meta:
         model = models.Document
-        permissions = (ProviderPermissions.MANAGE_DOCUMENTS,)
+
+    @classmethod
+    def perform_mutation(cls, _root, info, **data):
+        return super().perform_mutation(_root, info, **data)
 
 
 class DocumentUpdate(ModelMutation):

@@ -125,6 +125,10 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = '/media/'
+
 STATIC_ROOT = 'staticfiles/'
 
 STATIC_URL = 'static/'

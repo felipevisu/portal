@@ -1,7 +1,8 @@
 from graphene_django.views import GraphQLView as BaseGraphQLView
+from graphene_file_upload.django import FileUploadGraphQLView
 
 
-class GraphQLView(BaseGraphQLView):
+class GraphQLView(FileUploadGraphQLView, BaseGraphQLView):
     graphiql_template = "graphql/playground.html"
 
     def __init__(
