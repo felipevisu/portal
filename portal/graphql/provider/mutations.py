@@ -12,7 +12,7 @@ from .types import Document, Provider, Segment
 
 class DocumentInput(graphene.InputObjectType):
     name = graphene.String()
-    slug = graphene.String()
+    description = graphene.String()
     file = Upload()
     provider = graphene.ID()
     is_published = graphene.Boolean(default=False)
@@ -32,9 +32,14 @@ class DocumentCreate(ModelMutation):
         model = models.Document
 
     @classmethod
-    def perform_mutation(cls, _root, info, **data):
-        return super().perform_mutation(_root, info, **data)
-
+    def clean_input(cls, info, instance, data, input_cls=None):
+        cleaned_input = super().clean_input(info, instance, data, input_cls)
+        errors = {}
+        expires = data.get('expires', False)
+        expiration_date = data.get('expiration_date', None)
+        if expires and not expiration_date:
+            raise ValidationError({'expiration_date': 'Este campo não pode estar vazio se o documento é expirável.'})
+        return cleaned_input
 
 class DocumentUpdate(ModelMutation):
     document = graphene.Field(Document)

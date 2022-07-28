@@ -12,12 +12,9 @@ from graphql import GraphQLError
 
 from ...core.exeptions import PermissionDenied
 from ..utils import get_nodes
-from .types import Error, Upload
+from .types import Error
 from .utils import (
-    from_global_id_or_error,
-    get_error_code_from_error,
-    snake_to_camel_case,
-)
+    from_global_id_or_error, get_error_code_from_error, snake_to_camel_case)
 
 registry = get_global_registry()
 
@@ -315,11 +312,6 @@ class ModelMutation(BaseMutation):
                 and field.type.of_type == graphene.ID
             )
 
-        def is_upload_field(field):
-            if hasattr(field.type, "of_type"):
-                return field.type.of_type == Upload
-            return field.type == Upload
-
         if not input_cls:
             input_cls = getattr(cls.Arguments, "input")
         cleaned_input = {}
@@ -339,11 +331,6 @@ class ModelMutation(BaseMutation):
                 elif value is not None and is_id_field(field_item):
                     instance = cls.get_node_or_error(info, value, field_name)
                     cleaned_input[field_name] = instance
-
-                # handle uploaded files
-                elif value is not None and is_upload_field(field_item):
-                    value = info.context.FILES.get(value)
-                    cleaned_input[field_name] = value
 
                 # handle other fields
                 else:

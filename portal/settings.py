@@ -127,7 +127,7 @@ AUTHENTICATION_BACKENDS = [
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = '/media/'
+MEDIA_ROOT = 'media'
 
 STATIC_ROOT = 'staticfiles/'
 
