@@ -34,12 +34,14 @@ class DocumentCreate(ModelMutation):
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data, input_cls)
-        errors = {}
         expires = data.get('expires', False)
         expiration_date = data.get('expiration_date', None)
         if expires and not expiration_date:
-            raise ValidationError({'expiration_date': 'Este campo não pode estar vazio se o documento é expirável.'})
+            message = 'Este campo não pode estar vazio se o documento é expirável.'
+            raise ValidationError(
+                {'expiration_date': message})
         return cleaned_input
+
 
 class DocumentUpdate(ModelMutation):
     document = graphene.Field(Document)
@@ -51,6 +53,20 @@ class DocumentUpdate(ModelMutation):
     class Meta:
         model = models.Document
         permissions = (ProviderPermissions.MANAGE_DOCUMENTS,)
+
+    @classmethod
+    def clean_input(cls, info, instance, data, input_cls=None):
+        cleaned_input = super().clean_input(info, instance, data, input_cls)
+        expires = data.get('expires', False)
+        expiration_date = data.get('expiration_date', None)
+        if expires and not expiration_date:
+            message = 'Este campo não pode estar vazio se o documento é expirável.'
+            raise ValidationError(
+                {'expiration_date': message})
+        if not expires:
+            cleaned_input['begin_date'] = None
+            cleaned_input['expiration_date'] = None
+        return cleaned_input
 
 
 class DocumentDelete(ModelDeleteMutation):

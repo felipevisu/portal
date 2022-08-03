@@ -47,7 +47,7 @@ class Category(DjangoObjectType):
         interfaces = [graphene.relay.Node]
         connection_class = ContableConnection
 
-    def resolve_vehicles(self, info):
+    def resolve_vehicles(self, info, **kwargs):
         return vehicles_loader.load(self.id)
 
     def resolve_custom_id(self, info):

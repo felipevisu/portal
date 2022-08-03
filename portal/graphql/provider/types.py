@@ -46,7 +46,7 @@ class Provider(DjangoObjectType):
             return None
         return segment_loader.load(segment_id)
 
-    def resolve_documents(self, info):
+    def resolve_documents(self, info, **kwargs):
         return info.context.loaders.documents_by_provider_loader.load(self.id)
 
 
@@ -69,5 +69,5 @@ class Segment(DjangoObjectType):
         interfaces = [graphene.relay.Node]
         connection_class = ContableConnection
 
-    def resolve_providers(self, info):
+    def resolve_providers(self, info, **kwargs):
         return providers_loader.load(self.id)
