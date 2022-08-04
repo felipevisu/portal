@@ -111,7 +111,6 @@ USE_I18N = True
 USE_TZ = True
 
 GRAPHENE = {
-    'RELAY_CONNECTION_ENFORCE_FIRST_OR_LAST': True,
     "SCHEMA": "portal.graphql.schema.schema",
     'SCHEMA_OUTPUT': 'schema.graphql',
     'SCHEMA_INDENT': 2,
