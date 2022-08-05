@@ -2,14 +2,9 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from portal.graphql.core.connection import ContableConnection
-from portal.graphql.provider.dataloaders import (
-    ProvidersBySegmentIdLoader, SegmentByIdLoader)
 from portal.graphql.provider.filters import (
     DocumentFilter, ProviderFilter, SegmentFilter)
 from portal.provider import models
-
-segment_loader = SegmentByIdLoader()
-providers_loader = ProvidersBySegmentIdLoader()
 
 
 class Document(DjangoObjectType):
@@ -53,7 +48,7 @@ class Provider(DjangoObjectType):
             segment_id = self.segment_id
         else:
             return None
-        return segment_loader.load(segment_id)
+        return info.context.loaders.segment_loader.load(segment_id)
 
     def resolve_documents(self, info, **kwargs):
         return info.context.loaders.documents_by_provider_loader.load(self.id)
@@ -79,4 +74,4 @@ class Segment(DjangoObjectType):
         connection_class = ContableConnection
 
     def resolve_providers(self, info, **kwargs):
-        return providers_loader.load(self.id)
+        return info.context.loaders.providers_by_segment_loader.load(self.id)

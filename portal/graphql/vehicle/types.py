@@ -1,14 +1,9 @@
 import graphene
-from django.db import connection
 from graphene_django import DjangoObjectType
 
-from ...vehicle import models
-from ..core.connection import ContableConnection
-from .dataloaders import CategoryByIdLoader, VehiclesByCategoryIdLoader
-from .filters import CategoryFilter, VehicleFilter
-
-category_loader = CategoryByIdLoader()
-vehicles_loader = VehiclesByCategoryIdLoader()
+from portal.graphql.core.connection import ContableConnection
+from portal.graphql.vehicle.filters import CategoryFilter, VehicleFilter
+from portal.vehicle import models
 
 
 class Vehicle(DjangoObjectType):
@@ -24,7 +19,7 @@ class Vehicle(DjangoObjectType):
             category_id = self.category_id
         else:
             return None
-        return category_loader.load(category_id)
+        return info.context.loaders.category_loader.load(category_id)
 
 
 class VehiclesConnection(graphene.Connection):
@@ -48,7 +43,7 @@ class Category(DjangoObjectType):
         connection_class = ContableConnection
 
     def resolve_vehicles(self, info, **kwargs):
-        return vehicles_loader.load(self.id)
+        return info.context.loaders.vehicles_by_category_loader.load(self.id)
 
     def resolve_custom_id(self, info):
         return self.id
