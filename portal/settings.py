@@ -1,15 +1,28 @@
+import ast
 import os.path
 from pathlib import Path
 
 import dj_database_url
 import django_heroku
-from decouple import config
+from dotenv import load_dotenv
+
+load_dotenv()
+
+def get_bool_from_env(name, default_value):
+    if name in os.environ:
+        value = os.environ[name]
+        try:
+            return ast.literal_eval(value)
+        except ValueError as e:
+            raise ValueError("{} is an invalid value for {}".format(value, name)) from e
+    return default_value
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = config("DEBUG", cast=bool)
+DEBUG = get_bool_from_env("DEBUG", True)
 
 PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -22,6 +35,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 INTERNAL_IPS = ["127.0.0.1"]
 
 INSTALLED_APPS = [
+    'storages',
+    # django modules
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +61,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,11 +94,11 @@ WSGI_APPLICATION = 'portal.wsgi.application'
 
 DATABASE_CONNECTION_DEFAULT_NAME = "default"
 
-DB_USER = config("DB_USER", "")
+DB_USER = os.environ.get("DB_USER", "")
 
-DB_PASSWORD = config("DB_PASSWORD", "")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
 
-DB_NAME = config("DB_NAME", "")
+DB_NAME = os.environ.get("DB_NAME", "")
 
 DATABASES = {
     DATABASE_CONNECTION_DEFAULT_NAME: dj_database_url.config(
@@ -126,15 +140,29 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-MEDIA_URL = '/media/'
+# FTP STORAGE
 
-MEDIA_ROOT = 'media'
+FTP_USER = os.environ.get('FTP_USER')
+FTP_PASSWORD = os.environ.get('FTP_PASSWORD')
+FTP_HOST = os.environ.get('FTP_HOST')
+FTP_PORT = os.environ.get('FTP_PORT')
+FTP_PATH = os.environ.get('FTP_PATH')
+FTP_STORAGE_LOCATION = f'ftp://{FTP_USER}:{FTP_PASSWORD}@{FTP_HOST}:{FTP_PORT}{FTP_PATH}'
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, "media")
+MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
 
-STATIC_URL = 'static/'
+DEFAULT_FILE_STORAGE = 'storages.backends.ftp.FTPStorage'
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
+STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+STATICFILES_DIRS = [
+    ("images", os.path.join(PROJECT_ROOT, "saleor", "static", "images"))
+]
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

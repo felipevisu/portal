@@ -1,23 +1,32 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from ...provider import models
-from ..core.connection import ContableConnection
-from .dataloaders import (
-    DocumentsByProviderIdLoader, ProvidersBySegmentIdLoader, SegmentByIdLoader)
-from .filters import DocumentFilter, ProviderFilter, SegmentFilter
+from portal.graphql.core.connection import ContableConnection
+from portal.graphql.provider.dataloaders import (
+    ProvidersBySegmentIdLoader, SegmentByIdLoader)
+from portal.graphql.provider.filters import (
+    DocumentFilter, ProviderFilter, SegmentFilter)
+from portal.provider import models
 
 segment_loader = SegmentByIdLoader()
 providers_loader = ProvidersBySegmentIdLoader()
 
 
 class Document(DjangoObjectType):
+    file_url = graphene.String()
+    file_name = graphene.String()
 
     class Meta:
         model = models.Document
         filterset_class = DocumentFilter
         interfaces = [graphene.relay.Node]
         connection_class = ContableConnection
+
+    def resolve_file_url(self, info):
+        return self.file.url
+
+    def resolve_file_name(self, info):
+        return self.file.name.split('/')[-1]
 
 
 class DocumentsConnection(graphene.Connection):
