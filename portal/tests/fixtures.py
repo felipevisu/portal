@@ -3,10 +3,10 @@ from datetime import date, timedelta
 import pytest
 from django.contrib.auth.models import Permission
 
-from ..account.models import User
-from ..investment.models import Investment, Item
-from ..provider.models import Document, Provider, Segment
-from ..vehicle.models import Category, Vehicle
+from portal.account.models import User
+from portal.investment.models import Investment, Item
+from portal.provider.models import Document, Provider, Segment
+from portal.vehicle.models import Category, Vehicle
 
 
 @pytest.fixture
@@ -104,8 +104,8 @@ def provider(segment):
     provider = Provider.objects.create(name="Visualize Comunicação", segment=segment)
     Document.objects.bulk_create(
         [
-            Document(name="Documento 01", slug="documento-01", provider=provider),
-            Document(name="Documento 02", slug="documento-02", provider=provider)
+            Document(name="Documento 01", provider=provider),
+            Document(name="Documento 02", provider=provider)
         ]
     )
     return provider
@@ -128,17 +128,17 @@ def document(provider):
 
 @pytest.fixture
 def investment():
-    return Investment.objects.create(year=2022, mounth=3)
+    return Investment.objects.create(year=2022, month=3)
 
 
 @pytest.fixture
 def published_investment():
-    return Investment.objects.create(year=2022, mounth=2, is_published=True)
+    return Investment.objects.create(year=2022, month=2, is_published=True)
 
 
 @pytest.fixture
 def investment_with_items():
-    investment = Investment.objects.create(year=2022, mounth=1)
+    investment = Investment.objects.create(year=2022, month=1)
     Item.objects.create(name="TV", slug="tv", value=100, investment=investment),
     Item.objects.create(name="Radio", slug="radio", value=100, investment=investment),
     Item.objects.create(name="Internet", slug="internet",

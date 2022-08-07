@@ -14,5 +14,4 @@ def test_provider(provider):
 
 
 def test_document(document):
-    assert document.slug == slugify('Contrato de Serviço')
     assert document.extension() == '.pdf'

@@ -1,7 +1,7 @@
 import graphene
 import pytest
 
-from ...tests.utils import get_graphql_content
+from portal.graphql.tests.utils import get_graphql_content
 
 pytestmark = pytest.mark.django_db
 
@@ -221,7 +221,7 @@ def test_investment_create_mutation_duplicated(
 
 
 UPDATE_INVESTMENT_MUTATION = """
-    mutation InvestmentUpdate($id: ID, $input: InvestmentInput!){
+    mutation InvestmentUpdate($id: ID, $input: InvestmentUpdateInput!){
         investmentUpdate(id: $id, input: $input){
             investment{
                 id

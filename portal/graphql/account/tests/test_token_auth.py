@@ -1,6 +1,6 @@
 import pytest
 
-from ...tests.utils import get_graphql_content
+from portal.graphql.tests.utils import get_graphql_content
 
 pytestmark = pytest.mark.django_db
 
@@ -37,7 +37,7 @@ def test_create_token(api_client, user):
     assert email == user.email
 
 
-def test_create_token_invalid_password(api_client, user):
+def test_create_token_with_invalid_password(api_client, user):
     variables = {"email": user.email, "password": "wrong"}
     response = api_client.post_graphql(
         MUTATION_TOKEN_AUTH,
