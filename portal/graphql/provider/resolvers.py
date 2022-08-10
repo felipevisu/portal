@@ -30,13 +30,3 @@ def resolve_provider(info, global_provider_id=None, slug=None):
         provider = models.Provider.published.visible_to_user(
             user).filter(slug=slug).first()
     return provider
-
-
-def resolve_documents(info):
-    user = info.context.user
-    return models.Document.published.visible_to_user(user)
-
-
-def resolve_document(_, global_document_id=None):
-    _, document_pk = from_global_id_or_error(global_document_id)
-    return models.Document.objects.filter(pk=document_pk).first()

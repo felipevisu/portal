@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def get_bool_from_env(name, default_value):
     if name in os.environ:
         value = os.environ[name]
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     # apps
     'portal.account',
     'portal.core',
+    'portal.document',
     'portal.investment',
     'portal.provider',
     'portal.session',

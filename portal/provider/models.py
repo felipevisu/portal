@@ -1,7 +1,4 @@
-import os
-
 from django.db import models
-from django.forms import ValidationError
 
 from ..core.models import ModelWithDates, ModelWithSlug, PublishableModel
 from ..core.permissions import ProviderPermissions
@@ -31,29 +28,3 @@ class Provider(ModelWithDates, ModelWithSlug, PublishableModel):
 
     def __str__(self):
         return self.name
-
-
-class Document(ModelWithDates, PublishableModel):
-    name = models.CharField(max_length=256)
-    description = models.TextField(blank=True)
-    provider = models.ForeignKey(
-        Provider, on_delete=models.CASCADE, related_name='documents')
-    file = models.FileField(upload_to="documents")
-    expires = models.BooleanField(default=False)
-    begin_date = models.DateField(null=True, blank=True)
-    expiration_date = models.DateField(null=True, blank=True)
-
-    objects = models.Manager()
-
-    class Meta:
-        ordering = ['provider', '-created']
-        permissions = (
-            (ProviderPermissions.MANAGE_DOCUMENTS.codename, "Manage documents."),
-        )
-
-    def __str__(self):
-        return self.name
-
-    def extension(self):
-        _, extension = os.path.splitext(self.file.name)
-        return extension

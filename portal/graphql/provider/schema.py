@@ -3,28 +3,12 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 from ..utils.sorting import sort_queryset_resolver
 from .mutations import (
-    DocumentCreate,
-    DocumentDelete,
-    DocumentUpdate,
-    ProviderBulkDelete,
-    ProviderCreate,
-    ProviderDelete,
-    ProviderUpdate,
-    SegmentBulkDelete,
-    SegmentCreate,
-    SegmentDelete,
-    SegmentUpdate,
-)
+    ProviderBulkDelete, ProviderCreate, ProviderDelete, ProviderUpdate,
+    SegmentBulkDelete, SegmentCreate, SegmentDelete, SegmentUpdate)
 from .resolvers import (
-    resolve_document,
-    resolve_documents,
-    resolve_provider,
-    resolve_providers,
-    resolve_segment,
-    resolve_segments,
-)
+    resolve_provider, resolve_providers, resolve_segment, resolve_segments)
 from .sorters import ProviderSortingInput, SegmentSortingInput
-from .types import Document, Provider, Segment
+from .types import Provider, Segment
 
 
 class Query(graphene.ObjectType):
@@ -40,11 +24,6 @@ class Query(graphene.ObjectType):
         slug=graphene.String(),
     )
     providers = DjangoFilterConnectionField(Provider, sort_by=ProviderSortingInput())
-    document = graphene.Field(
-        Document,
-        id=graphene.Argument(graphene.ID)
-    )
-    documents = DjangoFilterConnectionField(Document)
 
     def resolve_segments(self, info, *args, **kwargs):
         qs = resolve_segments()
@@ -62,12 +41,6 @@ class Query(graphene.ObjectType):
     def resolve_provider(self, info, id=None, slug=None):
         return resolve_provider(info, id, slug)
 
-    def resolve_documents(self, info, *args, **kwargs):
-        return resolve_documents(info)
-
-    def resolve_document(self, info, id=None):
-        return resolve_document(info, id)
-
 
 class Mutation(graphene.ObjectType):
     segment_create = SegmentCreate.Field()
@@ -78,6 +51,3 @@ class Mutation(graphene.ObjectType):
     provider_update = ProviderUpdate.Field()
     provider_delete = ProviderDelete.Field()
     provider_bulk_delete = ProviderBulkDelete.Field()
-    document_create = DocumentCreate.Field()
-    document_update = DocumentUpdate.Field()
-    document_delete = DocumentDelete.Field()

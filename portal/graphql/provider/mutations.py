@@ -1,82 +1,12 @@
 import graphene
 from django.core.exceptions import ValidationError
-from graphene_file_upload.scalars import Upload
 
 from ...core.permissions import ProviderPermissions
 from ...provider import models
 from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
 from ..core.types import NonNullList
 from ..core.utils import validate_slug_and_generate_if_needed
-from .types import Document, Provider, Segment
-
-
-class DocumentInput(graphene.InputObjectType):
-    name = graphene.String()
-    description = graphene.String()
-    file = Upload()
-    provider = graphene.ID()
-    is_published = graphene.Boolean(default=False)
-    publication_date = graphene.Date(required=False)
-    expires = graphene.Boolean(default=False)
-    begin_date = graphene.Date(required=False)
-    expiration_date = graphene.Date(required=False)
-
-
-class DocumentCreate(ModelMutation):
-    document = graphene.Field(Document)
-
-    class Arguments:
-        input = DocumentInput(required=True)
-
-    class Meta:
-        model = models.Document
-
-    @classmethod
-    def clean_input(cls, info, instance, data, input_cls=None):
-        cleaned_input = super().clean_input(info, instance, data, input_cls)
-        expires = data.get('expires', False)
-        expiration_date = data.get('expiration_date', None)
-        if expires and not expiration_date:
-            message = 'Este campo não pode estar vazio se o documento é expirável.'
-            raise ValidationError(
-                {'expiration_date': message})
-        return cleaned_input
-
-
-class DocumentUpdate(ModelMutation):
-    document = graphene.Field(Document)
-
-    class Arguments:
-        id = graphene.ID()
-        input = DocumentInput(required=True)
-
-    class Meta:
-        model = models.Document
-        permissions = (ProviderPermissions.MANAGE_DOCUMENTS,)
-
-    @classmethod
-    def clean_input(cls, info, instance, data, input_cls=None):
-        cleaned_input = super().clean_input(info, instance, data, input_cls)
-        expires = data.get('expires', False)
-        expiration_date = data.get('expiration_date', None)
-        if expires and not expiration_date:
-            message = 'Este campo não pode estar vazio se o documento é expirável.'
-            raise ValidationError(
-                {'expiration_date': message})
-        if not expires:
-            cleaned_input['begin_date'] = None
-            cleaned_input['expiration_date'] = None
-        return cleaned_input
-
-
-class DocumentDelete(ModelDeleteMutation):
-
-    class Arguments:
-        id = graphene.ID()
-
-    class Meta:
-        model = models.Document
-        permissions = (ProviderPermissions.MANAGE_DOCUMENTS,)
+from .types import Provider, Segment
 
 
 class ProviderInput(graphene.InputObjectType):

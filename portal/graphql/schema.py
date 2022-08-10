@@ -1,19 +1,16 @@
 import graphene
 
-from .account.schema import Mutation as AccountMutation
-from .account.schema import Query as AccountQuery
-from .investment.schema import Mutation as InvestmentMutation
-from .investment.schema import Query as InvestmentQuery
-from .provider.schema import Mutation as ProviderMutation
-from .provider.schema import Query as ProviderQuery
-from .session.schema import Mutation as MutationQuery
-from .session.schema import Query as SessionQuery
-from .vehicle.schema import Mutation as VehicleMutation
-from .vehicle.schema import Query as VehicleQuery
+from .account.schema import Mutation as AccountMutation, Query as AccountQuery
+from .document.schema import Mutation as DocumentMutation, Query as DocumentQuery
+from .investment.schema import Mutation as InvestmentMutation, Query as InvestmentQuery
+from .provider.schema import Mutation as ProviderMutation, Query as ProviderQuery
+from .session.schema import Mutation as MutationQuery, Query as SessionQuery
+from .vehicle.schema import Mutation as VehicleMutation, Query as VehicleQuery
 
 
 class Query(
     AccountQuery,
+    DocumentQuery,
     InvestmentQuery,
     ProviderQuery,
     SessionQuery,
@@ -25,6 +22,7 @@ class Query(
 
 class Mutation(
     AccountMutation,
+    DocumentMutation,
     VehicleMutation,
     ProviderMutation,
     InvestmentMutation,

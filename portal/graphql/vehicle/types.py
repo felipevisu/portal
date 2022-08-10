@@ -1,18 +1,23 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from portal.graphql.core.connection import ContableConnection
-from portal.graphql.vehicle.filters import CategoryFilter, VehicleFilter
-from portal.vehicle import models
+from ...vehicle import models
+from ..core.connection import ContableConnection
+from ..document.types import DocumentsConnection
+from .filters import CategoryFilter, VehicleFilter
 
 
 class Vehicle(DjangoObjectType):
+    documents = graphene.relay.ConnectionField(DocumentsConnection)
 
     class Meta:
         model = models.Vehicle
         filterset_class = VehicleFilter
         interfaces = [graphene.relay.Node]
         connection_class = ContableConnection
+
+    def resolve_documents(self, info, **kwargs):
+        return info.context.loaders.documents_by_vehicle_loader.load(self.id)
 
     def resolve_category(self, info):
         if self.category_id:
