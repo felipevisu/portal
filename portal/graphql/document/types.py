@@ -1,3 +1,5 @@
+import datetime
+
 import graphene
 from graphene_django import DjangoObjectType
 
@@ -9,6 +11,7 @@ from .filters import DocumentFilter
 class Document(DjangoObjectType):
     file_url = graphene.String()
     file_name = graphene.String()
+    expired = graphene.Boolean()
 
     class Meta:
         model = models.Document
@@ -21,6 +24,12 @@ class Document(DjangoObjectType):
 
     def resolve_file_name(self, info):
         return self.file.name.split('/')[-1]
+
+    def resolve_expired(self, info):
+        if not self.expires:
+            return False
+        today = datetime.date.today()
+        return self.expiration_date < today
 
 
 class DocumentsConnection(graphene.Connection):
