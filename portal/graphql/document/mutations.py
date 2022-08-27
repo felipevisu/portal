@@ -3,9 +3,11 @@ import graphene
 from django.core.exceptions import ValidationError
 from graphene_file_upload.scalars import Upload
 
+from portal.graphql.core.types import NonNullList
+
 from ...core.permissions import DocumentPermissions
 from ...document import models
-from ..core.mutations import ModelDeleteMutation, ModelMutation
+from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
 from .types import Document
 
 
@@ -76,4 +78,17 @@ class DocumentDelete(ModelDeleteMutation):
 
     class Meta:
         model = models.Document
+        permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
+
+
+class DocumentBulkDelete(ModelBulkDeleteMutation):
+    class Arguments:
+        ids = NonNullList(
+            graphene.ID, required=True, description="List of documents IDs to delete."
+        )
+
+    class Meta:
+        description = "Deletes segments."
+        model = models.Document
+        object_type = Document
         permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
