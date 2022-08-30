@@ -15,7 +15,6 @@ class Query(graphene.ObjectType):
     documents = DjangoFilterConnectionField(Document)
 
     def resolve_documents(self, info, *args, **kwargs):
-        print(info, args, kwargs)
         return resolve_documents(info)
 
     def resolve_document(self, info, id=None):

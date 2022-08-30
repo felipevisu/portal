@@ -2,11 +2,7 @@ from typing import Union
 
 from django.contrib.auth.models import _user_has_perm  # type: ignore
 from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    Permission,
-    PermissionsMixin,
-)
+    AbstractBaseUser, BaseUserManager, Permission, PermissionsMixin)
 from django.db import models
 from django.db.models import Q, QuerySet
 from django.utils import timezone
@@ -78,7 +74,6 @@ class User(PermissionsMixin, AbstractBaseUser):
     def effective_permissions(self) -> "QuerySet[Permission]":
         if self._effective_permissions is None:
             self._effective_permissions = get_permissions()
-            print(self._effective_permissions)
             if not self.is_superuser:
                 self._effective_permissions = self._effective_permissions.filter(
                     Q(user=self) | Q(group__user=self)

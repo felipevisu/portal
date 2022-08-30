@@ -14,5 +14,4 @@ class User(DjangoObjectType):
         interfaces = [graphene.relay.Node]
 
     def resolve_permissions(self, info):
-        print(self.effective_permissions)
         return None

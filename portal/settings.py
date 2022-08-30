@@ -3,7 +3,7 @@ import os.path
 from pathlib import Path
 
 import dj_database_url
-import django_heroku
+import django_on_heroku
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -168,4 +168,4 @@ STATICFILES_FINDERS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-django_heroku.settings(locals())
+django_on_heroku.settings(locals())
