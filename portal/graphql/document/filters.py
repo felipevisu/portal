@@ -6,7 +6,6 @@ from ..core.filters import search_filter
 
 
 def filter_owner(queryset, name, value):
-    print('aqui')
     if value == 'vehicle':
         return queryset.filter(provider=None)
     if value == 'provider':

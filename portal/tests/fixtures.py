@@ -4,8 +4,9 @@ import pytest
 from django.contrib.auth.models import Permission
 
 from portal.account.models import User
+from portal.document.models import Document
 from portal.investment.models import Investment, Item
-from portal.provider.models import Document, Provider, Segment
+from portal.provider.models import Provider, Segment
 from portal.vehicle.models import Category, Vehicle
 
 
