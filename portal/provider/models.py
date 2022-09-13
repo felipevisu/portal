@@ -1,6 +1,7 @@
 from django.db import models
 
-from ..core.models import ModelWithDates, ModelWithSlug, PublishableModel
+from ..core.models import (
+    ModelWithContactInfo, ModelWithDates, ModelWithSlug, PublishableModel)
 from ..core.permissions import ProviderPermissions
 
 
@@ -15,7 +16,7 @@ class Segment(ModelWithDates, ModelWithSlug):
         return self.name
 
 
-class Provider(ModelWithDates, ModelWithSlug, PublishableModel):
+class Provider(ModelWithDates, ModelWithSlug, ModelWithContactInfo, PublishableModel):
     document_number = models.CharField(max_length=256)
     segment = models.ForeignKey(
         Segment, on_delete=models.PROTECT, related_name="providers")

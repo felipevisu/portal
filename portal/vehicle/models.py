@@ -1,6 +1,7 @@
 from django.db import models
 
-from ..core.models import ModelWithDates, ModelWithSlug, PublishableModel
+from ..core.models import (
+    ModelWithContactInfo, ModelWithDates, ModelWithSlug, PublishableModel)
 from ..core.permissions import VehiclePermissions
 
 
@@ -15,7 +16,7 @@ class Category(ModelWithDates, ModelWithSlug):
         return self.name
 
 
-class Vehicle(ModelWithDates, ModelWithSlug, PublishableModel):
+class Vehicle(ModelWithDates, ModelWithSlug, ModelWithContactInfo, PublishableModel):
     document_number = models.CharField(max_length=256)
     document_file = models.FileField(upload_to="vehicle", blank=True)
     category = models.ForeignKey(

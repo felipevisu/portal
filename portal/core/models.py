@@ -59,3 +59,12 @@ class PublishableModel(models.Model):
             self.publication_date is None
             or self.publication_date <= datetime.date.today()
         )
+
+
+class ModelWithContactInfo(models.Model):
+    email = models.CharField(max_length=258, null=True, blank=True)
+    phone = models.CharField(max_length=258, null=True, blank=True)
+    address = models.CharField(max_length=258, null=True, blank=True)
+
+    class Meta:
+        abstract = True
