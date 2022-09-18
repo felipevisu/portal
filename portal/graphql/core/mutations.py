@@ -64,6 +64,7 @@ def validation_error_to_error_type(validation_error: ValidationError) -> list:
 class ModelMutationOptions(MutationOptions):
     exclude = None
     model = None
+    object_type = None
     return_field_name = None
 
 
@@ -239,6 +240,7 @@ class ModelMutation(BaseMutation):
         model=None,
         exclude=None,
         return_field_name=None,
+        object_type=None,
         _meta=None,
         **options,
     ):
@@ -256,6 +258,7 @@ class ModelMutation(BaseMutation):
             arguments = {}
 
         _meta.model = model
+        _meta.object_type = object_type
         _meta.return_field_name = return_field_name
         _meta.exclude = exclude
         super().__init_subclass_with_meta__(_meta=_meta, **options)
@@ -263,7 +266,8 @@ class ModelMutation(BaseMutation):
         model_type = cls.get_type_for_model()
         if not model_type:
             raise ImproperlyConfigured(
-                "Unable to find type for model %s in graphene registry" % model.__name__
+                f"GraphQL type for model {cls._meta.model.__name__} could not be "
+                f"resolved for {cls.__name__}"
             )
         fields = {return_field_name: graphene.Field(model_type)}
 
@@ -271,7 +275,14 @@ class ModelMutation(BaseMutation):
 
     @classmethod
     def get_type_for_model(cls):
-        return registry.get_type_for_model(cls._meta.model)
+        if not cls._meta.object_type:
+            raise ImproperlyConfigured(
+                f"Either GraphQL type for model {cls._meta.model.__name__} needs to be "
+                f"specified on object_type option or {cls.__name__} needs to define "
+                "custom get_type_for_model() method."
+            )
+
+        return cls._meta.object_type
 
     @classmethod
     def _update_mutation_arguments_and_fields(cls, arguments, fields):

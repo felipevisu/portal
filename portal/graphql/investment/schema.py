@@ -1,19 +1,14 @@
 import graphene
-from graphene_django.filter import DjangoFilterConnectionField
 
-from portal.graphql.investment.mutations import (
-    InvestmentBulkDelete,
-    InvestmentCreate,
-    InvestmentDelete,
-    InvestmentUpdate,
-    ItemBulkCreate,
-    ItemCreate,
-    ItemDelete,
-    ItemUpdate,
-)
-
+from ..core.connection import create_connection_slice, filter_connection_queryset
+from ..core.fields import FilterConnectionField
+from .filters import InvestmentFilterInput
+from .mutations import (
+    InvestmentBulkDelete, InvestmentCreate, InvestmentDelete, InvestmentUpdate,
+    ItemBulkCreate, ItemCreate, ItemDelete, ItemUpdate)
 from .resolvers import resolve_investment, resolve_investments
-from .types import Investment
+from .sorters import InvestmentSortingInput
+from .types import Investment, InvestmentCountableConnection
 
 
 class Query(graphene.ObjectType):
@@ -23,10 +18,16 @@ class Query(graphene.ObjectType):
         month=graphene.Int(),
         year=graphene.Int(),
     )
-    investments = DjangoFilterConnectionField(Investment)
+    investments = FilterConnectionField(
+        InvestmentCountableConnection, 
+        sort_by=InvestmentSortingInput(), 
+        filter=InvestmentFilterInput()
+    )
 
-    def resolve_investments(self, info, *args, **kwargs):
-        return resolve_investments(info)
+    def resolve_investments(self, info, **kwargs):
+        qs = resolve_investments(info)
+        qs = filter_connection_queryset(qs, kwargs)
+        return create_connection_slice(qs, info, kwargs, InvestmentCountableConnection)
 
     def resolve_investment(self, info, id=None, month=None, year=None):
         return resolve_investment(info, id, month, year)

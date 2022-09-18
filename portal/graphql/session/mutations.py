@@ -26,6 +26,7 @@ class SessionCreate(ModelMutation):
     class Meta:
         model = models.Session
         permissions = (SessionPermissions.MANAGE_SESSIONS,)
+        object_type = Session
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
@@ -49,6 +50,7 @@ class SessionUpdate(ModelMutation):
     class Meta:
         model = models.Session
         permissions = (SessionPermissions.MANAGE_SESSIONS,)
+        object_type = Session
 
 
 class SessionDelete(ModelDeleteMutation):
@@ -59,6 +61,7 @@ class SessionDelete(ModelDeleteMutation):
     class Meta:
         model = models.Session
         permissions = (SessionPermissions.MANAGE_SESSIONS,)
+        object_type = Session
 
 
 class SessionBulkDelete(ModelBulkDeleteMutation):

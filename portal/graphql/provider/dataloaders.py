@@ -12,6 +12,14 @@ class SegmentByIdLoader(DataLoader):
         return [segments.get(segment_id) for segment_id in keys]
 
 
+class ProviderByIdLoader(DataLoader):
+    context_key = "provider_by_id"
+
+    def batch_load(self, keys):
+        providers = Provider.objects.in_bulk(keys)
+        return [providers.get(provider_id) for provider_id in keys]
+
+
 class ProvidersBySegmentIdLoader(DataLoader):
     context_key = "providers_by_segment_id"
 

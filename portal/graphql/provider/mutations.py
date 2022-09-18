@@ -30,6 +30,7 @@ class ProviderCreate(ModelMutation):
     class Meta:
         model = models.Provider
         permissions = (ProviderPermissions.MANAGE_PROVIDERS,)
+        object_type = Provider
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
@@ -53,6 +54,7 @@ class ProviderUpdate(ModelMutation):
     class Meta:
         model = models.Provider
         permissions = (ProviderPermissions.MANAGE_PROVIDERS,)
+        object_type = Provider
 
 
 class ProviderDelete(ModelDeleteMutation):
@@ -63,6 +65,7 @@ class ProviderDelete(ModelDeleteMutation):
     class Meta:
         model = models.Provider
         permissions = (ProviderPermissions.MANAGE_PROVIDERS,)
+        object_type = Provider
 
 
 class ProviderBulkDelete(ModelBulkDeleteMutation):
@@ -92,6 +95,7 @@ class SegmentCreate(ModelMutation):
     class Meta:
         model = models.Segment
         permissions = (ProviderPermissions.MANAGE_SEGMENTS,)
+        object_type = Segment
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
@@ -115,6 +119,7 @@ class SegmentUpdate(ModelMutation):
     class Meta:
         model = models.Segment
         permissions = (ProviderPermissions.MANAGE_SEGMENTS,)
+        object_type = Segment
 
 
 class SegmentDelete(ModelDeleteMutation):
@@ -125,6 +130,7 @@ class SegmentDelete(ModelDeleteMutation):
     class Meta:
         model = models.Segment
         permissions = (ProviderPermissions.MANAGE_SEGMENTS,)
+        object_type = Segment
 
 
 class SegmentBulkDelete(ModelBulkDeleteMutation):

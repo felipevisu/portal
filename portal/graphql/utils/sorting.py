@@ -1,6 +1,11 @@
-from django.db.models import QuerySet
+from typing import Optional, Tuple
 
+from django.db.models import QuerySet
+from graphql.error import GraphQLError
+
+from ..core.enums import OrderDirection
 from ..core.types import SortInputObjectType
+from ..core.utils import from_global_id_or_error
 
 REVERSED_DIRECTION = {
     "-": "",
@@ -8,34 +13,63 @@ REVERSED_DIRECTION = {
 }
 
 
-def sort_queryset_resolver(qs, kwargs):
-    sort_by = kwargs.get("sort_by")
-    reversed = True if "last" in kwargs else False
+def _sort_queryset_by_attribute(queryset, sorting_attribute, sorting_direction):
+    if sorting_attribute != "":
+        graphene_type, sorting_attribute = from_global_id_or_error(
+            sorting_attribute, "Attribute"
+        )
+    descending = sorting_direction == OrderDirection.DESC
+    queryset = queryset.sort_by_attribute(sorting_attribute, descending=descending)
+    return queryset
+
+
+def sort_queryset_for_connection(iterable, args):
+    sort_by = args.get("sort_by")
+    reversed = True if "last" in args else False
     if sort_by:
         iterable = sort_queryset(
-            queryset=qs,
+            queryset=iterable,
             sort_by=sort_by,
-            reversed=reversed
+            reversed=reversed,
+            channel_slug=args.get("channel")
         )
     else:
-        iterable = sort_queryset_by_default(
-            queryset=qs, reversed=reversed
+        iterable, sort_by = sort_queryset_by_default(
+            queryset=iterable, reversed=reversed
         )
-    return iterable
+        args["sort_by"] = sort_by
+    return iterable, sort_by
 
 
 def sort_queryset(
     queryset: QuerySet,
     sort_by: SortInputObjectType,
-    reversed: bool
-):
-    sorting_direction = str(sort_by.direction)
+    reversed: bool,
+    channel_slug: Optional[str],
+) -> QuerySet:
+    sorting_direction = sort_by.direction
     if reversed:
         sorting_direction = REVERSED_DIRECTION[sorting_direction]
 
     sorting_field = sort_by.field
+    sorting_attribute = getattr(sort_by, "attribute_id", None)
+    if sorting_field is not None and sorting_attribute is not None:
+        raise GraphQLError(
+            "You must provide either `field` or `attributeId` to sort the products."
+        )
+    elif sorting_attribute is not None:  # empty string as sorting_attribute is valid
+        return _sort_queryset_by_attribute(
+            queryset, sorting_attribute, sorting_direction
+        )
+
     sort_enum = sort_by._meta.sort_enum
     sorting_fields = sort_enum.get(sorting_field)
+    sorting_field_name = sorting_fields.name.lower()
+
+    custom_sort_by = getattr(sort_enum, f"qs_with_{sorting_field_name}", None)
+    if custom_sort_by:
+        queryset = custom_sort_by(queryset, channel_slug=channel_slug)
+
     sorting_field_value = sorting_fields.value
     sorting_list = [f"{sorting_direction}{field}" for field in sorting_field_value]
 
@@ -54,7 +88,10 @@ def get_model_default_ordering(model_class):
     return default_ordering
 
 
-def sort_queryset_by_default(queryset: QuerySet, reversed: bool):
+def sort_queryset_by_default(
+    queryset: QuerySet, reversed: bool
+) -> Tuple[QuerySet, dict]:
+    """Sort queryset by it's default ordering."""
     queryset_model = queryset.model
     default_ordering = ["pk"]
     if queryset_model and queryset_model._meta.ordering:
@@ -66,4 +103,5 @@ def sort_queryset_by_default(queryset: QuerySet, reversed: bool):
         reversed_direction = REVERSED_DIRECTION[direction]
         default_ordering = [f"{reversed_direction}{field}" for field in ordering_fields]
 
-    return queryset.order_by(*default_ordering)
+    order_by = {"field": ordering_fields, "direction": direction}
+    return queryset.order_by(*default_ordering), order_by

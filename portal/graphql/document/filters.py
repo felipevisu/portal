@@ -1,8 +1,11 @@
 
 import django_filters
+import graphene
 
 from ...document.models import Document
-from ..core.filters import search_filter
+from ..core.filters import ListObjectTypeFilter, ObjectTypeFilter, search_filter
+from ..core.types import DateRangeInput, FilterInputObjectType
+from ..utils.filters import filter_range_field
 
 
 def filter_owner(queryset, name, value):
@@ -13,21 +16,30 @@ def filter_owner(queryset, name, value):
     return queryset
 
 
-OWNER_CHOICES = (
-    ('provider', 'Provider'),
-    ('vehicle', 'Vehicle'),
-)
+def filter_expiration_date_range(qs, _, value):
+    return filter_range_field(qs, "expiration_date", value)
+
+
+def filter_begin_date_range(qs, _, value):
+    return filter_range_field(qs, "begin_date", value)
+
+
+class OwnerType(graphene.Enum):
+    PROVIDER = "provider"
+    VEHICLE = "vehicle"
 
 
 class DocumentFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
-    owner = django_filters.ChoiceFilter(choices=OWNER_CHOICES, method=filter_owner)
+    owner = ListObjectTypeFilter(input_class=OwnerType, method=filter_owner)
+    expiration_date = ObjectTypeFilter(input_class=DateRangeInput, method=filter_expiration_date_range)
+    begin_date = ObjectTypeFilter(input_class=DateRangeInput, method=filter_begin_date_range)
 
     class Meta:
         model = Document
-        fields = {
-            'is_published': ['exact'],
-            'expires': ['exact'],
-            'begin_date': ['lte', 'gte', 'exact'],
-            'expiration_date': ['lte', 'gte', 'exact']
-        }
+        fields = ['is_published', 'expires', 'expiration_date', 'begin_date']
+
+
+class DocumentFilterInput(FilterInputObjectType):
+    class Meta:
+        filterset_class = DocumentFilter

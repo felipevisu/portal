@@ -32,6 +32,7 @@ class DocumentCreate(ModelMutation):
 
     class Meta:
         model = models.Document
+        object_type = Document
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
@@ -55,6 +56,7 @@ class DocumentUpdate(ModelMutation):
     class Meta:
         model = models.Document
         permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
+        object_type = Document
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
@@ -79,6 +81,7 @@ class DocumentDelete(ModelDeleteMutation):
     class Meta:
         model = models.Document
         permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
+        object_type = Document
 
 
 class DocumentBulkDelete(ModelBulkDeleteMutation):

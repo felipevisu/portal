@@ -2,6 +2,7 @@ import django_filters
 
 from ...vehicle.models import Category, Vehicle
 from ..core.filters import GlobalIDMultipleChoiceFilter, search_filter
+from ..core.types import FilterInputObjectType
 from ..utils import resolve_global_ids_to_primary_keys
 from . import types as vehicle_types
 
@@ -30,3 +31,13 @@ class VehicleFilter(django_filters.FilterSet):
     class Meta:
         model = Vehicle
         fields = ['is_published', 'category']
+
+
+class CategoryFilterInput(FilterInputObjectType):
+    class Meta:
+        filterset_class = CategoryFilter
+
+
+class VehicleFilterInput(FilterInputObjectType):
+    class Meta:
+        filterset_class = VehicleFilter

@@ -75,6 +75,7 @@ class InvestmentCreate(ItemsMixin, ModelMutation):
     class Meta:
         model = models.Investment
         permissions = (InvestmentPermissions.MANAGE_INVESTMENTS,)
+        object_type = Investment
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
@@ -105,6 +106,7 @@ class InvestmentUpdate(ItemsMixin, ModelMutation):
     class Meta:
         model = models.Investment
         permissions = (InvestmentPermissions.MANAGE_INVESTMENTS,)
+        object_type = Investment
 
     @classmethod
     def clean_remove_items(cls, cleaned_input, instance):
@@ -149,6 +151,7 @@ class InvestmentDelete(ModelDeleteMutation):
     class Meta:
         model = models.Investment
         permissions = (InvestmentPermissions.MANAGE_INVESTMENTS,)
+        object_type = Investment
 
 
 class ItemInput(graphene.InputObjectType):
@@ -172,6 +175,7 @@ class ItemCreate(ModelMutation):
     class Meta:
         model = models.Investment
         permissions = (InvestmentPermissions.MANAGE_ITEMS,)
+        object_type = Item
 
     @classmethod
     def perform_mutation(cls, _root, info, investment_id, input):
@@ -195,6 +199,7 @@ class ItemUpdate(ModelMutation):
     class Meta:
         model = models.Item
         permissions = (InvestmentPermissions.MANAGE_ITEMS,)
+        object_type = Item
 
 
 class InvestmentBulkDelete(ModelBulkDeleteMutation):
@@ -218,6 +223,7 @@ class ItemDelete(ModelDeleteMutation):
     class Meta:
         model = models.Item
         permissions = (InvestmentPermissions.MANAGE_ITEMS,)
+        object_type = Item
 
 
 class BulkItemError(Error):

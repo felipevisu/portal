@@ -1,25 +1,18 @@
 import graphene
-from graphene_django.filter import DjangoFilterConnectionField
 
-from ..utils.sorting import sort_queryset_resolver
+from portal.graphql.core.connection import (
+    create_connection_slice, filter_connection_queryset)
+
+from ..core.fields import FilterConnectionField
+from .filters import CategoryFilterInput, VehicleFilterInput
 from .mutations import (
-    CategoryBulkDelete,
-    CategoryCreate,
-    CategoryDelete,
-    CategoryUpdate,
-    VehicleBulkDelete,
-    VehicleCreate,
-    VehicleDelete,
-    VehicleUpdate,
-)
+    CategoryBulkDelete, CategoryCreate, CategoryDelete, CategoryUpdate,
+    VehicleBulkDelete, VehicleCreate, VehicleDelete, VehicleUpdate)
 from .resolvers import (
-    resolve_categories,
-    resolve_category,
-    resolve_vehicle,
-    resolve_vehicles,
-)
-from .sorters import CategorySortingInput
-from .types import Category, Vehicle
+    resolve_categories, resolve_category, resolve_vehicle, resolve_vehicles)
+from .sorters import CategorySortingInput, VehicleSortingInput
+from .types import (
+    Category, CategoryCountableConnection, Vehicle, VehicleCountableConnection)
 
 
 class Query(graphene.ObjectType):
@@ -28,30 +21,37 @@ class Query(graphene.ObjectType):
         id=graphene.Argument(graphene.ID),
         slug=graphene.String(),
     )
-    categories = DjangoFilterConnectionField(
-        Category,
-        sort_by=CategorySortingInput()
+    categories = FilterConnectionField(
+        CategoryCountableConnection,
+        sort_by=CategorySortingInput(),
+        filter=CategoryFilterInput()
     )
     vehicle = graphene.Field(
         Vehicle,
         id=graphene.Argument(graphene.ID),
         slug=graphene.String(),
     )
-    vehicles = DjangoFilterConnectionField(Vehicle)
+    vehicles = FilterConnectionField(
+        VehicleCountableConnection,
+        sort_by=VehicleSortingInput(),
+        filter=VehicleFilterInput()
+    )
 
     def resolve_category(self, info, id=None, slug=None):
         return resolve_category(info, id, slug)
 
     def resolve_categories(self, info, *args, **kwargs):
         qs = resolve_categories()
-        qs = sort_queryset_resolver(qs, kwargs)
-        return qs
-
-    def resolve_vehicles(self, info, *args, **kwargs):
-        return resolve_vehicles(info)
+        qs = filter_connection_queryset(qs, kwargs)
+        return create_connection_slice(qs, info, kwargs, CategoryCountableConnection)
 
     def resolve_vehicle(self, info, id=None, slug=None):
         return resolve_vehicle(info, id, slug)
+
+    def resolve_vehicles(self, info, *args, **kwargs):
+        qs = resolve_vehicles(info)
+        qs = filter_connection_queryset(qs, kwargs)
+        return create_connection_slice(qs, info, kwargs, VehicleCountableConnection)
 
 
 class Mutation(graphene.ObjectType):

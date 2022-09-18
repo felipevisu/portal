@@ -30,6 +30,7 @@ class VehicleCreate(ModelMutation):
     class Meta:
         model = models.Vehicle
         permissions = (VehiclePermissions.MANAGE_VEHICLES,)
+        object_type = Vehicle
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
@@ -53,6 +54,7 @@ class VehicleUpdate(ModelMutation):
     class Meta:
         model = models.Vehicle
         permissions = (VehiclePermissions.MANAGE_VEHICLES,)
+        object_type = Vehicle
 
 
 class VehicleDelete(ModelDeleteMutation):
@@ -63,6 +65,7 @@ class VehicleDelete(ModelDeleteMutation):
     class Meta:
         model = models.Vehicle
         permissions = (VehiclePermissions.MANAGE_VEHICLES,)
+        object_type = Vehicle
 
 
 class VehicleBulkDelete(ModelBulkDeleteMutation):
@@ -92,6 +95,7 @@ class CategoryCreate(ModelMutation):
     class Meta:
         model = models.Category
         permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+        object_type = Category
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
@@ -115,6 +119,7 @@ class CategoryUpdate(ModelMutation):
     class Meta:
         model = models.Category
         permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+        object_type = Category
 
 
 class CategoryDelete(ModelDeleteMutation):
@@ -125,6 +130,7 @@ class CategoryDelete(ModelDeleteMutation):
     class Meta:
         model = models.Category
         permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+        object_type = Category
 
 
 class CategoryBulkDelete(ModelBulkDeleteMutation):

@@ -2,14 +2,17 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from ...session import models
-from ..core.connection import ContableConnection
-from .filters import SessionFilter
+from ..core.connection import CountableConnection
+from ..core.types import ModelObjectType
 
 
-class Session(DjangoObjectType):
+class Session(ModelObjectType):
 
     class Meta:
         model = models.Session
-        filterset_class = SessionFilter
         interfaces = [graphene.relay.Node]
-        connection_class = ContableConnection
+
+
+class SessionCountableConnection(CountableConnection):
+    class Meta:
+        node = Session

@@ -1,14 +1,16 @@
 import graphene
-from graphene_django.filter import DjangoFilterConnectionField
 
-from ..utils.sorting import sort_queryset_resolver
+from ..core.connection import create_connection_slice, filter_connection_queryset
+from ..core.fields import FilterConnectionField
+from .filters import ProviderFilterInput, SegmentFilterInput
 from .mutations import (
     ProviderBulkDelete, ProviderCreate, ProviderDelete, ProviderUpdate,
     SegmentBulkDelete, SegmentCreate, SegmentDelete, SegmentUpdate)
 from .resolvers import (
     resolve_provider, resolve_providers, resolve_segment, resolve_segments)
 from .sorters import ProviderSortingInput, SegmentSortingInput
-from .types import Provider, Segment
+from .types import (
+    Provider, ProviderCountableConnection, Segment, SegmentCountableConnection)
 
 
 class Query(graphene.ObjectType):
@@ -17,26 +19,34 @@ class Query(graphene.ObjectType):
         id=graphene.Argument(graphene.ID),
         slug=graphene.String(),
     )
-    segments = DjangoFilterConnectionField(Segment, sort_by=SegmentSortingInput())
+    segments = FilterConnectionField(
+        SegmentCountableConnection, 
+        sort_by=SegmentSortingInput(), 
+        filter=SegmentFilterInput()
+    )
     provider = graphene.Field(
         Provider,
         id=graphene.Argument(graphene.ID),
         slug=graphene.String(),
     )
-    providers = DjangoFilterConnectionField(Provider, sort_by=ProviderSortingInput())
+    providers = FilterConnectionField(
+        ProviderCountableConnection, 
+        sort_by=ProviderSortingInput(),
+        filter=ProviderFilterInput()
+    )
 
     def resolve_segments(self, info, *args, **kwargs):
         qs = resolve_segments()
-        qs = sort_queryset_resolver(qs, kwargs)
-        return qs
+        qs = filter_connection_queryset(qs, kwargs)
+        return create_connection_slice(qs, info, kwargs, SegmentCountableConnection)
 
     def resolve_segment(self, info, id=None, slug=None):
         return resolve_segment(info, id, slug)
 
     def resolve_providers(self, info, *args, **kwargs):
         qs = resolve_providers(info)
-        qs = sort_queryset_resolver(qs, kwargs)
-        return qs
+        qs = filter_connection_queryset(qs, kwargs)
+        return create_connection_slice(qs, info, kwargs, ProviderCountableConnection)
 
     def resolve_provider(self, info, id=None, slug=None):
         return resolve_provider(info, id, slug)

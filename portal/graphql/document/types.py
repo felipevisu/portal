@@ -1,29 +1,30 @@
 import datetime
 
 import graphene
-from graphene_django import DjangoObjectType
 
 from ...document import models
-from ..core.connection import ContableConnection
-from .filters import DocumentFilter
+from ..core.connection import CountableConnection
+from ..core.types import File, ModelObjectType
+from ..provider.dataloaders import ProviderByIdLoader
+from ..vehicle.dataloaders import VehicleByIdLoader
 
 
-class Document(DjangoObjectType):
-    file_url = graphene.String()
-    file_name = graphene.String()
+class Document(ModelObjectType):
+    id = graphene.GlobalID(required=True)
+    name = graphene.String(required=True)
+    vehicle = graphene.Field('portal.graphql.vehicle.types.Vehicle')
+    provider = graphene.Field('portal.graphql.provider.types.Provider')
+    created = graphene.DateTime()
+    begin_date = graphene.Date()
+    expiration_date = graphene.Date()
+    is_published = graphene.Boolean()
+    expires = graphene.Boolean()
+    file = graphene.Field(File)
     expired = graphene.Boolean()
 
     class Meta:
         model = models.Document
-        filterset_class = DocumentFilter
         interfaces = [graphene.relay.Node]
-        connection_class = ContableConnection
-
-    def resolve_file_url(self, info):
-        return self.file.url
-
-    def resolve_file_name(self, info):
-        return self.file.name.split('/')[-1]
 
     def resolve_expired(self, info):
         if not self.expires:
@@ -31,12 +32,21 @@ class Document(DjangoObjectType):
         today = datetime.date.today()
         return self.expiration_date < today
 
+    def resolve_vehicle(self, info):
+        if self.vehicle_id:
+            vehicle_id = self.vehicle_id
+        else:
+            return None
+        return VehicleByIdLoader(info.context).load(vehicle_id)
 
-class DocumentsConnection(graphene.Connection):
-    total_count = graphene.Int()
+    def resolve_provider(self, info):
+        if self.provider_id:
+            provider_id = self.provider_id
+        else:
+            return None
+        return ProviderByIdLoader(info.context).load(provider_id)
 
+
+class DocumentCountableConnection(CountableConnection):
     class Meta:
         node = Document
-
-    def resolve_total_count(root, info, **kwargs):
-        return len(root.edges)

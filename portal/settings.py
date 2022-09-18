@@ -132,8 +132,7 @@ GRAPHENE = {
     'SCHEMA_OUTPUT': 'schema.graphql',
     'SCHEMA_INDENT': 2,
     "MIDDLEWARE": [
-        "graphql_jwt.middleware.JSONWebTokenMiddleware",
-        "portal.graphql.middlewares.LoaderMiddleware"
+        "graphql_jwt.middleware.JSONWebTokenMiddleware"
     ],
 }
 
@@ -167,5 +166,8 @@ STATICFILES_FINDERS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DATABASE_CONNECTION_DEFAULT_NAME = "default"
+DATABASE_CONNECTION_REPLICA_NAME = "default"
 
 django_on_heroku.settings(locals())

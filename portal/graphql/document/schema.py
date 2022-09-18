@@ -1,10 +1,13 @@
 import graphene
-from graphene_django.filter import DjangoFilterConnectionField
 
+from ..core.connection import create_connection_slice, filter_connection_queryset
+from ..core.fields import FilterConnectionField
+from .filters import DocumentFilterInput
 from .mutations import (
     DocumentBulkDelete, DocumentCreate, DocumentDelete, DocumentUpdate)
 from .resolvers import resolve_document, resolve_documents
-from .types import Document
+from .sorters import DocumentSortingInput
+from .types import Document, DocumentCountableConnection
 
 
 class Query(graphene.ObjectType):
@@ -12,10 +15,16 @@ class Query(graphene.ObjectType):
         Document,
         id=graphene.Argument(graphene.ID)
     )
-    documents = DjangoFilterConnectionField(Document)
+    documents = FilterConnectionField(
+        DocumentCountableConnection, 
+        sort_by=DocumentSortingInput(), 
+        filter=DocumentFilterInput()
+    )
 
-    def resolve_documents(self, info, *args, **kwargs):
-        return resolve_documents(info)
+    def resolve_documents(self, info, **kwargs):
+        qs = resolve_documents(info)
+        qs = filter_connection_queryset(qs, kwargs)
+        return create_connection_slice(qs, info, kwargs, DocumentCountableConnection)
 
     def resolve_document(self, info, id=None):
         return resolve_document(info, id)

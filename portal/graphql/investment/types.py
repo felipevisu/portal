@@ -1,27 +1,42 @@
 import graphene
-from graphene_django import DjangoObjectType
 
 from ...investment import models
-from ..core.connection import ContableConnection
+from ..core.connection import CountableConnection
+from ..core.types import ModelObjectType, NonNullList
+from .dataloaders import ItemsByInvestmentIdLoader
 
 
-class Item(DjangoObjectType):
+class Item(ModelObjectType):
+    id = graphene.GlobalID(required=True)
+    name = graphene.String(required=True)
+    value = graphene.Decimal()
+    investment = graphene.Field(lambda: Investment)
 
     class Meta:
         model = models.Item
-        filter_fields = ['name']
         interfaces = [graphene.relay.Node]
-        connection_class = ContableConnection
 
 
-class Investment(DjangoObjectType):
-    items = graphene.List(Item)
+class ItemCountableConnection(CountableConnection):
+    class Meta:
+        node = Item
+
+
+class Investment(ModelObjectType):
+    id = graphene.GlobalID(required=True)
+    year = graphene.Int(required=True)
+    month = graphene.Int(required=True)
+    isPublished = graphene.Boolean()
+    items = NonNullList(Item)
 
     class Meta:
         model = models.Investment
-        filter_fields = ['month', 'year', 'is_published']
         interfaces = [graphene.relay.Node]
-        connection_class = ContableConnection
 
     def resolve_items(self, info):
-        return info.context.loaders.items_by_investment_loader.load(self.id)
+        return ItemsByInvestmentIdLoader(info.context).load(self.id)
+
+
+class InvestmentCountableConnection(CountableConnection):
+    class Meta:
+        node = Investment

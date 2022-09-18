@@ -6,6 +6,7 @@ from django.utils import timezone
 from ...document.models import Document
 from ...provider.models import Provider, Segment
 from ..core.filters import GlobalIDMultipleChoiceFilter, search_filter
+from ..core.types import FilterInputObjectType
 from ..utils import resolve_global_ids_to_primary_keys
 from . import types as provider_types
 
@@ -57,3 +58,13 @@ class SegmentFilter(django_filters.FilterSet):
     class Meta:
         model = Segment
         fields = ['search']
+
+
+class SegmentFilterInput(FilterInputObjectType):
+    class Meta:
+        filterset_class = SegmentFilter
+
+
+class ProviderFilterInput(FilterInputObjectType):
+    class Meta:
+        filterset_class = ProviderFilter

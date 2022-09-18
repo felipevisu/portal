@@ -1,5 +1,12 @@
 import graphene
-from graphene.types.objecttype import ObjectTypeOptions
+
+
+class NonNullList(graphene.List):
+    """A list type that automatically adds non-null constraint on contained items."""
+
+    def __init__(self, of_type, *args, **kwargs):
+        of_type = graphene.NonNull(of_type)
+        super(NonNullList, self).__init__(of_type, *args, **kwargs)
 
 
 class Error(graphene.ObjectType):
@@ -49,43 +56,15 @@ class Permission(graphene.ObjectType):
         description = "Represents a permission object in a friendly form."
 
 
-class OrderDirection(graphene.Enum):
-    ASC = ""
-    DESC = "-"
+class File(graphene.ObjectType):
+    url = graphene.String(required=True)
 
 
-class SortInputMeta(ObjectTypeOptions):
-    sort_enum = None
+class DateRangeInput(graphene.InputObjectType):
+    gte = graphene.Date(description="Start date.", required=False)
+    lte = graphene.Date(description="End date.", required=False)
 
 
-class SortInputObjectType(graphene.InputObjectType):
-    direction = graphene.Argument(OrderDirection, required=True)
-
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def __init_subclass_with_meta__(
-        cls, container=None, _meta=None, sort_enum=None, type_name=None, **options
-    ):
-        if not _meta:
-            _meta = SortInputMeta(cls)
-        if sort_enum:
-            _meta.sort_enum = sort_enum
-
-        super().__init_subclass_with_meta__(container, _meta, **options)
-        if sort_enum and type_name:
-            field = graphene.Argument(
-                sort_enum,
-                required=True,
-                description=f"Sort {type_name} by the selected field.",
-            )
-            cls._meta.fields.update({"field": field})
-
-
-class NonNullList(graphene.List):
-    """A list type that automatically adds non-null constraint on contained items."""
-
-    def __init__(self, of_type, *args, **kwargs):
-        of_type = graphene.NonNull(of_type)
-        super(NonNullList, self).__init__(of_type, *args, **kwargs)
+class DateTimeRangeInput(graphene.InputObjectType):
+    gte = graphene.DateTime(description="Start date.", required=False)
+    lte = graphene.DateTime(description="End date.", required=False)
