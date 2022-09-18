@@ -5,6 +5,10 @@ from ..core.types import ModelObjectType, Permission
 
 
 class User(ModelObjectType):
+    id = graphene.GlobalID(required=True)
+    email = graphene.String(required=True)
+    first_name = graphene.String()
+    last_name = graphene.String()
     permissions = graphene.List(Permission)
 
     class Meta:

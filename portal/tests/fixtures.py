@@ -129,7 +129,7 @@ def document(provider):
 
 @pytest.fixture
 def investment():
-    return Investment.objects.create(year=2022, month=3)
+    return Investment.objects.create(year=2022, month=3, is_published=False)
 
 
 @pytest.fixture

@@ -20,8 +20,8 @@ class Query(graphene.ObjectType):
         slug=graphene.String(),
     )
     segments = FilterConnectionField(
-        SegmentCountableConnection, 
-        sort_by=SegmentSortingInput(), 
+        SegmentCountableConnection,
+        sort_by=SegmentSortingInput(),
         filter=SegmentFilterInput()
     )
     provider = graphene.Field(
@@ -30,7 +30,7 @@ class Query(graphene.ObjectType):
         slug=graphene.String(),
     )
     providers = FilterConnectionField(
-        ProviderCountableConnection, 
+        ProviderCountableConnection,
         sort_by=ProviderSortingInput(),
         filter=ProviderFilterInput()
     )

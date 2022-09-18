@@ -26,7 +26,7 @@ class Investment(ModelObjectType):
     id = graphene.GlobalID(required=True)
     year = graphene.Int(required=True)
     month = graphene.Int(required=True)
-    isPublished = graphene.Boolean()
+    is_published = graphene.Boolean()
     items = NonNullList(Item)
 
     class Meta:

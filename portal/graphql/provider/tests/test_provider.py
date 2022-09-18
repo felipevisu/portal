@@ -1,7 +1,7 @@
 import graphene
 import pytest
 
-from ...tests.utils import get_graphql_content
+from portal.graphql.tests.utils import get_graphql_content
 
 pytestmark = pytest.mark.django_db
 
@@ -20,8 +20,8 @@ QUERY_PROVIDER = """
 """
 
 QUERY_PROVIDERS = """
-    query Providers($isPublished: Boolean){
-        providers(isPublished: $isPublished){
+    query Providers($first: Int, $filter: ProviderFilterInput){
+        providers(first: $first, filter: $filter){
             edges{
                 node{
                     id
@@ -94,7 +94,8 @@ def test_provider_anonymouns_query_published(api_client, published_provider):
 
 
 def test_providers_anonymouns_query(api_client, provider, published_provider):
-    response = api_client.post_graphql(QUERY_PROVIDERS)
+    variables = {"first": 10}
+    response = api_client.post_graphql(QUERY_PROVIDERS, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['providers']
     global_id = graphene.Node.to_global_id("Provider", published_provider.pk)
@@ -104,7 +105,8 @@ def test_providers_anonymouns_query(api_client, provider, published_provider):
 
 
 def test_providers_staff_query(staff_api_client, provider, published_provider):
-    response = staff_api_client.post_graphql(QUERY_PROVIDERS)
+    variables = {"first": 10}
+    response = staff_api_client.post_graphql(QUERY_PROVIDERS, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['providers']
 
@@ -114,7 +116,7 @@ def test_providers_staff_query(staff_api_client, provider, published_provider):
 def test_providers_staff_query_with_filter(
     staff_api_client, provider, published_provider
 ):
-    variables = {"isPublished": False, }
+    variables = {"first": 10, "filter": {"isPublished": False}}
     response = staff_api_client.post_graphql(QUERY_PROVIDERS, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['providers']

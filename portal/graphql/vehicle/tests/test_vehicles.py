@@ -20,8 +20,8 @@ QUERY_VEHICLE = """
 """
 
 QUERY_VEHICLES = """
-    query Vehicles($isPublished: Boolean){
-        vehicles(isPublished: $isPublished){
+    query Vehicles($first: Int, $filter: VehicleFilterInput){
+        vehicles(first: $first, filter: $filter){
             edges{
                 node{
                     id
@@ -94,7 +94,8 @@ def test_vehicle_anonymouns_query_published(api_client, published_vehicle):
 
 
 def test_vehicles_anonymouns_query(api_client, vehicle, published_vehicle):
-    response = api_client.post_graphql(QUERY_VEHICLES)
+    variables = {"first": 10}
+    response = api_client.post_graphql(QUERY_VEHICLES, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['vehicles']
     global_id = graphene.Node.to_global_id("Vehicle", published_vehicle.pk)
@@ -104,7 +105,8 @@ def test_vehicles_anonymouns_query(api_client, vehicle, published_vehicle):
 
 
 def test_vehicles_staff_query(staff_api_client, vehicle, published_vehicle):
-    response = staff_api_client.post_graphql(QUERY_VEHICLES)
+    variables = {"first": 10}
+    response = staff_api_client.post_graphql(QUERY_VEHICLES, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['vehicles']
 
@@ -114,7 +116,7 @@ def test_vehicles_staff_query(staff_api_client, vehicle, published_vehicle):
 def test_vehicles_staff_query_with_filter(
     staff_api_client, vehicle, published_vehicle
 ):
-    variables = {"isPublished": False, }
+    variables = {"first": 10, "filter": {"isPublished": False}}
     response = staff_api_client.post_graphql(QUERY_VEHICLES, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['vehicles']

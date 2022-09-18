@@ -55,6 +55,7 @@ class Segment(ModelObjectType):
         qs = self.providers.all()
         return create_connection_slice(qs, info, kwargs, ProviderCountableConnection)
 
+
 class SegmentCountableConnection(CountableConnection):
     class Meta:
         node = Segment

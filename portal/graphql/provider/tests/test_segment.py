@@ -1,7 +1,7 @@
 import graphene
 import pytest
 
-from ...tests.utils import get_graphql_content
+from portal.graphql.tests.utils import get_graphql_content
 
 pytestmark = pytest.mark.django_db
 
@@ -16,8 +16,8 @@ QUERY_SEGMENT = """
 """
 
 QUERY_SEGMENTS = """
-    query Segments{
-        segments{
+    query Segments($first: Int, $filter: SegmentFilterInput){
+        segments(first: $first, filter: $filter){
             edges{
                 node{
                     id
@@ -63,7 +63,8 @@ def test_segment_query_by_invalid_id(api_client):
 
 
 def test_segments_query(api_client, segment):
-    response = api_client.post_graphql(QUERY_SEGMENTS)
+    variables = {"first": 10}
+    response = api_client.post_graphql(QUERY_SEGMENTS, variables=variables)
     content = get_graphql_content(response, ignore_errors=True)
     data = content['data']['segments']
     global_id = graphene.Node.to_global_id("Segment", segment.pk)
@@ -73,7 +74,7 @@ def test_segments_query(api_client, segment):
 
 
 def test_segments_query_with_filter(staff_api_client, segment):
-    variables = {"name": segment.name}
+    variables = {"first": 10, "filter": {"search": segment.name}}
     response = staff_api_client.post_graphql(QUERY_SEGMENTS, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['segments']

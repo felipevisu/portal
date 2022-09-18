@@ -16,8 +16,8 @@ QUERY_CATEGORY = """
 """
 
 QUERY_CATEGORIES = """
-    query Categories{
-        categories{
+    query Categories($first: Int, $filter: CategoryFilterInput){
+        categories(first: $first, filter: $filter){
             edges{
                 node{
                     id
@@ -63,7 +63,8 @@ def test_category_query_by_invalid_id(api_client):
 
 
 def test_categories_query(api_client, category):
-    response = api_client.post_graphql(QUERY_CATEGORIES)
+    variables = {"first": 10}
+    response = api_client.post_graphql(QUERY_CATEGORIES, variables=variables)
     content = get_graphql_content(response, ignore_errors=True)
     data = content['data']['categories']
     global_id = graphene.Node.to_global_id("Category", category.pk)
@@ -73,7 +74,7 @@ def test_categories_query(api_client, category):
 
 
 def test_categories_query_with_filter(staff_api_client, category):
-    variables = {"name": category.name}
+    variables = {"first": 10, "filter": {"search": category.name}}
     response = staff_api_client.post_graphql(QUERY_CATEGORIES, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['categories']

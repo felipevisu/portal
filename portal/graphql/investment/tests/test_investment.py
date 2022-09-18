@@ -22,8 +22,8 @@ QUERY_INVESTMENT = """
 """
 
 QUERY_INVESTMENTS = """
-    query Investments($isPublished: Boolean){
-        investments(isPublished: $isPublished){
+    query Investments($first: Int, $filter: InvestmentFilterInput){
+        investments(first: $first, filter: $filter){
             edges{
                 node{
                     id
@@ -44,7 +44,6 @@ QUERY_INVESTMENTS = """
 def test_investment_staff_query_by_id(staff_api_client, investment):
     variables = {
         "id": graphene.Node.to_global_id("Investment", investment.pk),
-
     }
     response = staff_api_client.post_graphql(QUERY_INVESTMENT, variables=variables)
     content = get_graphql_content(response)
@@ -101,7 +100,8 @@ def test_investment_anonymouns_query_published(api_client, published_investment)
 
 
 def test_investments_anonymouns_query(api_client, investment, published_investment):
-    response = api_client.post_graphql(QUERY_INVESTMENTS)
+    variables = {'first': 10}
+    response = api_client.post_graphql(QUERY_INVESTMENTS, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['investments']
     global_id = graphene.Node.to_global_id("Investment", published_investment.pk)
@@ -111,7 +111,8 @@ def test_investments_anonymouns_query(api_client, investment, published_investme
 
 
 def test_investments_staff_query(staff_api_client, investment, published_investment):
-    response = staff_api_client.post_graphql(QUERY_INVESTMENTS)
+    variables = {'first': 10}
+    response = staff_api_client.post_graphql(QUERY_INVESTMENTS, variables=variables)
     content = get_graphql_content(response)
     data = content['data']['investments']
 
@@ -122,7 +123,8 @@ def test_investments_staff_query_with_filter(
     staff_api_client, investment, published_investment
 ):
     variables = {
-        "isPublished": False,
+        "first": 10,
+        "filter": { "isPublished": False }
     }
     response = staff_api_client.post_graphql(QUERY_INVESTMENTS, variables=variables)
     content = get_graphql_content(response)
