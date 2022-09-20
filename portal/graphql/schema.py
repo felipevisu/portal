@@ -15,7 +15,7 @@ class Query(
     ProviderQuery,
     SessionQuery,
     VehicleQuery,
-    graphene.ObjectType
+    graphene.ObjectType,
 ):
     pass
 
@@ -26,7 +26,7 @@ class Mutation(
     VehicleMutation,
     ProviderMutation,
     InvestmentMutation,
-    MutationQuery
+    MutationQuery,
 ):
     pass
 

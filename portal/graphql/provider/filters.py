@@ -16,8 +16,9 @@ def filter_by_documents_close_to_expire(qs, _, value):
         today = timezone.now()
         week_ahead = timezone.now() + timedelta(days=7)
         documents = Document.objects.filter(
-            expires=True, expiration_date__range=[today, week_ahead])
-        qs = qs.filter(id__in=documents.values_list('provider_id'))
+            expires=True, expiration_date__range=[today, week_ahead]
+        )
+        qs = qs.filter(id__in=documents.values_list("provider_id"))
 
     return qs
 
@@ -25,8 +26,9 @@ def filter_by_documents_close_to_expire(qs, _, value):
 def filter_by_expired_documents(qs, _, value):
     if value:
         documents = Document.objects.filter(
-            expires=True, expiration_date__lte=timezone.now())
-        qs = qs.filter(id__in=documents.values_list('provider_id'))
+            expires=True, expiration_date__lte=timezone.now()
+        )
+        qs = qs.filter(id__in=documents.values_list("provider_id"))
 
     return qs
 
@@ -45,11 +47,12 @@ class ProviderFilter(django_filters.FilterSet):
     segments = GlobalIDMultipleChoiceFilter(method=filter_segments)
     expired = django_filters.BooleanFilter(method=filter_by_expired_documents)
     close_to_expire = django_filters.BooleanFilter(
-        method=filter_by_documents_close_to_expire)
+        method=filter_by_documents_close_to_expire
+    )
 
     class Meta:
         model = Provider
-        fields = ['is_published', 'segment']
+        fields = ["is_published", "segment"]
 
 
 class SegmentFilter(django_filters.FilterSet):
@@ -57,7 +60,7 @@ class SegmentFilter(django_filters.FilterSet):
 
     class Meta:
         model = Segment
-        fields = ['search']
+        fields = ["search"]
 
 
 class SegmentFilterInput(FilterInputObjectType):

@@ -1,18 +1,35 @@
 import graphene
 
 from portal.graphql.core.connection import (
-    create_connection_slice, filter_connection_queryset)
+    create_connection_slice,
+    filter_connection_queryset,
+)
 
 from ..core.fields import FilterConnectionField
 from .filters import CategoryFilterInput, VehicleFilterInput
 from .mutations import (
-    CategoryBulkDelete, CategoryCreate, CategoryDelete, CategoryUpdate,
-    VehicleBulkDelete, VehicleCreate, VehicleDelete, VehicleUpdate)
+    CategoryBulkDelete,
+    CategoryCreate,
+    CategoryDelete,
+    CategoryUpdate,
+    VehicleBulkDelete,
+    VehicleCreate,
+    VehicleDelete,
+    VehicleUpdate,
+)
 from .resolvers import (
-    resolve_categories, resolve_category, resolve_vehicle, resolve_vehicles)
+    resolve_categories,
+    resolve_category,
+    resolve_vehicle,
+    resolve_vehicles,
+)
 from .sorters import CategorySortingInput, VehicleSortingInput
 from .types import (
-    Category, CategoryCountableConnection, Vehicle, VehicleCountableConnection)
+    Category,
+    CategoryCountableConnection,
+    Vehicle,
+    VehicleCountableConnection,
+)
 
 
 class Query(graphene.ObjectType):
@@ -24,7 +41,7 @@ class Query(graphene.ObjectType):
     categories = FilterConnectionField(
         CategoryCountableConnection,
         sort_by=CategorySortingInput(),
-        filter=CategoryFilterInput()
+        filter=CategoryFilterInput(),
     )
     vehicle = graphene.Field(
         Vehicle,
@@ -34,7 +51,7 @@ class Query(graphene.ObjectType):
     vehicles = FilterConnectionField(
         VehicleCountableConnection,
         sort_by=VehicleSortingInput(),
-        filter=VehicleFilterInput()
+        filter=VehicleFilterInput(),
     )
 
     def resolve_category(self, info, id=None, slug=None):

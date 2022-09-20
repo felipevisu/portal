@@ -1,4 +1,3 @@
-
 from collections import defaultdict
 
 import graphene
@@ -9,7 +8,11 @@ from portal import investment
 from ...core.permissions import InvestmentPermissions
 from ...investment import models
 from ..core.mutations import (
-    BaseMutation, ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation)
+    BaseMutation,
+    ModelBulkDeleteMutation,
+    ModelDeleteMutation,
+    ModelMutation,
+)
 from ..core.types import Error, NonNullList
 from .types import Investment, Item
 
@@ -114,11 +117,7 @@ class InvestmentUpdate(ItemsMixin, ModelMutation):
         for item in remove_items:
             if item.attribute != instance:
                 msg = "Value %s does not belong to this attribute." % item
-                raise ValidationError(
-                    {
-                        "remove_values": ValidationError(msg)
-                    }
-                )
+                raise ValidationError({"remove_values": ValidationError(msg)})
         return remove_items
 
     @classmethod
@@ -144,7 +143,6 @@ class InvestmentUpdate(ItemsMixin, ModelMutation):
 
 
 class InvestmentDelete(ModelDeleteMutation):
-
     class Arguments:
         id = graphene.ID()
 
@@ -216,7 +214,6 @@ class InvestmentBulkDelete(ModelBulkDeleteMutation):
 
 
 class ItemDelete(ModelDeleteMutation):
-
     class Arguments:
         id = graphene.ID()
 

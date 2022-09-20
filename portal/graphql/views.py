@@ -15,7 +15,7 @@ class GraphQLView(FileUploadGraphQLView, BaseGraphQLView):
         pretty=False,
         batch=False,
         backend=None,
-        subscription_path=None
+        subscription_path=None,
     ):
         super().__init__(
             schema,
@@ -26,5 +26,5 @@ class GraphQLView(FileUploadGraphQLView, BaseGraphQLView):
             pretty,
             batch,
             backend,
-            subscription_path
+            subscription_path,
         )

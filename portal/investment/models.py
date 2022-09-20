@@ -7,7 +7,7 @@ from ..core.permissions import InvestmentPermissions
 
 def validate_month(value):
     if value < 0 and value > 12:
-        raise ValidationError("Valor inválido", params={'value': value})
+        raise ValidationError("Valor inválido", params={"value": value})
 
 
 class Investment(ModelWithDates, PublishableModel):
@@ -17,8 +17,8 @@ class Investment(ModelWithDates, PublishableModel):
     objects = models.Manager()
 
     class Meta:
-        ordering = ['-year', '-month']
-        unique_together = ('year', 'month')
+        ordering = ["-year", "-month"]
+        unique_together = ("year", "month")
         permissions = (
             (InvestmentPermissions.MANAGE_INVESTMENTS.codename, "Manage investments."),
         )
@@ -31,13 +31,12 @@ class Item(models.Model):
     name = models.CharField(max_length=256)
     value = models.DecimalField(decimal_places=2, max_digits=10)
     investment = models.ForeignKey(
-        Investment, on_delete=models.CASCADE, related_name='items')
+        Investment, on_delete=models.CASCADE, related_name="items"
+    )
 
     class Meta:
-        ordering = ['investment', 'name']
-        permissions = (
-            (InvestmentPermissions.MANAGE_ITEMS.codename, "Manage items."),
-        )
+        ordering = ["investment", "name"]
+        permissions = ((InvestmentPermissions.MANAGE_ITEMS.codename, "Manage items."),)
 
     def __str__(self):
         return self.name

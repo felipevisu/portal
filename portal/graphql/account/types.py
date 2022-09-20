@@ -9,6 +9,7 @@ class User(ModelObjectType):
     email = graphene.String(required=True)
     first_name = graphene.String()
     last_name = graphene.String()
+    is_staff = graphene.Boolean()
     permissions = graphene.List(Permission)
 
     class Meta:

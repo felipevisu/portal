@@ -54,7 +54,6 @@ class SessionUpdate(ModelMutation):
 
 
 class SessionDelete(ModelDeleteMutation):
-
     class Arguments:
         id = graphene.ID()
 

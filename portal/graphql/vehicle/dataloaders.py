@@ -25,6 +25,10 @@ class VehiclesByCategoryIdLoader(DataLoader):
 
     def batch_load(self, keys):
         vehicles_by_category_ids = defaultdict(list)
-        for vehicle in Vehicle.objects.using(self.database_connection_name).filter(category_id__in=keys).iterator():
+        for vehicle in (
+            Vehicle.objects.using(self.database_connection_name)
+            .filter(category_id__in=keys)
+            .iterator()
+        ):
             vehicles_by_category_ids[vehicle.category_id].append(vehicle)
         return [vehicles_by_category_ids.get(key, []) for key in keys]

@@ -2,7 +2,11 @@ from typing import Union
 
 from django.contrib.auth.models import _user_has_perm  # type: ignore
 from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, Permission, PermissionsMixin)
+    AbstractBaseUser,
+    BaseUserManager,
+    Permission,
+    PermissionsMixin,
+)
 from django.db import models
 from django.db.models import Q, QuerySet
 from django.utils import timezone
@@ -18,8 +22,9 @@ class UserManager(BaseUserManager):
         email = UserManager.normalize_email(email)
         extra_fields.pop("username", None)
 
-        user = self.model(email=email, is_active=is_active,
-                          is_staff=is_staff, **extra_fields)
+        user = self.model(
+            email=email, is_active=is_active, is_staff=is_staff, **extra_fields
+        )
         if password:
             user.set_password(password)
         user.save()

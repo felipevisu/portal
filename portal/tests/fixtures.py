@@ -59,7 +59,7 @@ def staff_user():
         password="password",
         first_name="Leslie",
         last_name="Wade",
-        is_staff=True
+        is_staff=True,
     )
     user._password = "password"
     user.user_permissions.add(*Permission.objects.all())
@@ -78,8 +78,7 @@ def category():
 
 @pytest.fixture
 def vehicle(category):
-    vehicle = Vehicle.objects.create(
-        name="Correio Sudoeste", category=category)
+    vehicle = Vehicle.objects.create(name="Correio Sudoeste", category=category)
     return vehicle
 
 
@@ -94,8 +93,10 @@ def published_vehicle(category):
 @pytest.fixture
 def published_vehicle_with_date(category):
     vehicle = Vehicle.objects.create(
-        name="Jornal Jogo Sério", category=category, is_published=True,
-        publication_date=(date.today() + timedelta(days=1))
+        name="Jornal Jogo Sério",
+        category=category,
+        is_published=True,
+        publication_date=(date.today() + timedelta(days=1)),
     )
     return vehicle
 
@@ -106,7 +107,7 @@ def provider(segment):
     Document.objects.bulk_create(
         [
             Document(name="Documento 01", provider=provider),
-            Document(name="Documento 02", provider=provider)
+            Document(name="Documento 02", provider=provider),
         ]
     )
     return provider
@@ -115,7 +116,8 @@ def provider(segment):
 @pytest.fixture
 def published_provider(segment):
     provider = Provider.objects.create(
-        name="Agência 123", segment=segment, is_published=True)
+        name="Agência 123", segment=segment, is_published=True
+    )
     return provider
 
 
@@ -142,6 +144,7 @@ def investment_with_items():
     investment = Investment.objects.create(year=2022, month=1)
     Item.objects.create(name="TV", slug="tv", value=100, investment=investment),
     Item.objects.create(name="Radio", slug="radio", value=100, investment=investment),
-    Item.objects.create(name="Internet", slug="internet",
-                        value=200, investment=investment)
+    Item.objects.create(
+        name="Internet", slug="internet", value=200, investment=investment
+    )
     return investment

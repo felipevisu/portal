@@ -11,7 +11,7 @@ class Session(ModelWithDates, ModelWithSlug, PublishableModel):
     date = models.DateTimeField()
 
     class Meta:
-        ordering = ['-created']
+        ordering = ["-created"]
         permissions = (
             (SessionPermissions.MANAGE_SESSIONS.codename, "Manage sessions."),
         )

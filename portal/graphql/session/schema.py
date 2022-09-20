@@ -18,7 +18,7 @@ class Query(graphene.ObjectType):
     sessions = FilterConnectionField(
         SessionCountableConnection,
         sort_by=SessionSortingInput(),
-        filter=SessionFilterInput()
+        filter=SessionFilterInput(),
     )
 
     def resolve_session(self, info, id=None):

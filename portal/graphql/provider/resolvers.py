@@ -24,9 +24,13 @@ def resolve_provider(info, global_provider_id=None, slug=None):
     user = info.context.user
     if global_provider_id:
         _, provider_pk = from_global_id_or_error(global_provider_id)
-        provider = models.Provider.published.visible_to_user(
-            user).filter(pk=provider_pk).first()
+        provider = (
+            models.Provider.published.visible_to_user(user)
+            .filter(pk=provider_pk)
+            .first()
+        )
     else:
-        provider = models.Provider.published.visible_to_user(
-            user).filter(slug=slug).first()
+        provider = (
+            models.Provider.published.visible_to_user(user).filter(slug=slug).first()
+        )
     return provider

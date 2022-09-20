@@ -14,16 +14,16 @@ class Document(ModelWithDates, PublishableModel):
     provider = models.ForeignKey(
         Provider,
         on_delete=models.CASCADE,
-        related_name='documents',
+        related_name="documents",
         null=True,
-        blank=True
+        blank=True,
     )
     vehicle = models.ForeignKey(
         Vehicle,
         on_delete=models.CASCADE,
-        related_name='documents',
+        related_name="documents",
         null=True,
-        blank=True
+        blank=True,
     )
     file = models.FileField(upload_to="documents")
     expires = models.BooleanField(default=False)
@@ -33,7 +33,7 @@ class Document(ModelWithDates, PublishableModel):
     objects = models.Manager()
 
     class Meta:
-        ordering = ['-created']
+        ordering = ["-created"]
         permissions = (
             (DocumentPermissions.MANAGE_DOCUMENTS.codename, "Manage documents."),
         )

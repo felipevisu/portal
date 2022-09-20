@@ -27,7 +27,7 @@ class InvestmentPermissions(BasePermissionEnum):
 class ProviderPermissions(BasePermissionEnum):
     MANAGE_SEGMENTS = "provider.manage_segments"
     MANAGE_PROVIDERS = "provider.manage_providers"
-    
+
 
 class VehiclePermissions(BasePermissionEnum):
     MANAGE_CATEGORIES = "vehicle.manage_categories"
@@ -43,7 +43,7 @@ PERMISSIONS_ENUMS = [
     VehiclePermissions,
     ProviderPermissions,
     InvestmentPermissions,
-    SessionPermissions
+    SessionPermissions,
 ]
 
 

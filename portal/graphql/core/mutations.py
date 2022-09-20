@@ -14,7 +14,10 @@ from ...core.exeptions import PermissionDenied
 from ..utils import get_nodes
 from .types import Error
 from .utils import (
-    from_global_id_or_error, get_error_code_from_error, snake_to_camel_case)
+    from_global_id_or_error,
+    get_error_code_from_error,
+    snake_to_camel_case,
+)
 
 registry = get_global_registry()
 
@@ -74,11 +77,7 @@ class BaseMutation(graphene.Mutation):
 
     @classmethod
     def __init_subclass_with_meta__(
-        cls,
-        _meta=None,
-        permissions=None,
-        error_type_class=None,
-        **options
+        cls, _meta=None, permissions=None, error_type_class=None, **options
     ):
         if not _meta:
             _meta = MutationOptions(cls)
@@ -210,11 +209,17 @@ class BaseMutation(graphene.Mutation):
             node = cls.get_node_by_pk(info, graphene_type=object_type, pk=pk, qs=qs)
         except (AssertionError, GraphQLError) as e:
             raise ValidationError(
-                {field: ValidationError(str(e), code="graphql_error")})
+                {field: ValidationError(str(e), code="graphql_error")}
+            )
         else:
             if node is None:
-                raise ValidationError({field: ValidationError(
-                    "Couldn't resolve to a node: %s" % node_id, code="not_found")})
+                raise ValidationError(
+                    {
+                        field: ValidationError(
+                            "Couldn't resolve to a node: %s" % node_id, code="not_found"
+                        )
+                    }
+                )
 
         return node
 
@@ -388,7 +393,7 @@ class ModelDeleteMutation(ModelMutation):
         if not cls.check_permissions(info.context):
             return PermissionDenied()
 
-        node_id = data.get('id')
+        node_id = data.get("id")
         model_type = cls.get_type_for_model()
         instance = cls.get_node_or_error(info, node_id, only_type=model_type)
 

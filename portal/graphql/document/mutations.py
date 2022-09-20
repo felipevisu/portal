@@ -1,4 +1,3 @@
-
 import graphene
 from django.core.exceptions import ValidationError
 from graphene_file_upload.scalars import Upload
@@ -37,12 +36,11 @@ class DocumentCreate(ModelMutation):
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data, input_cls)
-        expires = data.get('expires', False)
-        expiration_date = data.get('expiration_date', None)
+        expires = data.get("expires", False)
+        expiration_date = data.get("expiration_date", None)
         if expires and not expiration_date:
-            message = 'Este campo não pode estar vazio se o documento é expirável.'
-            raise ValidationError(
-                {'expiration_date': message})
+            message = "Este campo não pode estar vazio se o documento é expirável."
+            raise ValidationError({"expiration_date": message})
         return cleaned_input
 
 
@@ -61,20 +59,18 @@ class DocumentUpdate(ModelMutation):
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data, input_cls)
-        expires = data.get('expires', False)
-        expiration_date = data.get('expiration_date', None)
+        expires = data.get("expires", False)
+        expiration_date = data.get("expiration_date", None)
         if expires and not expiration_date:
-            message = 'Este campo não pode estar vazio se o documento é expirável.'
-            raise ValidationError(
-                {'expiration_date': message})
+            message = "Este campo não pode estar vazio se o documento é expirável."
+            raise ValidationError({"expiration_date": message})
         if not expires:
-            cleaned_input['begin_date'] = None
-            cleaned_input['expiration_date'] = None
+            cleaned_input["begin_date"] = None
+            cleaned_input["expiration_date"] = None
         return cleaned_input
 
 
 class DocumentDelete(ModelDeleteMutation):
-
     class Arguments:
         id = graphene.ID()
 

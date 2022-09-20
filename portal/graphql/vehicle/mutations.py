@@ -58,7 +58,6 @@ class VehicleUpdate(ModelMutation):
 
 
 class VehicleDelete(ModelDeleteMutation):
-
     class Arguments:
         id = graphene.ID()
 
@@ -123,7 +122,6 @@ class CategoryUpdate(ModelMutation):
 
 
 class CategoryDelete(ModelDeleteMutation):
-
     class Arguments:
         id = graphene.ID()
 

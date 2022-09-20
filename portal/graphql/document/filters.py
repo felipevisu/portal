@@ -1,4 +1,3 @@
-
 import django_filters
 import graphene
 
@@ -9,9 +8,9 @@ from ..utils.filters import filter_range_field
 
 
 def filter_owner(queryset, name, value):
-    if value == 'vehicle':
+    if value[0] == "vehicle":
         return queryset.filter(provider=None)
-    if value == 'provider':
+    if value[0] == "provider":
         return queryset.filter(vehicle=None)
     return queryset
 
@@ -32,12 +31,16 @@ class OwnerType(graphene.Enum):
 class DocumentFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
     owner = ListObjectTypeFilter(input_class=OwnerType, method=filter_owner)
-    expiration_date = ObjectTypeFilter(input_class=DateRangeInput, method=filter_expiration_date_range)
-    begin_date = ObjectTypeFilter(input_class=DateRangeInput, method=filter_begin_date_range)
+    expiration_date = ObjectTypeFilter(
+        input_class=DateRangeInput, method=filter_expiration_date_range
+    )
+    begin_date = ObjectTypeFilter(
+        input_class=DateRangeInput, method=filter_begin_date_range
+    )
 
     class Meta:
         model = Document
-        fields = ['is_published', 'expires', 'expiration_date', 'begin_date']
+        fields = ["is_published", "expires", "expiration_date", "begin_date"]
 
 
 class DocumentFilterInput(FilterInputObjectType):

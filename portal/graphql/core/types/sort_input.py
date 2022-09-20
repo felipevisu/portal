@@ -6,7 +6,7 @@ from ..enums import OrderDirection
 
 class SortInputMeta(ObjectTypeOptions):
     sort_enum = None
-    
+
 
 class SortInputObjectType(graphene.InputObjectType):
     direction = graphene.Argument(

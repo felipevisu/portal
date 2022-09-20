@@ -35,21 +35,21 @@ def test_category_query_by_id(api_client, category):
     variables = {"id": category_id}
     response = api_client.post_graphql(QUERY_CATEGORY, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['category']
+    data = content["data"]["category"]
 
-    assert data['id'] == category_id
-    assert data['name'] == category.name
-    assert data['slug'] == category.slug
+    assert data["id"] == category_id
+    assert data["name"] == category.name
+    assert data["slug"] == category.slug
 
 
 def test_category_query_by_slug(api_client, category):
     variables = {"slug": category.slug}
     response = api_client.post_graphql(QUERY_CATEGORY, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['category']
+    data = content["data"]["category"]
 
-    assert data['name'] == category.name
-    assert data['slug'] == category.slug
+    assert data["name"] == category.name
+    assert data["slug"] == category.slug
 
 
 def test_category_query_by_invalid_id(api_client):
@@ -66,22 +66,22 @@ def test_categories_query(api_client, category):
     variables = {"first": 10}
     response = api_client.post_graphql(QUERY_CATEGORIES, variables=variables)
     content = get_graphql_content(response, ignore_errors=True)
-    data = content['data']['categories']
+    data = content["data"]["categories"]
     global_id = graphene.Node.to_global_id("Category", category.pk)
 
-    assert len(data['edges']) == 1
-    assert data['edges'][0]['node']['id'] == global_id
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
 
 
 def test_categories_query_with_filter(staff_api_client, category):
     variables = {"first": 10, "filter": {"search": category.name}}
     response = staff_api_client.post_graphql(QUERY_CATEGORIES, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['categories']
+    data = content["data"]["categories"]
     global_id = graphene.Node.to_global_id("Category", category.pk)
 
-    assert len(data['edges']) == 1
-    assert data['edges'][0]['node']['id'] == global_id
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
 
 
 CREATE_CATEGORY_MUTATION = """
@@ -103,15 +103,12 @@ CREATE_CATEGORY_MUTATION = """
 
 
 def test_investment_create_mutation(staff_api_client, permission_manage_categories):
-    input = {
-        "name": "Category",
-        "slug": "category"
-    }
+    input = {"name": "Category", "slug": "category"}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_CATEGORY_MUTATION,
         permissions=[permission_manage_categories],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["categoryCreate"]
@@ -130,14 +127,14 @@ def test_category_create_mutation_missing_params(
     response = staff_api_client.post_graphql(
         CREATE_CATEGORY_MUTATION,
         permissions=[permission_manage_categories],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["categoryCreate"]
 
-    assert data['category'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['field'] == "name"
+    assert data["category"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["field"] == "name"
 
 
 UPDATE_CATEGORY_MUTATION = """
@@ -162,17 +159,12 @@ def test_category_update_mutation(
     staff_api_client, permission_manage_categories, category
 ):
     category_id = graphene.Node.to_global_id("Category", category.pk)
-    input = {
-        "name": "New name"
-    }
-    variables = {
-        "id": category_id,
-        "input": input
-    }
+    input = {"name": "New name"}
+    variables = {"id": category_id, "input": input}
     response = staff_api_client.post_graphql(
         UPDATE_CATEGORY_MUTATION,
         permissions=[permission_manage_categories],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["categoryUpdate"]
@@ -197,14 +189,16 @@ CATEGORY_DELETE_MUTATION = """
 
 
 def test_category_delete_mutation(
-    staff_api_client, permission_manage_categories, category,
+    staff_api_client,
+    permission_manage_categories,
+    category,
 ):
     category_id = graphene.Node.to_global_id("Category", category.id)
     variables = {"id": category_id}
     response = staff_api_client.post_graphql(
         CATEGORY_DELETE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_categories]
+        permissions=[permission_manage_categories],
     )
     content = get_graphql_content(response)
     data = content["data"]["categoryDelete"]
@@ -214,17 +208,19 @@ def test_category_delete_mutation(
 
 
 def test_category_delete_mutation_with_invalid_id(
-    staff_api_client, permission_manage_categories, category,
+    staff_api_client,
+    permission_manage_categories,
+    category,
 ):
     variables = {"id": "'"}
     response = staff_api_client.post_graphql(
         CATEGORY_DELETE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_categories]
+        permissions=[permission_manage_categories],
     )
     content = get_graphql_content(response)
     data = content["data"]["categoryDelete"]
 
-    assert data['category'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['field'] == 'id'
+    assert data["category"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["field"] == "id"

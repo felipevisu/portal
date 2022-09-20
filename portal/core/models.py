@@ -16,7 +16,7 @@ class ModelWithDates(models.Model):
 class ModelWithSlugManager(models.Manager):
     def create(self, **obj_data):
         if "slug" not in obj_data:
-            obj_data['slug'] = slugify(obj_data['name'])
+            obj_data["slug"] = slugify(obj_data["name"])
         return super().create(**obj_data)
 
 

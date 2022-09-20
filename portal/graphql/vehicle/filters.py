@@ -21,7 +21,7 @@ class CategoryFilter(django_filters.FilterSet):
 
     class Meta:
         model = Category
-        fields = ['search']
+        fields = ["search"]
 
 
 class VehicleFilter(django_filters.FilterSet):
@@ -30,7 +30,7 @@ class VehicleFilter(django_filters.FilterSet):
 
     class Meta:
         model = Vehicle
-        fields = ['is_published', 'category']
+        fields = ["is_published", "category"]
 
 
 class CategoryFilterInput(FilterInputObjectType):

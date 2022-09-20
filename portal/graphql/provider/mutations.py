@@ -58,7 +58,6 @@ class ProviderUpdate(ModelMutation):
 
 
 class ProviderDelete(ModelDeleteMutation):
-
     class Arguments:
         id = graphene.ID()
 
@@ -123,7 +122,6 @@ class SegmentUpdate(ModelMutation):
 
 
 class SegmentDelete(ModelDeleteMutation):
-
     class Arguments:
         id = graphene.ID()
 

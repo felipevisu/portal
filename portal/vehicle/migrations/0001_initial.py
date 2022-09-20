@@ -8,41 +8,63 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=256)),
-                ('slug', models.SlugField(max_length=256, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=256)),
+                ("slug", models.SlugField(max_length=256, unique=True)),
             ],
             options={
-                'ordering': ['name'],
-                'permissions': (('manage_categories', 'Manage categories.'),),
+                "ordering": ["name"],
+                "permissions": (("manage_categories", "Manage categories."),),
             },
         ),
         migrations.CreateModel(
-            name='Vehicle',
+            name="Vehicle",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=256)),
-                ('slug', models.SlugField(max_length=256, unique=True)),
-                ('publication_date', models.DateField(blank=True, null=True)),
-                ('is_published', models.BooleanField(default=False)),
-                ('document_number', models.CharField(max_length=256)),
-                ('document_file', models.FileField(blank=True, upload_to='vehicle')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='vehicles', to='vehicle.category')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=256)),
+                ("slug", models.SlugField(max_length=256, unique=True)),
+                ("publication_date", models.DateField(blank=True, null=True)),
+                ("is_published", models.BooleanField(default=False)),
+                ("document_number", models.CharField(max_length=256)),
+                ("document_file", models.FileField(blank=True, upload_to="vehicle")),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="vehicles",
+                        to="vehicle.category",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['name'],
-                'permissions': (('manage_vehicles', 'Manage vehicles.'),),
+                "ordering": ["name"],
+                "permissions": (("manage_vehicles", "Manage vehicles."),),
             },
         ),
     ]

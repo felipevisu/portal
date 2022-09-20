@@ -5,6 +5,7 @@ from graphene.types.objecttype import ObjectType, ObjectTypeOptions
 class ModelObjectOptions(ObjectTypeOptions):
     model = None
 
+
 class ModelObjectType(ObjectType):
     @classmethod
     def __init_subclass_with_meta__(
@@ -13,17 +14,17 @@ class ModelObjectType(ObjectType):
         possible_types=(),
         default_resolver=None,
         _meta=None,
-        **options
+        **options,
     ):
         if not _meta:
             _meta = ModelObjectOptions(cls)
 
         if not getattr(_meta, "model", None):
-            if not options.get('model'):
+            if not options.get("model"):
                 raise ValueError(
                     "ModelObjectType was declared without 'model' option in it's Meta."
                 )
-            elif not issubclass(options['model'], Model):
+            elif not issubclass(options["model"], Model):
                 raise ValueError(
                     "ModelObjectType was declared with invalid 'model' option value "
                     "in it's Meta. Expected subclass of django.db.models.Model, "

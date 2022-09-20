@@ -4,8 +4,15 @@ from ..core.connection import create_connection_slice, filter_connection_queryse
 from ..core.fields import FilterConnectionField
 from .filters import InvestmentFilterInput
 from .mutations import (
-    InvestmentBulkDelete, InvestmentCreate, InvestmentDelete, InvestmentUpdate,
-    ItemBulkCreate, ItemCreate, ItemDelete, ItemUpdate)
+    InvestmentBulkDelete,
+    InvestmentCreate,
+    InvestmentDelete,
+    InvestmentUpdate,
+    ItemBulkCreate,
+    ItemCreate,
+    ItemDelete,
+    ItemUpdate,
+)
 from .resolvers import resolve_investment, resolve_investments
 from .sorters import InvestmentSortingInput
 from .types import Investment, InvestmentCountableConnection
@@ -19,9 +26,9 @@ class Query(graphene.ObjectType):
         year=graphene.Int(),
     )
     investments = FilterConnectionField(
-        InvestmentCountableConnection, 
-        sort_by=InvestmentSortingInput(), 
-        filter=InvestmentFilterInput()
+        InvestmentCountableConnection,
+        sort_by=InvestmentSortingInput(),
+        filter=InvestmentFilterInput(),
     )
 
     def resolve_investments(self, info, **kwargs):

@@ -2,6 +2,8 @@ aniso8601==7.0.0
 asgiref==3.5.0
 attrs==21.4.0
 autopep8==1.6.0
+black==22.8.0
+click==8.1.3
 dj-database-url==0.5.0
 Django==3.2.12
 django-cors-headers==3.11.0
@@ -11,7 +13,6 @@ django-graphiql-debug-toolbar==0.2.0
 django-graphql-jwt==0.3.4
 django-on-heroku==1.1.2
 django-storages==1.12.3
-flake8==4.0.1
 graphene==2.1.9
 graphene-django==2.15.0
 graphene-file-upload==1.3.0
@@ -19,16 +20,18 @@ graphql-core==2.3.2
 graphql-relay==2.0.1
 gunicorn==20.1.0
 iniconfig==1.1.1
-mccabe==0.6.1
+mccabe==0.7.0
 mypy==0.942
 mypy-extensions==0.4.3
 packaging==21.3
+pathspec==0.10.1
+platformdirs==2.5.2
 pluggy==1.0.0
 promise==2.3
 psycopg2-binary==2.9.3
 py==1.11.0
-pycodestyle==2.8.0
-pyflakes==2.4.0
+pycodestyle==2.9.1
+pyflakes==2.5.0
 PyJWT==2.3.0
 pyparsing==3.0.7
 pytest==7.1.1
@@ -42,6 +45,6 @@ sqlparse==0.4.2
 text-unidecode==1.3
 toml==0.10.2
 tomli==2.0.1
-typing-extensions==4.1.1
+typing_extensions==4.1.1
 urllib3==1.26.9
 whitenoise==6.2.0

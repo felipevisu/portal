@@ -4,7 +4,7 @@ from ..core.types import SortInputObjectType
 
 
 class SegmentSortField(graphene.Enum):
-    NAME = ["name", 'slug']
+    NAME = ["name", "slug"]
 
 
 class SegmentSortingInput(SortInputObjectType):
@@ -14,7 +14,7 @@ class SegmentSortingInput(SortInputObjectType):
 
 
 class ProviderSortField(graphene.Enum):
-    NAME = ["name", 'slug']
+    NAME = ["name", "slug"]
     UPDATED = ["updated", "name", "slug"]
     CREATED = ["created", "name", "slug"]
     PUBLISHED = ["is_published", "name", "slug"]

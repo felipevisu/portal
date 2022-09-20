@@ -31,7 +31,7 @@ def sort_queryset_for_connection(iterable, args):
             queryset=iterable,
             sort_by=sort_by,
             reversed=reversed,
-            channel_slug=args.get("channel")
+            channel_slug=args.get("channel"),
         )
     else:
         iterable, sort_by = sort_queryset_by_default(

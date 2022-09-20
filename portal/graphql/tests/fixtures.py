@@ -16,8 +16,8 @@ class ApiClient:
             self.headers["HTTP_AUTHORIZATION"] = f"JWT {self.token}"
 
     def post_graphql(self, *args, **kwargs):
-        if 'permissions' in kwargs:
-            permissions = kwargs.pop('permissions')
+        if "permissions" in kwargs:
+            permissions = kwargs.pop("permissions")
             if self.user:
                 self.user.user_permissions.add(*permissions)
                 self.user.save()

@@ -4,13 +4,28 @@ from ..core.connection import create_connection_slice, filter_connection_queryse
 from ..core.fields import FilterConnectionField
 from .filters import ProviderFilterInput, SegmentFilterInput
 from .mutations import (
-    ProviderBulkDelete, ProviderCreate, ProviderDelete, ProviderUpdate,
-    SegmentBulkDelete, SegmentCreate, SegmentDelete, SegmentUpdate)
+    ProviderBulkDelete,
+    ProviderCreate,
+    ProviderDelete,
+    ProviderUpdate,
+    SegmentBulkDelete,
+    SegmentCreate,
+    SegmentDelete,
+    SegmentUpdate,
+)
 from .resolvers import (
-    resolve_provider, resolve_providers, resolve_segment, resolve_segments)
+    resolve_provider,
+    resolve_providers,
+    resolve_segment,
+    resolve_segments,
+)
 from .sorters import ProviderSortingInput, SegmentSortingInput
 from .types import (
-    Provider, ProviderCountableConnection, Segment, SegmentCountableConnection)
+    Provider,
+    ProviderCountableConnection,
+    Segment,
+    SegmentCountableConnection,
+)
 
 
 class Query(graphene.ObjectType):
@@ -22,7 +37,7 @@ class Query(graphene.ObjectType):
     segments = FilterConnectionField(
         SegmentCountableConnection,
         sort_by=SegmentSortingInput(),
-        filter=SegmentFilterInput()
+        filter=SegmentFilterInput(),
     )
     provider = graphene.Field(
         Provider,
@@ -32,7 +47,7 @@ class Query(graphene.ObjectType):
     providers = FilterConnectionField(
         ProviderCountableConnection,
         sort_by=ProviderSortingInput(),
-        filter=ProviderFilterInput()
+        filter=ProviderFilterInput(),
     )
 
     def resolve_segments(self, info, *args, **kwargs):

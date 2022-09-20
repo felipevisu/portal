@@ -4,21 +4,22 @@ from ..core.connection import create_connection_slice, filter_connection_queryse
 from ..core.fields import FilterConnectionField
 from .filters import DocumentFilterInput
 from .mutations import (
-    DocumentBulkDelete, DocumentCreate, DocumentDelete, DocumentUpdate)
+    DocumentBulkDelete,
+    DocumentCreate,
+    DocumentDelete,
+    DocumentUpdate,
+)
 from .resolvers import resolve_document, resolve_documents
 from .sorters import DocumentSortingInput
 from .types import Document, DocumentCountableConnection
 
 
 class Query(graphene.ObjectType):
-    document = graphene.Field(
-        Document,
-        id=graphene.Argument(graphene.ID)
-    )
+    document = graphene.Field(Document, id=graphene.Argument(graphene.ID))
     documents = FilterConnectionField(
-        DocumentCountableConnection, 
-        sort_by=DocumentSortingInput(), 
-        filter=DocumentFilterInput()
+        DocumentCountableConnection,
+        sort_by=DocumentSortingInput(),
+        filter=DocumentFilterInput(),
     )
 
     def resolve_documents(self, info, **kwargs):

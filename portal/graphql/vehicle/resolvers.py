@@ -19,11 +19,13 @@ def resolve_vehicle(info, global_vehicle_id=None, slug=None):
     user = info.context.user
     if global_vehicle_id:
         _, vehicle_pk = from_global_id_or_error(global_vehicle_id)
-        vehicle = models.Vehicle.published.visible_to_user(
-            user).filter(pk=vehicle_pk).first()
+        vehicle = (
+            models.Vehicle.published.visible_to_user(user).filter(pk=vehicle_pk).first()
+        )
     else:
-        vehicle = models.Vehicle.published.visible_to_user(
-            user).filter(slug=slug).first()
+        vehicle = (
+            models.Vehicle.published.visible_to_user(user).filter(slug=slug).first()
+        )
     return vehicle
 
 

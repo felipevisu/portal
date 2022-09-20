@@ -5,11 +5,11 @@ pytestmark = pytest.mark.django_db
 
 
 def test_category(category):
-    assert category.slug == slugify('Jornal Impresso')
+    assert category.slug == slugify("Jornal Impresso")
 
 
 def test_vehicle(vehicle):
-    assert vehicle.slug == slugify('Correio Sudoeste')
+    assert vehicle.slug == slugify("Correio Sudoeste")
 
 
 def test_vehicle_publication(vehicle, published_vehicle, published_vehicle_with_date):

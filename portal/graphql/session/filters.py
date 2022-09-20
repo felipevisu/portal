@@ -10,10 +10,9 @@ class SessionFilter(django_filters.FilterSet):
 
     class Meta:
         model = Session
-        fields = ['search', 'is_published']
+        fields = ["search", "is_published"]
 
 
 class SessionFilterInput(FilterInputObjectType):
     class Meta:
         filterset_class = SessionFilter
-

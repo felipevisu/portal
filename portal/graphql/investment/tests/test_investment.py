@@ -47,10 +47,10 @@ def test_investment_staff_query_by_id(staff_api_client, investment):
     }
     response = staff_api_client.post_graphql(QUERY_INVESTMENT, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['investment']
+    data = content["data"]["investment"]
 
-    assert data['month'] == investment.month
-    assert data['year'] == investment.year
+    assert data["month"] == investment.month
+    assert data["year"] == investment.year
 
 
 def test_investment_query_by_invalid_id(staff_api_client):
@@ -70,10 +70,10 @@ def test_investment_staff_query_by_month_and_year(staff_api_client, investment):
     }
     response = staff_api_client.post_graphql(QUERY_INVESTMENT, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['investment']
+    data = content["data"]["investment"]
 
-    assert data['month'] == investment.month
-    assert data['year'] == investment.year
+    assert data["month"] == investment.month
+    assert data["year"] == investment.year
 
 
 def test_investment_anonymouns_query_unpublished(api_client, investment):
@@ -82,7 +82,7 @@ def test_investment_anonymouns_query_unpublished(api_client, investment):
     }
     response = api_client.post_graphql(QUERY_INVESTMENT, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['investment']
+    data = content["data"]["investment"]
 
     assert data is None
 
@@ -93,46 +93,43 @@ def test_investment_anonymouns_query_published(api_client, published_investment)
     }
     response = api_client.post_graphql(QUERY_INVESTMENT, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['investment']
+    data = content["data"]["investment"]
 
-    assert data['month'] == published_investment.month
-    assert data['year'] == published_investment.year
+    assert data["month"] == published_investment.month
+    assert data["year"] == published_investment.year
 
 
 def test_investments_anonymouns_query(api_client, investment, published_investment):
-    variables = {'first': 10}
+    variables = {"first": 10}
     response = api_client.post_graphql(QUERY_INVESTMENTS, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['investments']
+    data = content["data"]["investments"]
     global_id = graphene.Node.to_global_id("Investment", published_investment.pk)
 
-    assert len(data['edges']) == 1
-    assert data['edges'][0]['node']['id'] == global_id
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
 
 
 def test_investments_staff_query(staff_api_client, investment, published_investment):
-    variables = {'first': 10}
+    variables = {"first": 10}
     response = staff_api_client.post_graphql(QUERY_INVESTMENTS, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['investments']
+    data = content["data"]["investments"]
 
-    assert len(data['edges']) == 2
+    assert len(data["edges"]) == 2
 
 
 def test_investments_staff_query_with_filter(
     staff_api_client, investment, published_investment
 ):
-    variables = {
-        "first": 10,
-        "filter": { "isPublished": False }
-    }
+    variables = {"first": 10, "filter": {"isPublished": False}}
     response = staff_api_client.post_graphql(QUERY_INVESTMENTS, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['investments']
+    data = content["data"]["investments"]
     global_id = graphene.Node.to_global_id("Investment", investment.pk)
 
-    assert len(data['edges']) == 1
-    assert data['edges'][0]['node']['id'] == global_id
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
 
 
 CREATE_INVESTMENT_MUTATION = """
@@ -159,15 +156,12 @@ CREATE_INVESTMENT_MUTATION = """
 
 
 def test_investment_create_mutation(staff_api_client, permission_manage_investments):
-    input = {
-        "month": 6,
-        "year": 2022
-    }
+    input = {"month": 6, "year": 2022}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_INVESTMENT_MUTATION,
         permissions=[permission_manage_investments],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["investmentCreate"]
@@ -186,40 +180,37 @@ def test_investment_create_mutation_missing_params(
     response = staff_api_client.post_graphql(
         CREATE_INVESTMENT_MUTATION,
         permissions=[permission_manage_investments],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["investmentCreate"]
 
-    assert data['investment'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['field'] == "year"
+    assert data["investment"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["field"] == "year"
 
 
 def test_investment_create_mutation_duplicated(
     staff_api_client, permission_manage_investments
 ):
-    input = {
-        "month": 6,
-        "year": 2022
-    }
+    input = {"month": 6, "year": 2022}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_INVESTMENT_MUTATION,
         permissions=[permission_manage_investments],
-        variables=variables
+        variables=variables,
     )
     response = staff_api_client.post_graphql(
         CREATE_INVESTMENT_MUTATION,
         permissions=[permission_manage_investments],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
 
     data = content["data"]["investmentCreate"]
-    assert data['investment'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['code'] == 'unique_together'
+    assert data["investment"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["code"] == "unique_together"
 
 
 UPDATE_INVESTMENT_MUTATION = """
@@ -250,18 +241,12 @@ def test_investment_update_mutation(
     staff_api_client, permission_manage_investments, investment
 ):
     investment_id = graphene.Node.to_global_id("Investment", investment.pk)
-    input = {
-        "month": 12,
-        "isPublished": True
-    }
-    variables = {
-        "id": investment_id,
-        "input": input
-    }
+    input = {"month": 12, "isPublished": True}
+    variables = {"id": investment_id, "input": input}
     response = staff_api_client.post_graphql(
         UPDATE_INVESTMENT_MUTATION,
         permissions=[permission_manage_investments],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["investmentUpdate"]
@@ -275,25 +260,19 @@ def test_investment_update_mutation_invalid_parameter(
     staff_api_client, permission_manage_investments, investment, published_investment
 ):
     investment_id = graphene.Node.to_global_id("Investment", investment.pk)
-    input = {
-        "month": 2,
-        "isPublished": True
-    }
-    variables = {
-        "id": investment_id,
-        "input": input
-    }
+    input = {"month": 2, "isPublished": True}
+    variables = {"id": investment_id, "input": input}
     response = staff_api_client.post_graphql(
         UPDATE_INVESTMENT_MUTATION,
         permissions=[permission_manage_investments],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["investmentUpdate"]
 
-    assert data['investment'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['code'] == 'unique_together'
+    assert data["investment"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["code"] == "unique_together"
 
 
 INVESTMENT_DELETE_MUTATION = """
@@ -312,14 +291,16 @@ INVESTMENT_DELETE_MUTATION = """
 
 
 def test_investment_delete_mutation(
-    staff_api_client, permission_manage_investments, investment,
+    staff_api_client,
+    permission_manage_investments,
+    investment,
 ):
     investment_id = graphene.Node.to_global_id("Investment", investment.id)
     variables = {"id": investment_id}
     response = staff_api_client.post_graphql(
         INVESTMENT_DELETE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_investments]
+        permissions=[permission_manage_investments],
     )
     content = get_graphql_content(response)
     data = content["data"]["investmentDelete"]
@@ -329,20 +310,22 @@ def test_investment_delete_mutation(
 
 
 def test_investment_delete_mutation_with_invalid_id(
-    staff_api_client, permission_manage_investments, investment,
+    staff_api_client,
+    permission_manage_investments,
+    investment,
 ):
     variables = {"id": "'"}
     response = staff_api_client.post_graphql(
         INVESTMENT_DELETE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_investments]
+        permissions=[permission_manage_investments],
     )
     content = get_graphql_content(response)
     data = content["data"]["investmentDelete"]
 
-    assert data['investment'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['field'] == 'id'
+    assert data["investment"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["field"] == "id"
 
 
 ITEM_BULK_CREATE_MUTATION = """
@@ -367,20 +350,19 @@ ITEM_BULK_CREATE_MUTATION = """
 
 
 def test_items_bulk_create(
-    staff_api_client, permission_manage_items, investment,
+    staff_api_client,
+    permission_manage_items,
+    investment,
 ):
     investment_id = graphene.Node.to_global_id("Investment", investment.id)
     variables = {
         "investmentId": investment_id,
-        "items": [
-            {"name": "Item 1", "value": 10},
-            {"name": "Item 2", "value": 20}
-        ]
+        "items": [{"name": "Item 1", "value": 10}, {"name": "Item 2", "value": 20}],
     }
     response = staff_api_client.post_graphql(
         ITEM_BULK_CREATE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_items]
+        permissions=[permission_manage_items],
     )
     content = get_graphql_content(response)
     data = content["data"]["itemBulkCreate"]

@@ -35,21 +35,21 @@ def test_segment_query_by_id(api_client, segment):
     variables = {"id": segment_id}
     response = api_client.post_graphql(QUERY_SEGMENT, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['segment']
+    data = content["data"]["segment"]
 
-    assert data['id'] == segment_id
-    assert data['name'] == segment.name
-    assert data['slug'] == segment.slug
+    assert data["id"] == segment_id
+    assert data["name"] == segment.name
+    assert data["slug"] == segment.slug
 
 
 def test_segment_query_by_slug(api_client, segment):
     variables = {"slug": segment.slug}
     response = api_client.post_graphql(QUERY_SEGMENT, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['segment']
+    data = content["data"]["segment"]
 
-    assert data['name'] == segment.name
-    assert data['slug'] == segment.slug
+    assert data["name"] == segment.name
+    assert data["slug"] == segment.slug
 
 
 def test_segment_query_by_invalid_id(api_client):
@@ -66,22 +66,22 @@ def test_segments_query(api_client, segment):
     variables = {"first": 10}
     response = api_client.post_graphql(QUERY_SEGMENTS, variables=variables)
     content = get_graphql_content(response, ignore_errors=True)
-    data = content['data']['segments']
+    data = content["data"]["segments"]
     global_id = graphene.Node.to_global_id("Segment", segment.pk)
 
-    assert len(data['edges']) == 1
-    assert data['edges'][0]['node']['id'] == global_id
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
 
 
 def test_segments_query_with_filter(staff_api_client, segment):
     variables = {"first": 10, "filter": {"search": segment.name}}
     response = staff_api_client.post_graphql(QUERY_SEGMENTS, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['segments']
+    data = content["data"]["segments"]
     global_id = graphene.Node.to_global_id("Segment", segment.pk)
 
-    assert len(data['edges']) == 1
-    assert data['edges'][0]['node']['id'] == global_id
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
 
 
 CREATE_SEGMENT_MUTATION = """
@@ -103,15 +103,12 @@ CREATE_SEGMENT_MUTATION = """
 
 
 def test_investment_create_mutation(staff_api_client, permission_manage_segments):
-    input = {
-        "name": "Segment",
-        "slug": "segment"
-    }
+    input = {"name": "Segment", "slug": "segment"}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_SEGMENT_MUTATION,
         permissions=[permission_manage_segments],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["segmentCreate"]
@@ -130,14 +127,14 @@ def test_segment_create_mutation_missing_params(
     response = staff_api_client.post_graphql(
         CREATE_SEGMENT_MUTATION,
         permissions=[permission_manage_segments],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["segmentCreate"]
 
-    assert data['segment'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['field'] == "name"
+    assert data["segment"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["field"] == "name"
 
 
 UPDATE_SEGMENT_MUTATION = """
@@ -158,21 +155,14 @@ UPDATE_SEGMENT_MUTATION = """
 """
 
 
-def test_segment_update_mutation(
-    staff_api_client, permission_manage_segments, segment
-):
+def test_segment_update_mutation(staff_api_client, permission_manage_segments, segment):
     segment_id = graphene.Node.to_global_id("Segment", segment.pk)
-    input = {
-        "name": "New name"
-    }
-    variables = {
-        "id": segment_id,
-        "input": input
-    }
+    input = {"name": "New name"}
+    variables = {"id": segment_id, "input": input}
     response = staff_api_client.post_graphql(
         UPDATE_SEGMENT_MUTATION,
         permissions=[permission_manage_segments],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["segmentUpdate"]
@@ -197,14 +187,16 @@ SEGMENT_DELETE_MUTATION = """
 
 
 def test_segment_delete_mutation(
-    staff_api_client, permission_manage_segments, segment,
+    staff_api_client,
+    permission_manage_segments,
+    segment,
 ):
     segment_id = graphene.Node.to_global_id("Segment", segment.id)
     variables = {"id": segment_id}
     response = staff_api_client.post_graphql(
         SEGMENT_DELETE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_segments]
+        permissions=[permission_manage_segments],
     )
     content = get_graphql_content(response)
     data = content["data"]["segmentDelete"]
@@ -214,17 +206,19 @@ def test_segment_delete_mutation(
 
 
 def test_segment_delete_mutation_with_invalid_id(
-    staff_api_client, permission_manage_segments, segment,
+    staff_api_client,
+    permission_manage_segments,
+    segment,
 ):
     variables = {"id": "'"}
     response = staff_api_client.post_graphql(
         SEGMENT_DELETE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_segments]
+        permissions=[permission_manage_segments],
     )
     content = get_graphql_content(response)
     data = content["data"]["segmentDelete"]
 
-    assert data['segment'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['field'] == 'id'
+    assert data["segment"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["field"] == "id"

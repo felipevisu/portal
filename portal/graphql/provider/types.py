@@ -1,11 +1,13 @@
 import graphene
 
+from portal.graphql.document.dataloaders import DocumentsByProviderIdLoader
+
 from ...provider import models
 from ..core.connection import CountableConnection, create_connection_slice
 from ..core.fields import ConnectionField
 from ..core.types import ModelObjectType
 from ..document.types import DocumentCountableConnection
-from .dataloaders import SegmentByIdLoader
+from .dataloaders import ProvidersBySegmentIdLoader, SegmentByIdLoader
 
 
 class Provider(ModelObjectType):
@@ -14,7 +16,7 @@ class Provider(ModelObjectType):
     slug = graphene.String()
     segment = graphene.Field(lambda: Segment)
     document_number = graphene.String()
-    is_published = graphene.String()
+    is_published = graphene.Boolean()
     email = graphene.String()
     phone = graphene.String()
     address = graphene.String()
@@ -32,8 +34,12 @@ class Provider(ModelObjectType):
         return SegmentByIdLoader(info.context).load(segment_id)
 
     def resolve_documents(self, info, **kwargs):
-        qs = self.documents.all()
-        return create_connection_slice(qs, info, kwargs, DocumentCountableConnection)
+        def _resolve(documents):
+            return create_connection_slice(
+                documents, info, kwargs, DocumentCountableConnection
+            )
+
+        return DocumentsByProviderIdLoader(info.context).load(self.id).then(_resolve)
 
 
 class ProviderCountableConnection(CountableConnection):
@@ -52,8 +58,12 @@ class Segment(ModelObjectType):
         interfaces = [graphene.relay.Node]
 
     def resolve_providers(self, info, **kwargs):
-        qs = self.providers.all()
-        return create_connection_slice(qs, info, kwargs, ProviderCountableConnection)
+        def _resolve(providers):
+            create_connection_slice(
+                providers, info, kwargs, ProviderCountableConnection
+            )
+
+        return ProvidersBySegmentIdLoader(info.context).load(self.id).then(_resolve)
 
 
 class SegmentCountableConnection(CountableConnection):

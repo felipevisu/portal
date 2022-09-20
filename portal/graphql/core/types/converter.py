@@ -5,8 +5,12 @@ from django import forms
 from django.core.exceptions import ImproperlyConfigured
 
 from ..filters import (
-    EnumFilter, GlobalIDFormField, GlobalIDMultipleChoiceField, ListObjectTypeFilter,
-    ObjectTypeFilter)
+    EnumFilter,
+    GlobalIDFormField,
+    GlobalIDMultipleChoiceField,
+    ListObjectTypeFilter,
+    ObjectTypeFilter,
+)
 from .common import NonNullList
 
 

@@ -26,9 +26,7 @@ MUTATION_TOKEN_AUTH = """
 def test_create_token(api_client, user):
     variables = {"email": user.email, "password": user._password}
     response = api_client.post_graphql(
-        MUTATION_TOKEN_AUTH,
-        op_name='GenerateToken',
-        variables=variables
+        MUTATION_TOKEN_AUTH, op_name="GenerateToken", variables=variables
     )
     content = get_graphql_content(response)
     data = content["data"]["tokenAuth"]
@@ -40,9 +38,7 @@ def test_create_token(api_client, user):
 def test_create_token_with_invalid_password(api_client, user):
     variables = {"email": user.email, "password": "wrong"}
     response = api_client.post_graphql(
-        MUTATION_TOKEN_AUTH,
-        op_name='GenerateToken',
-        variables=variables
+        MUTATION_TOKEN_AUTH, op_name="GenerateToken", variables=variables
     )
     content = get_graphql_content(response, ignore_errors=True)
     data = content["data"]["tokenAuth"]

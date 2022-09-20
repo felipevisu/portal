@@ -8,40 +8,62 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Segment',
+            name="Segment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=256)),
-                ('slug', models.SlugField(max_length=256, unique=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=256)),
+                ("slug", models.SlugField(max_length=256, unique=True)),
             ],
             options={
-                'ordering': ['name'],
-                'permissions': (('manage_segments', 'Manage segments.'),),
+                "ordering": ["name"],
+                "permissions": (("manage_segments", "Manage segments."),),
             },
         ),
         migrations.CreateModel(
-            name='Provider',
+            name="Provider",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=256)),
-                ('slug', models.SlugField(max_length=256, unique=True)),
-                ('publication_date', models.DateField(blank=True, null=True)),
-                ('is_published', models.BooleanField(default=False)),
-                ('document_number', models.CharField(max_length=256)),
-                ('segment', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='providers', to='provider.segment')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=256)),
+                ("slug", models.SlugField(max_length=256, unique=True)),
+                ("publication_date", models.DateField(blank=True, null=True)),
+                ("is_published", models.BooleanField(default=False)),
+                ("document_number", models.CharField(max_length=256)),
+                (
+                    "segment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="providers",
+                        to="provider.segment",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['name'],
-                'permissions': (('manage_providers', 'Manage providers.'),),
+                "ordering": ["name"],
+                "permissions": (("manage_providers", "Manage providers."),),
             },
         ),
     ]

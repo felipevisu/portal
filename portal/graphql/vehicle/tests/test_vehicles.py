@@ -43,11 +43,11 @@ def test_vehicle_staff_query_by_id(staff_api_client, vehicle):
     variables = {"id": vehicle_id}
     response = staff_api_client.post_graphql(QUERY_VEHICLE, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['vehicle']
+    data = content["data"]["vehicle"]
 
-    assert data['id'] == vehicle_id
-    assert data['name'] == vehicle.name
-    assert data['slug'] == vehicle.slug
+    assert data["id"] == vehicle_id
+    assert data["name"] == vehicle.name
+    assert data["slug"] == vehicle.slug
 
 
 def test_vehicle_query_by_invalid_id(staff_api_client):
@@ -64,10 +64,10 @@ def test_vehicle_staff_query_by_slug(staff_api_client, vehicle):
     variables = {"slug": vehicle.slug}
     response = staff_api_client.post_graphql(QUERY_VEHICLE, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['vehicle']
+    data = content["data"]["vehicle"]
 
-    assert data['name'] == vehicle.name
-    assert data['slug'] == vehicle.slug
+    assert data["name"] == vehicle.name
+    assert data["slug"] == vehicle.slug
 
 
 def test_vehicle_anonymouns_query_unpublished(api_client, vehicle):
@@ -76,7 +76,7 @@ def test_vehicle_anonymouns_query_unpublished(api_client, vehicle):
     }
     response = api_client.post_graphql(QUERY_VEHICLE, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['vehicle']
+    data = content["data"]["vehicle"]
 
     assert data is None
 
@@ -86,44 +86,42 @@ def test_vehicle_anonymouns_query_published(api_client, published_vehicle):
     variables = {"id": vehicle_id}
     response = api_client.post_graphql(QUERY_VEHICLE, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['vehicle']
+    data = content["data"]["vehicle"]
 
-    assert data['id'] == vehicle_id
-    assert data['name'] == published_vehicle.name
-    assert data['slug'] == published_vehicle.slug
+    assert data["id"] == vehicle_id
+    assert data["name"] == published_vehicle.name
+    assert data["slug"] == published_vehicle.slug
 
 
 def test_vehicles_anonymouns_query(api_client, vehicle, published_vehicle):
     variables = {"first": 10}
     response = api_client.post_graphql(QUERY_VEHICLES, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['vehicles']
+    data = content["data"]["vehicles"]
     global_id = graphene.Node.to_global_id("Vehicle", published_vehicle.pk)
 
-    assert len(data['edges']) == 1
-    assert data['edges'][0]['node']['id'] == global_id
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
 
 
 def test_vehicles_staff_query(staff_api_client, vehicle, published_vehicle):
     variables = {"first": 10}
     response = staff_api_client.post_graphql(QUERY_VEHICLES, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['vehicles']
+    data = content["data"]["vehicles"]
 
-    assert len(data['edges']) == 2
+    assert len(data["edges"]) == 2
 
 
-def test_vehicles_staff_query_with_filter(
-    staff_api_client, vehicle, published_vehicle
-):
+def test_vehicles_staff_query_with_filter(staff_api_client, vehicle, published_vehicle):
     variables = {"first": 10, "filter": {"isPublished": False}}
     response = staff_api_client.post_graphql(QUERY_VEHICLES, variables=variables)
     content = get_graphql_content(response)
-    data = content['data']['vehicles']
+    data = content["data"]["vehicles"]
     global_id = graphene.Node.to_global_id("Vehicle", vehicle.pk)
 
-    assert len(data['edges']) == 1
-    assert data['edges'][0]['node']['id'] == global_id
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
 
 
 CREATE_VEHICLE_MUTATION = """
@@ -156,13 +154,13 @@ def test_vehicle_create_mutation(
         "name": "New vehicle",
         "slug": "new-vehicle",
         "documentNumber": "123456789",
-        "category": category_id
+        "category": category_id,
     }
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_VEHICLE_MUTATION,
         permissions=[permission_manage_vehicles],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["vehicleCreate"]
@@ -177,23 +175,19 @@ def test_vehicle_create_mutation_missing_params(
     staff_api_client, category, permission_manage_vehicles
 ):
     category_id = graphene.Node.to_global_id("Category", category.pk)
-    input = {
-        "name": "New vehicle",
-        "slug": "new-vehicle",
-        "category": category_id
-    }
+    input = {"name": "New vehicle", "slug": "new-vehicle", "category": category_id}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_VEHICLE_MUTATION,
         permissions=[permission_manage_vehicles],
-        variables=variables
+        variables=variables,
     )
     content = get_graphql_content(response)
     data = content["data"]["vehicleCreate"]
 
-    assert data['vehicle'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['field'] == "documentNumber"
+    assert data["vehicle"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["field"] == "documentNumber"
 
 
 VEHICLE_DELETE_MUTATION = """
@@ -212,14 +206,16 @@ VEHICLE_DELETE_MUTATION = """
 
 
 def test_vehicle_delete_mutation(
-    staff_api_client, permission_manage_vehicles, vehicle,
+    staff_api_client,
+    permission_manage_vehicles,
+    vehicle,
 ):
     vehicle_id = graphene.Node.to_global_id("Vehicle", vehicle.id)
     variables = {"id": vehicle_id}
     response = staff_api_client.post_graphql(
         VEHICLE_DELETE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_vehicles]
+        permissions=[permission_manage_vehicles],
     )
     content = get_graphql_content(response)
     data = content["data"]["vehicleDelete"]
@@ -229,17 +225,19 @@ def test_vehicle_delete_mutation(
 
 
 def test_vehicle_delete_mutation_with_invalid_id(
-    staff_api_client, permission_manage_vehicles, vehicle,
+    staff_api_client,
+    permission_manage_vehicles,
+    vehicle,
 ):
     variables = {"id": "'"}
     response = staff_api_client.post_graphql(
         VEHICLE_DELETE_MUTATION,
         variables=variables,
-        permissions=[permission_manage_vehicles]
+        permissions=[permission_manage_vehicles],
     )
     content = get_graphql_content(response)
     data = content["data"]["vehicleDelete"]
 
-    assert data['vehicle'] is None
-    assert data['errors'] is not None
-    assert data['errors'][0]['field'] == 'id'
+    assert data["vehicle"] is None
+    assert data["errors"] is not None
+    assert data["errors"][0]["field"] == "id"

@@ -11,6 +11,7 @@ from ..utils.filters import filter_range_field
 def search_filter(queryset, name, value):
     return queryset.filter(name__search=value)
 
+
 class DefaultMultipleChoiceField(MultipleChoiceField):
     default_error_messages = {"invalid_list": "Enter a list of values."}
 
