@@ -24,14 +24,9 @@ class InvestmentPermissions(BasePermissionEnum):
     MANAGE_ITEMS = "investment.manage_items"
 
 
-class ProviderPermissions(BasePermissionEnum):
-    MANAGE_SEGMENTS = "provider.manage_segments"
-    MANAGE_PROVIDERS = "provider.manage_providers"
-
-
-class VehiclePermissions(BasePermissionEnum):
-    MANAGE_CATEGORIES = "vehicle.manage_categories"
-    MANAGE_VEHICLES = "vehicle.manage_vehicles"
+class EntryPermissions(BasePermissionEnum):
+    MANAGE_CATEGORIES = "entry.manage_categories"
+    MANAGE_ENTRIES = "entry.manage_entries"
 
 
 class DocumentPermissions(BasePermissionEnum):
@@ -40,8 +35,6 @@ class DocumentPermissions(BasePermissionEnum):
 
 PERMISSIONS_ENUMS = [
     AccountPermissions,
-    VehiclePermissions,
-    ProviderPermissions,
     InvestmentPermissions,
     SessionPermissions,
 ]

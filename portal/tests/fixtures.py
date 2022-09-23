@@ -7,7 +7,7 @@ from portal.account.models import User
 from portal.document.models import Document
 from portal.investment.models import Investment, Item
 from portal.provider.models import Provider, Segment
-from portal.vehicle.models import Category, Vehicle
+from portal.entry.models import Category, Entry
 
 
 @pytest.fixture
@@ -36,8 +36,8 @@ def permission_manage_categories():
 
 
 @pytest.fixture
-def permission_manage_vehicles():
-    return Permission.objects.get(codename="manage_vehicles")
+def permission_manage_entries():
+    return Permission.objects.get(codename="manage_entries")
 
 
 @pytest.fixture
@@ -77,28 +77,28 @@ def category():
 
 
 @pytest.fixture
-def vehicle(category):
-    vehicle = Vehicle.objects.create(name="Correio Sudoeste", category=category)
-    return vehicle
+def entry(category):
+    entry = Entry.objects.create(name="Correio Sudoeste", category=category)
+    return entry
 
 
 @pytest.fixture
-def published_vehicle(category):
-    vehicle = Vehicle.objects.create(
+def published_entry(category):
+    entry = Entry.objects.create(
         name="Jornal da Região", category=category, is_published=True
     )
-    return vehicle
+    return entry
 
 
 @pytest.fixture
-def published_vehicle_with_date(category):
-    vehicle = Vehicle.objects.create(
+def published_entry_with_date(category):
+    entry = Entry.objects.create(
         name="Jornal Jogo Sério",
         category=category,
         is_published=True,
         publication_date=(date.today() + timedelta(days=1)),
     )
-    return vehicle
+    return entry
 
 
 @pytest.fixture

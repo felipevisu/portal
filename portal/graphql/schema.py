@@ -2,19 +2,17 @@ import graphene
 
 from .account.schema import Mutation as AccountMutation, Query as AccountQuery
 from .document.schema import Mutation as DocumentMutation, Query as DocumentQuery
+from .entry.schema import Mutation as EntryMutation, Query as EntryQuery
 from .investment.schema import Mutation as InvestmentMutation, Query as InvestmentQuery
-from .provider.schema import Mutation as ProviderMutation, Query as ProviderQuery
 from .session.schema import Mutation as MutationQuery, Query as SessionQuery
-from .vehicle.schema import Mutation as VehicleMutation, Query as VehicleQuery
 
 
 class Query(
     AccountQuery,
     DocumentQuery,
     InvestmentQuery,
-    ProviderQuery,
     SessionQuery,
-    VehicleQuery,
+    EntryQuery,
     graphene.ObjectType,
 ):
     pass
@@ -23,8 +21,7 @@ class Query(
 class Mutation(
     AccountMutation,
     DocumentMutation,
-    VehicleMutation,
-    ProviderMutation,
+    EntryMutation,
     InvestmentMutation,
     MutationQuery,
 ):

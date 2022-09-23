@@ -1,15 +1,16 @@
 import graphene
 from django.core.exceptions import ValidationError
 
-from ...core.permissions import VehiclePermissions
-from ...vehicle import models
+from ...core.permissions import EntryPermissions
+from ...entry import models
 from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
 from ..core.types import NonNullList
 from ..core.utils import validate_slug_and_generate_if_needed
-from .types import Category, Vehicle
+from .enums import EntryTypeEnum
+from .types import Category, Entry
 
 
-class VehicleInput(graphene.InputObjectType):
+class EntryInput(graphene.InputObjectType):
     name = graphene.String()
     slug = graphene.String()
     document_number = graphene.String()
@@ -21,16 +22,17 @@ class VehicleInput(graphene.InputObjectType):
     address = graphene.String(required=False)
 
 
-class VehicleCreate(ModelMutation):
-    vehicle = graphene.Field(Vehicle)
+class EntryCreate(ModelMutation):
+    entry = graphene.Field(Entry)
 
     class Arguments:
-        input = VehicleInput(required=True)
+        type = EntryTypeEnum()
+        input = EntryInput(required=True)
 
     class Meta:
-        model = models.Vehicle
-        permissions = (VehiclePermissions.MANAGE_VEHICLES,)
-        object_type = Vehicle
+        model = models.Entry
+        permissions = (EntryPermissions.MANAGE_ENTRIES,)
+        object_type = Entry
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
@@ -44,40 +46,40 @@ class VehicleCreate(ModelMutation):
         return cleaned_input
 
 
-class VehicleUpdate(ModelMutation):
-    vehicle = graphene.Field(Vehicle)
+class EntryUpdate(ModelMutation):
+    entry = graphene.Field(Entry)
 
     class Arguments:
         id = graphene.ID()
-        input = VehicleInput(required=True)
+        input = EntryInput(required=True)
 
     class Meta:
-        model = models.Vehicle
-        permissions = (VehiclePermissions.MANAGE_VEHICLES,)
-        object_type = Vehicle
+        model = models.Entry
+        permissions = (EntryPermissions.MANAGE_ENTRIES,)
+        object_type = Entry
 
 
-class VehicleDelete(ModelDeleteMutation):
+class EntryDelete(ModelDeleteMutation):
     class Arguments:
         id = graphene.ID()
 
     class Meta:
-        model = models.Vehicle
-        permissions = (VehiclePermissions.MANAGE_VEHICLES,)
-        object_type = Vehicle
+        model = models.Entry
+        permissions = (EntryPermissions.MANAGE_ENTRIES,)
+        object_type = Entry
 
 
-class VehicleBulkDelete(ModelBulkDeleteMutation):
+class EntryBulkDelete(ModelBulkDeleteMutation):
     class Arguments:
         ids = NonNullList(
-            graphene.ID, required=True, description="List of vehicles IDs to delete."
+            graphene.ID, required=True, description="List of entries IDs to delete."
         )
 
     class Meta:
-        description = "Deletes vehicles."
-        model = models.Vehicle
-        object_type = Vehicle
-        permissions = (VehiclePermissions.MANAGE_VEHICLES,)
+        description = "Deletes entries."
+        model = models.Entry
+        object_type = Entry
+        permissions = (EntryPermissions.MANAGE_ENTRIES,)
 
 
 class CategoryInput(graphene.InputObjectType):
@@ -86,6 +88,7 @@ class CategoryInput(graphene.InputObjectType):
 
 
 class CategoryCreate(ModelMutation):
+    type = EntryTypeEnum()
     category = graphene.Field(Category)
 
     class Arguments:
@@ -93,7 +96,7 @@ class CategoryCreate(ModelMutation):
 
     class Meta:
         model = models.Category
-        permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+        permissions = (EntryPermissions.MANAGE_CATEGORIES,)
         object_type = Category
 
     @classmethod
@@ -117,7 +120,7 @@ class CategoryUpdate(ModelMutation):
 
     class Meta:
         model = models.Category
-        permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+        permissions = (EntryPermissions.MANAGE_CATEGORIES,)
         object_type = Category
 
 
@@ -127,7 +130,7 @@ class CategoryDelete(ModelDeleteMutation):
 
     class Meta:
         model = models.Category
-        permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+        permissions = (EntryPermissions.MANAGE_CATEGORIES,)
         object_type = Category
 
 
@@ -141,4 +144,4 @@ class CategoryBulkDelete(ModelBulkDeleteMutation):
         description = "Deletes categories."
         model = models.Category
         object_type = Category
-        permissions = (VehiclePermissions.MANAGE_CATEGORIES,)
+        permissions = (EntryPermissions.MANAGE_CATEGORIES,)

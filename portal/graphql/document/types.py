@@ -5,16 +5,14 @@ import graphene
 from ...document import models
 from ..core.connection import CountableConnection
 from ..core.types import File, ModelObjectType
-from ..provider.dataloaders import ProviderByIdLoader
-from ..vehicle.dataloaders import VehicleByIdLoader
+from ..entry.dataloaders import EntryByIdLoader
 
 
 class Document(ModelObjectType):
     id = graphene.GlobalID(required=True)
     name = graphene.String(required=True)
     description = graphene.String()
-    vehicle = graphene.Field("portal.graphql.vehicle.types.Vehicle")
-    provider = graphene.Field("portal.graphql.provider.types.Provider")
+    entry = graphene.Field("portal.graphql.entry.types.Entry")
     created = graphene.DateTime()
     updated = graphene.DateTime()
     begin_date = graphene.Date()
@@ -35,19 +33,12 @@ class Document(ModelObjectType):
         today = datetime.date.today()
         return self.expiration_date < today
 
-    def resolve_vehicle(self, info):
-        if self.vehicle_id:
-            vehicle_id = self.vehicle_id
+    def resolve_entry(self, info):
+        if self.entry_id:
+            entry_id = self.entry_id
         else:
             return None
-        return VehicleByIdLoader(info.context).load(vehicle_id)
-
-    def resolve_provider(self, info):
-        if self.provider_id:
-            provider_id = self.provider_id
-        else:
-            return None
-        return ProviderByIdLoader(info.context).load(provider_id)
+        return EntryByIdLoader(info.context).load(entry_id)
 
 
 class DocumentCountableConnection(CountableConnection):

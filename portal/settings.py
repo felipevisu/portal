@@ -50,9 +50,8 @@ INSTALLED_APPS = [
     "portal.core",
     "portal.document",
     "portal.investment",
-    "portal.provider",
     "portal.session",
-    "portal.vehicle",
+    "portal.entry",
     # libs
     "corsheaders",
     "django_filters",

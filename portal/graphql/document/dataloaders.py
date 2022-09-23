@@ -14,11 +14,11 @@ class DocumentsByProviderIdLoader(DataLoader):
         return [documents_by_provider_ids.get(key, []) for key in keys]
 
 
-class DocumentsByVehicleIdLoader(DataLoader):
-    context_key = "documents_by_vehicle_id"
+class DocumentsByEntryIdLoader(DataLoader):
+    context_key = "documents_by_entry_id"
 
     def batch_load(self, keys):
-        documents_by_vehicle_ids = defaultdict(list)
-        for document in Document.objects.filter(vehicle_id__in=keys).iterator():
-            documents_by_vehicle_ids[document.vehicle_id].append(document)
-        return [documents_by_vehicle_ids.get(key, []) for key in keys]
+        documents_by_entry_ids = defaultdict(list)
+        for document in Document.objects.filter(entry_id__in=keys).iterator():
+            documents_by_entry_ids[document.entry_id].append(document)
+        return [documents_by_entry_ids.get(key, []) for key in keys]

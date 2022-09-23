@@ -4,22 +4,14 @@ from django.db import models
 
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import DocumentPermissions
-from ..provider.models import Provider
-from ..vehicle.models import Vehicle
+from ..entry.models import Entry
 
 
 class Document(ModelWithDates, PublishableModel):
     name = models.CharField(max_length=256)
     description = models.TextField(blank=True)
-    provider = models.ForeignKey(
-        Provider,
-        on_delete=models.CASCADE,
-        related_name="documents",
-        null=True,
-        blank=True,
-    )
-    vehicle = models.ForeignKey(
-        Vehicle,
+    entry = models.ForeignKey(
+        Entry,
         on_delete=models.CASCADE,
         related_name="documents",
         null=True,

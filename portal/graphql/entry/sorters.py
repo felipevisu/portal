@@ -13,14 +13,14 @@ class CategorySortingInput(SortInputObjectType):
         type_name = "categories"
 
 
-class VehicleSortField(graphene.Enum):
+class EntrySortField(graphene.Enum):
     NAME = ["name", "slug"]
     UPDATED = ["updated", "name", "slug"]
     CREATED = ["created", "name", "slug"]
     PUBLISHED = ["is_published", "name", "slug"]
 
 
-class VehicleSortingInput(SortInputObjectType):
+class EntrySortingInput(SortInputObjectType):
     class Meta:
-        sort_enum = VehicleSortField
-        type_name = "vehicles"
+        sort_enum = EntrySortField
+        type_name = "entries"

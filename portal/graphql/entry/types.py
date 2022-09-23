@@ -1,16 +1,18 @@
 import graphene
 
-from portal.graphql.document.dataloaders import DocumentsByVehicleIdLoader
+from portal.graphql.document.dataloaders import DocumentsByEntryIdLoader
+from portal.graphql.entry.enums import EntryTypeEnum
 
-from ...vehicle import models
+from ...entry import models
 from ..core.connection import CountableConnection, create_connection_slice
 from ..core.fields import ConnectionField
 from ..core.types import ModelObjectType
 from ..document.types import DocumentCountableConnection
-from .dataloaders import CategoryByIdLoader, VehiclesByCategoryIdLoader
+from .dataloaders import CategoryByIdLoader, EntriesByCategoryIdLoader
+from .enums import EntryTypeEnum
 
 
-class Vehicle(ModelObjectType):
+class Entry(ModelObjectType):
     id = graphene.GlobalID(required=True)
     name = graphene.String(required=True)
     slug = graphene.String()
@@ -21,9 +23,10 @@ class Vehicle(ModelObjectType):
     phone = graphene.String()
     address = graphene.String()
     documents = ConnectionField(DocumentCountableConnection)
+    type = EntryTypeEnum()
 
     class Meta:
-        model = models.Vehicle
+        model = models.Entry
         interfaces = [graphene.relay.Node]
 
     def resolve_documents(self, info, **kwargs):
@@ -32,7 +35,7 @@ class Vehicle(ModelObjectType):
                 documents, info, kwargs, DocumentCountableConnection
             )
 
-        return DocumentsByVehicleIdLoader(info.context).load(self.id).then(_resolve)
+        return DocumentsByEntryIdLoader(info.context).load(self.id).then(_resolve)
 
     def resolve_category(self, info):
         if self.category_id:
@@ -42,29 +45,30 @@ class Vehicle(ModelObjectType):
         return CategoryByIdLoader(info.context).load(category_id)
 
 
-class VehicleCountableConnection(CountableConnection):
+class EntryCountableConnection(CountableConnection):
     class Meta:
-        node = Vehicle
+        node = Entry
 
 
 class Category(ModelObjectType):
     id = graphene.GlobalID(required=True)
     name = graphene.String(required=True)
     slug = graphene.String()
-    vehicles = ConnectionField(VehicleCountableConnection)
-    total_vehicles = graphene.Int()
+    entries = ConnectionField(EntryCountableConnection)
+    total_entries = graphene.Int()
+    type = EntryTypeEnum()
 
     class Meta:
         model = models.Category
         interfaces = [graphene.relay.Node]
 
-    def resolve_vehicles(self, info, **kwargs):
-        def _resolve(vehicles):
+    def resolve_entries(self, info, **kwargs):
+        def _resolve(entries):
             return create_connection_slice(
-                vehicles, info, kwargs, VehicleCountableConnection
+                entries, info, kwargs, EntryCountableConnection
             )
 
-        return VehiclesByCategoryIdLoader(info.context).load(self.id).then(_resolve)
+        return EntriesByCategoryIdLoader(info.context).load(self.id).then(_resolve)
 
 
 class CategoryCountableConnection(CountableConnection):

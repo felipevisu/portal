@@ -6,29 +6,29 @@ from portal.graphql.core.connection import (
 )
 
 from ..core.fields import FilterConnectionField
-from .filters import CategoryFilterInput, VehicleFilterInput
+from .filters import CategoryFilterInput, EntryFilterInput
 from .mutations import (
     CategoryBulkDelete,
     CategoryCreate,
     CategoryDelete,
     CategoryUpdate,
-    VehicleBulkDelete,
-    VehicleCreate,
-    VehicleDelete,
-    VehicleUpdate,
+    EntryBulkDelete,
+    EntryCreate,
+    EntryDelete,
+    EntryUpdate,
 )
 from .resolvers import (
     resolve_categories,
     resolve_category,
-    resolve_vehicle,
-    resolve_vehicles,
+    resolve_entries,
+    resolve_entry,
 )
-from .sorters import CategorySortingInput, VehicleSortingInput
+from .sorters import CategorySortingInput, EntrySortingInput
 from .types import (
     Category,
     CategoryCountableConnection,
-    Vehicle,
-    VehicleCountableConnection,
+    Entry,
+    EntryCountableConnection,
 )
 
 
@@ -43,15 +43,15 @@ class Query(graphene.ObjectType):
         sort_by=CategorySortingInput(),
         filter=CategoryFilterInput(),
     )
-    vehicle = graphene.Field(
-        Vehicle,
+    entry = graphene.Field(
+        Entry,
         id=graphene.Argument(graphene.ID),
         slug=graphene.String(),
     )
-    vehicles = FilterConnectionField(
-        VehicleCountableConnection,
-        sort_by=VehicleSortingInput(),
-        filter=VehicleFilterInput(),
+    entries = FilterConnectionField(
+        EntryCountableConnection,
+        sort_by=EntrySortingInput(),
+        filter=EntryFilterInput(),
     )
 
     def resolve_category(self, info, id=None, slug=None):
@@ -62,13 +62,13 @@ class Query(graphene.ObjectType):
         qs = filter_connection_queryset(qs, kwargs)
         return create_connection_slice(qs, info, kwargs, CategoryCountableConnection)
 
-    def resolve_vehicle(self, info, id=None, slug=None):
-        return resolve_vehicle(info, id, slug)
+    def resolve_entry(self, info, id=None, slug=None):
+        return resolve_entry(info, id, slug)
 
-    def resolve_vehicles(self, info, *args, **kwargs):
-        qs = resolve_vehicles(info)
+    def resolve_entries(self, info, *args, **kwargs):
+        qs = resolve_entries(info)
         qs = filter_connection_queryset(qs, kwargs)
-        return create_connection_slice(qs, info, kwargs, VehicleCountableConnection)
+        return create_connection_slice(qs, info, kwargs, EntryCountableConnection)
 
 
 class Mutation(graphene.ObjectType):
@@ -76,7 +76,7 @@ class Mutation(graphene.ObjectType):
     category_update = CategoryUpdate.Field()
     category_delete = CategoryDelete.Field()
     category_bulk_delete = CategoryBulkDelete.Field()
-    vehicle_create = VehicleCreate.Field()
-    vehicle_update = VehicleUpdate.Field()
-    vehicle_delete = VehicleDelete.Field()
-    vehicle_bulk_delete = VehicleBulkDelete.Field()
+    entry_create = EntryCreate.Field()
+    entry_update = EntryUpdate.Field()
+    entry_delete = EntryDelete.Field()
+    entry_bulk_delete = EntryBulkDelete.Field()

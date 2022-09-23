@@ -41,7 +41,7 @@ class SessionCreate(ModelMutation):
 
 
 class SessionUpdate(ModelMutation):
-    vehicle = graphene.Field(Session)
+    entry = graphene.Field(Session)
 
     class Arguments:
         id = graphene.ID()
