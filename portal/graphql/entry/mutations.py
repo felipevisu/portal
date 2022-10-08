@@ -45,6 +45,17 @@ class EntryCreate(ModelMutation):
             raise ValidationError({"slug": error})
         return cleaned_input
 
+    @classmethod
+    def perform_mutation(cls, _root, info, **data):
+        input = data.get("input")
+        instance = models.Entry()
+        instance.type = data.get("type")
+        cleaned_input = cls.clean_input(info, instance, input)
+        instance = cls.construct_instance(instance, cleaned_input)
+        cls.clean_instance(info, instance)
+        instance.save()
+        return EntryCreate(entry=instance)
+
 
 class EntryUpdate(ModelMutation):
     entry = graphene.Field(Entry)
@@ -85,10 +96,10 @@ class EntryBulkDelete(ModelBulkDeleteMutation):
 class CategoryInput(graphene.InputObjectType):
     name = graphene.String()
     slug = graphene.String()
+    type = EntryTypeEnum()
 
 
 class CategoryCreate(ModelMutation):
-    type = EntryTypeEnum()
     category = graphene.Field(Category)
 
     class Arguments:

@@ -1,8 +1,8 @@
 class EntryType:
-    ENTRY = "entry"
+    VEHICLE = "vehicle"
     PROVIDER = "provider"
 
     CHOICES = [
-        (ENTRY, "A communitation entry"),
+        (VEHICLE, "A communitation vehicle"),
         (PROVIDER, "A service provider"),
     ]
