@@ -6,7 +6,7 @@ from ..core.permissions import InvestmentPermissions
 
 
 def validate_month(value):
-    if value < 0 and value > 12:
+    if 1 <= value <= 12:
         raise ValidationError("Valor inválido", params={"value": value})
 
 
