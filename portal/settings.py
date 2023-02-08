@@ -1,5 +1,6 @@
 import ast
 import os.path
+from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
@@ -70,6 +71,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "graphiql_debug_toolbar.middleware.DebugToolbarMiddleware",
+    "portal.core.middleware.jwt_refresh_token_middleware",
 ]
 
 ROOT_URLCONF = "portal.urls"
@@ -117,6 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
     }
 ]
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 LANGUAGE_CODE = "pt-br"
 
@@ -130,11 +133,13 @@ GRAPHENE = {
     "SCHEMA": "portal.graphql.schema.schema",
     "SCHEMA_OUTPUT": "schema.graphql",
     "SCHEMA_INDENT": 2,
-    "MIDDLEWARE": ["graphql_jwt.middleware.JSONWebTokenMiddleware"],
+    "MIDDLEWARE": [
+        "portal.graphql.middleware.JWTMiddleware",
+    ],
 }
 
 AUTHENTICATION_BACKENDS = [
-    "graphql_jwt.backends.JSONWebTokenBackend",
+    "portal.core.auth_backend.JSONWebTokenBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -168,5 +173,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DATABASE_CONNECTION_DEFAULT_NAME = "default"
 DATABASE_CONNECTION_REPLICA_NAME = "default"
+
+JWT_EXPIRE = False
+JWT_TTL_ACCESS = timedelta(seconds=10)
+JWT_TTL_APP_ACCESS = timedelta(seconds=10)
+JWT_TTL_REFRESH = timedelta(days=30)
+JWT_TTL_REQUEST_EMAIL_CHANGE = timedelta(seconds=3600)
 
 django_on_heroku.settings(locals())

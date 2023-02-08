@@ -56,7 +56,6 @@ class Category(ModelObjectType):
     slug = graphene.String()
     entries = ConnectionField(EntryCountableConnection)
     total_entries = graphene.Int()
-    type = EntryTypeEnum()
 
     class Meta:
         model = models.Category

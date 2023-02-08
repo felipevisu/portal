@@ -1,7 +1,12 @@
 import graphene
-import graphql_jwt
 
-from .mutations import ObtainJSONWebToken
+from .mutations.authentication import (
+    CreateToken,
+    DeactivateAllUserTokens,
+    RefreshToken,
+    VerifyToken,
+)
+from .mutations.base import RequestPasswordReset, SetPassword
 from .types import User
 
 
@@ -14,6 +19,9 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    token_auth = ObtainJSONWebToken.Field()
-    verify_token = graphql_jwt.Verify.Field()
-    refresh_token = graphql_jwt.Refresh.Field()
+    token_create = CreateToken.Field()
+    token_refresh = RefreshToken.Field()
+    token_verify = VerifyToken.Field()
+    tokens_deactivate_all = DeactivateAllUserTokens.Field()
+    request_password_reset = RequestPasswordReset.Field()
+    password_reset = SetPassword.Field()

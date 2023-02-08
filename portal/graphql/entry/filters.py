@@ -8,12 +8,6 @@ from . import types as entry_types
 from .enums import EntryTypeEnum
 
 
-def filter_category_type(qs, _, value):
-    if not value:
-        return qs
-    return qs.filter(type=value)
-
-
 def filter_entry_type(qs, _, value):
     if not value:
         return qs
@@ -31,7 +25,6 @@ def filter_categories(qs, _, value):
 
 class CategoryFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
-    type = EnumFilter(input_class=EntryTypeEnum, method=filter_category_type)
 
     class Meta:
         model = Category
