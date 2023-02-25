@@ -143,31 +143,33 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-# FTP STORAGE
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_LOCATION = "static"
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",
+}
+AWS_HEADERS = {"Access-Control-Allow-Origin": "*"}
+AWS_DEFAULT_ACL = "public-read"
 
-FTP_USER = os.environ.get("FTP_USER")
-FTP_PASSWORD = os.environ.get("FTP_PASSWORD")
-FTP_HOST = os.environ.get("FTP_HOST")
-FTP_PORT = os.environ.get("FTP_PORT")
-FTP_PATH = os.environ.get("FTP_PATH")
-FTP_STORAGE_LOCATION = (
-    f"ftp://{FTP_USER}:{FTP_PASSWORD}@{FTP_HOST}:{FTP_PORT}{FTP_PATH}"
-)
+DEFAULT_FILE_STORAGE = "portal.core.storages.S3MediaStorage"
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "media")
-MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
-DEFAULT_FILE_STORAGE = "storages.backends.ftp.FTPStorage"
-
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
-STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
-    ("images", os.path.join(PROJECT_ROOT, "saleor", "static", "images"))
+    ("images", os.path.join(PROJECT_ROOT, "portal", "static", "images"))
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
