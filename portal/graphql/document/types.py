@@ -8,19 +8,35 @@ from ..core.types import File, ModelObjectType
 from ..entry.dataloaders import EntryByIdLoader
 
 
+class DocumentFile(ModelObjectType):
+    document = graphene.Field(lambda: Document)
+    file = graphene.Field(File)
+    begin_date = graphene.Date()
+    expiration_date = graphene.Date()
+    created = graphene.DateTime()
+    updated = graphene.DateTime()
+
+    class Meta:
+        model = models.DocumentFile
+        interfaces = [graphene.relay.Node]
+
+
+class DocumentFileCountableConnection(CountableConnection):
+    class Meta:
+        node = DocumentFile
+
+
 class Document(ModelObjectType):
     id = graphene.GlobalID(required=True)
     name = graphene.String(required=True)
     description = graphene.String()
     entry = graphene.Field("portal.graphql.entry.types.Entry")
+    default_file = graphene.Field(lambda: DocumentFile)
     created = graphene.DateTime()
     updated = graphene.DateTime()
-    begin_date = graphene.Date()
     publication_date = graphene.Date()
-    expiration_date = graphene.Date()
     is_published = graphene.Boolean()
     expires = graphene.Boolean()
-    file = graphene.Field(File)
     expired = graphene.Boolean()
 
     class Meta:
@@ -31,7 +47,7 @@ class Document(ModelObjectType):
         if not self.expires:
             return False
         today = datetime.date.today()
-        return self.expiration_date < today
+        return self.default_file.expiration_date < today
 
     def resolve_entry(self, info):
         if self.entry_id:

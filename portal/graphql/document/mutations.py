@@ -43,6 +43,33 @@ class DocumentCreate(ModelMutation):
             raise ValidationError({"expiration_date": message})
         return cleaned_input
 
+    @classmethod
+    def default_input(cls, input):
+        default_input = {
+            "file": input.pop("file"),
+            "begin_date": input.pop("begin_date", None),
+            "expiration_date": input.pop("expiration_date", None),
+        }
+        return default_input
+
+    @classmethod
+    def perform_mutation(cls, _root, info, **data):
+        input = data.get("input")
+        instance = models.Document()
+        cleaned_input = cls.clean_input(info, instance, input)
+        default_input = cls.default_input(cleaned_input)
+        instance = cls.construct_instance(instance, cleaned_input)
+        cls.clean_instance(info, instance)
+        instance.save()
+        default_file = models.DocumentFile()
+        default_file = cls.construct_instance(default_file, default_input)
+        default_file.document = instance
+        instance.default_file = default_file
+        default_file.save()
+        instance.save(update_fields=["default_file"])
+
+        return DocumentCreate(document=instance)
+
 
 class DocumentUpdate(ModelMutation):
     document = graphene.Field(Document)
@@ -68,6 +95,40 @@ class DocumentUpdate(ModelMutation):
             cleaned_input["begin_date"] = None
             cleaned_input["expiration_date"] = None
         return cleaned_input
+
+    @classmethod
+    def default_input(cls, input):
+        default_input = {
+            "file": input.pop("file", None),
+            "begin_date": input.pop("begin_date", None),
+            "expiration_date": input.pop("expiration_date", None),
+        }
+        return default_input
+
+    @classmethod
+    def save_default_file(cls, instance, input):
+        if input["file"] and instance.expires:
+            default_file = models.DocumentFile()
+            default_file = cls.construct_instance(default_file, input)
+            default_file.document = instance
+            default_file.save()
+            instance.default_file = default_file
+            instance.save(update_fields=["default_file"])
+        else:
+            input.pop("file")
+            default_file = cls.construct_instance(instance.default_file, input)
+            default_file.save()
+
+    @classmethod
+    def perform_mutation(cls, _root, info, id, input):
+        instance = cls.get_node_or_error(info, id, only_type=Document)
+        cleaned_input = cls.clean_input(info, instance, input)
+        default_input = cls.default_input(cleaned_input)
+        instance = cls.construct_instance(instance, cleaned_input)
+        cls.clean_instance(info, instance)
+        instance.save()
+        cls.save_default_file(instance, default_input)
+        return DocumentCreate(document=instance)
 
 
 class DocumentDelete(ModelDeleteMutation):

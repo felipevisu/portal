@@ -3,7 +3,7 @@ load-plugins=pylint.extensions.bad_builtin, pylint.extensions.mccabe, pylint_cel
 django-settings-module=portal.settings
 
 [MESSAGES CONTROL]
-disable=C0103, C0111, E0307, I0011, R0903, W0621, W0622, W0707
+disable=C0103, C0111, E0307, I0011, R0903, W0621, W0622, W0707, W0221
 
 [DESIGN]
 max-complexity=5

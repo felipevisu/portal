@@ -17,11 +17,11 @@ def filter_owner(queryset, name, value):
 
 
 def filter_expiration_date_range(qs, _, value):
-    return filter_range_field(qs, "expiration_date", value)
+    return filter_range_field(qs, "default_file__expiration_date", value)
 
 
 def filter_begin_date_range(qs, _, value):
-    return filter_range_field(qs, "begin_date", value)
+    return filter_range_field(qs, "default_file__begin_date", value)
 
 
 def filter_entry_type(qs, _, value):

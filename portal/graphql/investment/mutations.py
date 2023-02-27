@@ -276,7 +276,7 @@ class ItemBulkCreate(BaseMutation):
     @classmethod
     def clean_items(cls, info, items, investment):
         cleaned_inputs = []
-        for index, item_data in enumerate(items):
+        for _, item_data in enumerate(items):
             item_data["investment"] = investment
             cleaned_input = cls.clean_item_input(info, None, item_data)
             cleaned_inputs.append(cleaned_input if cleaned_input else None)
