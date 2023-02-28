@@ -1,13 +1,11 @@
-from datetime import date, timedelta
-
 import pytest
 from django.contrib.auth.models import Permission
 
 from portal.account.models import User
-from portal.document.models import Document
-from portal.investment.models import Investment, Item
-from portal.provider.models import Provider, Segment
+from portal.document.models import Document, DocumentFile
+from portal.entry import EntryType
 from portal.entry.models import Category, Entry
+from portal.investment.models import Investment, Item
 
 
 @pytest.fixture
@@ -45,8 +43,8 @@ def user():
     user = User.objects.create_user(  # type: ignore
         email="test@example.com",
         password="password",
-        first_name="Leslie",
-        last_name="Wade",
+        first_name="Felipe",
+        last_name="Faria",
     )
     user._password = "password"
     return user
@@ -57,8 +55,8 @@ def staff_user():
     user = User.objects.create_user(  # type: ignore
         email="test@example.com",
         password="password",
-        first_name="Leslie",
-        last_name="Wade",
+        first_name="Vinícius",
+        last_name="Gonçalves",
         is_staff=True,
     )
     user._password = "password"
@@ -67,64 +65,72 @@ def staff_user():
 
 
 @pytest.fixture
-def segment():
-    return Segment.objects.create(name="Comunicação Visual")
-
-
-@pytest.fixture
 def category():
-    return Category.objects.create(name="Jornal Impresso")
+    return Category.objects.create(name="Category 1", slug="category-1")
 
 
 @pytest.fixture
-def entry(category):
-    entry = Entry.objects.create(name="Correio Sudoeste", category=category)
-    return entry
-
-
-@pytest.fixture
-def published_entry(category):
-    entry = Entry.objects.create(
-        name="Jornal da Região", category=category, is_published=True
-    )
-    return entry
-
-
-@pytest.fixture
-def published_entry_with_date(category):
-    entry = Entry.objects.create(
-        name="Jornal Jogo Sério",
+def vehicle(category):
+    vehicle = Entry.objects.create(
+        name="Vehicle",
+        slug="vehicle",
+        type=EntryType.VEHICLE,
+        document_number="123456789",
         category=category,
         is_published=True,
-        publication_date=(date.today() + timedelta(days=1)),
     )
-    return entry
+    return vehicle
 
 
 @pytest.fixture
-def provider(segment):
-    provider = Provider.objects.create(name="Visualize Comunicação", segment=segment)
-    Document.objects.bulk_create(
-        [
-            Document(name="Documento 01", provider=provider),
-            Document(name="Documento 02", provider=provider),
-        ]
+def unpublished_vehicle(category):
+    vehicle = Entry.objects.create(
+        name="Unpublished vehicle",
+        slug="unpublished-vehicle",
+        type=EntryType.VEHICLE,
+        document_number="123456789",
+        category=category,
+        is_published=False,
+    )
+    return vehicle
+
+
+@pytest.fixture
+def provider(category):
+    provider = Entry.objects.create(
+        name="Provider",
+        slug="provider",
+        type=EntryType.PROVIDER,
+        document_number="123456789",
+        category=category,
+        is_published=True,
     )
     return provider
 
 
 @pytest.fixture
-def published_provider(segment):
-    provider = Provider.objects.create(
-        name="Agência 123", segment=segment, is_published=True
+def unpublished_vehicle(category):
+    provider = Entry.objects.create(
+        name="Unpublished provider",
+        slug="unpublished-provider",
+        type=EntryType.PROVIDER,
+        document_number="123456789",
+        category=category,
+        is_published=False,
     )
     return provider
 
 
 @pytest.fixture
-def document(provider):
+def default_file():
+    document_file = DocumentFile.objects.create(file="/path/to/file.pdf")
+    return document_file
+
+
+@pytest.fixture
+def document_from_provider(provider, default_file):
     document = Document.objects.create(
-        name="Contrato de Serviço", provider=provider, file="/path/to/myfile.pdf"
+        name="Contrato de Serviço", entry=provider, default_file=default_file
     )
     return document
 

@@ -1,7 +1,8 @@
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from graphene_django.utils.testing import graphql_query
-from graphql_jwt.shortcuts import get_token
+
+from portal.core.jwt import create_access_token
 
 
 class ApiClient:
@@ -12,7 +13,7 @@ class ApiClient:
         self.headers = {}
 
         if not user.is_anonymous:
-            self.token = get_token(user)
+            self.token = create_access_token(user)
             self.headers["HTTP_AUTHORIZATION"] = f"JWT {self.token}"
 
     def post_graphql(self, *args, **kwargs):

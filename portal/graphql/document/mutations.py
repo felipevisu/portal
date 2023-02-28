@@ -2,11 +2,10 @@ import graphene
 from django.core.exceptions import ValidationError
 from graphene_file_upload.scalars import Upload
 
-from portal.graphql.core.types import NonNullList
-
 from ...core.permissions import DocumentPermissions
 from ...document import models
 from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
+from ..core.types import NonNullList
 from .types import Document
 
 

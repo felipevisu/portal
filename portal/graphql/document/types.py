@@ -43,7 +43,7 @@ class Document(ModelObjectType):
         model = models.Document
         interfaces = [graphene.relay.Node]
 
-    def resolve_expired(self, info):
+    def resolve_expired(self):
         if not self.expires:
             return False
         today = datetime.date.today()

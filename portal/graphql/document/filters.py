@@ -1,5 +1,4 @@
 import django_filters
-import graphene
 
 from ...document.models import Document
 from ..core.filters import EnumFilter, ObjectTypeFilter, search_filter
@@ -8,7 +7,7 @@ from ..entry.enums import EntryTypeEnum
 from ..utils.filters import filter_range_field
 
 
-def filter_owner(queryset, name, value):
+def filter_owner(queryset, _, value):
     if value[0] == "entry":
         return queryset.filter(provider=None)
     if value[0] == "provider":
