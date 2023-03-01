@@ -43,25 +43,25 @@ class DocumentCreate(ModelMutation):
         return cleaned_input
 
     @classmethod
-    def default_input(cls, input):
-        default_input = {
-            "file": input.pop("file"),
+    def clean_file_input(cls, input):
+        file_input = {
+            "file": input.pop("file", None),
             "begin_date": input.pop("begin_date", None),
             "expiration_date": input.pop("expiration_date", None),
         }
-        return default_input
+        return {k: v for k, v in file_input.items() if v}
 
     @classmethod
     def perform_mutation(cls, _root, info, **data):
         input = data.get("input")
         instance = models.Document()
         cleaned_input = cls.clean_input(info, instance, input)
-        default_input = cls.default_input(cleaned_input)
+        file_input = cls.clean_file_input(cleaned_input)
         instance = cls.construct_instance(instance, cleaned_input)
         cls.clean_instance(info, instance)
         instance.save()
         default_file = models.DocumentFile()
-        default_file = cls.construct_instance(default_file, default_input)
+        default_file = cls.construct_instance(default_file, file_input)
         default_file.document = instance
         instance.default_file = default_file
         default_file.save()
@@ -96,17 +96,17 @@ class DocumentUpdate(ModelMutation):
         return cleaned_input
 
     @classmethod
-    def default_input(cls, input):
-        default_input = {
+    def clean_file_input(cls, input):
+        file_input = {
             "file": input.pop("file", None),
             "begin_date": input.pop("begin_date", None),
             "expiration_date": input.pop("expiration_date", None),
         }
-        return default_input
+        return {k: v for k, v in file_input.items() if v}
 
     @classmethod
     def save_default_file(cls, instance, input):
-        if input["file"] and instance.expires:
+        if "file" in input and instance.expires:
             default_file = models.DocumentFile()
             default_file = cls.construct_instance(default_file, input)
             default_file.document = instance
@@ -114,7 +114,6 @@ class DocumentUpdate(ModelMutation):
             instance.default_file = default_file
             instance.save(update_fields=["default_file"])
         else:
-            input.pop("file")
             default_file = cls.construct_instance(instance.default_file, input)
             default_file.save()
 
@@ -122,11 +121,11 @@ class DocumentUpdate(ModelMutation):
     def perform_mutation(cls, _root, info, id, input):
         instance = cls.get_node_or_error(info, id, only_type=Document)
         cleaned_input = cls.clean_input(info, instance, input)
-        default_input = cls.default_input(cleaned_input)
+        file_input = cls.clean_file_input(cleaned_input)
         instance = cls.construct_instance(instance, cleaned_input)
         cls.clean_instance(info, instance)
         instance.save()
-        cls.save_default_file(instance, default_input)
+        cls.save_default_file(instance, file_input)
         return DocumentCreate(document=instance)
 
 
