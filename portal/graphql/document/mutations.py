@@ -35,6 +35,11 @@ class DocumentCreate(ModelMutation):
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data, input_cls)
+        file = data.get("file", None)
+        if not file:
+            raise ValidationError(
+                {"file": "Você precisa adicionar um arquivo para criar o documento"}
+            )
         expires = data.get("expires", False)
         expiration_date = data.get("expiration_date", None)
         if expires and not expiration_date:
