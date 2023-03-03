@@ -25,7 +25,6 @@ class Document(ModelWithDates, PublishableModel):
         null=True,
         related_name="+",
     )
-    objects = models.Manager()
 
     class Meta:
         ordering = ["-created"]

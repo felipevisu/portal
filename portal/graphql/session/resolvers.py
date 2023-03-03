@@ -11,4 +11,4 @@ def resolve_session(_, global_session_id=None):
 
 def resolve_sessions(info):
     user = info.context.user
-    return models.Session.published.visible_to_user(user)
+    return models.Session.objects.visible_to_user(user)

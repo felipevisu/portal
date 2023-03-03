@@ -13,21 +13,12 @@ class ModelWithDates(models.Model):
         abstract = True
 
 
-class ModelWithSlugManager(models.Manager):
-    def create(self, **obj_data):
-        if "slug" not in obj_data:
-            obj_data["slug"] = slugify(obj_data["name"])
-        return super().create(**obj_data)
-
-
 class ModelWithSlug(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=256, unique=True)
 
     class Meta:
         abstract = True
-
-    objects = ModelWithSlugManager()
 
 
 class PublishedQuerySet(models.QuerySet):
@@ -48,7 +39,7 @@ class PublishableModel(models.Model):
     publication_date = models.DateField(blank=True, null=True)
     is_published = models.BooleanField(default=False)
 
-    published = models.Manager.from_queryset(PublishedQuerySet)()
+    objects = models.Manager.from_queryset(PublishedQuerySet)()
 
     class Meta:
         abstract = True

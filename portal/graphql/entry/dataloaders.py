@@ -26,7 +26,8 @@ class EntriesByCategoryIdLoader(DataLoader):
     def batch_load(self, keys):
         entries_by_category_ids = defaultdict(list)
         for entry in (
-            Entry.objects.using(self.database_connection_name)
+            Entry.objects.visible_to_user(self.user)
+            .using(self.database_connection_name)
             .filter(category_id__in=keys)
             .iterator()
         ):

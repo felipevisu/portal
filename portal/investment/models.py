@@ -14,8 +14,6 @@ class Investment(ModelWithDates, PublishableModel):
     month = models.PositiveIntegerField(validators=[validate_month])
     year = models.PositiveIntegerField()
 
-    objects = models.Manager()
-
     class Meta:
         ordering = ["-year", "-month"]
         unique_together = ("year", "month")

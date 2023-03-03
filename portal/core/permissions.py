@@ -37,6 +37,8 @@ PERMISSIONS_ENUMS = [
     AccountPermissions,
     InvestmentPermissions,
     SessionPermissions,
+    EntryPermissions,
+    DocumentPermissions,
 ]
 
 

@@ -39,34 +39,33 @@ def permission_manage_entries():
 
 
 @pytest.fixture
-def user():
-    user = User.objects.create_user(  # type: ignore
-        email="test@example.com",
-        password="password",
-        first_name="Felipe",
-        last_name="Faria",
-    )
-    user._password = "password"
-    return user
-
-
-@pytest.fixture
 def staff_user():
     user = User.objects.create_user(  # type: ignore
         email="test@example.com",
         password="password",
-        first_name="Vinícius",
-        last_name="Gonçalves",
+        first_name="Leslie",
+        last_name="Wade",
         is_staff=True,
     )
     user._password = "password"
-    user.user_permissions.add(*Permission.objects.all())
     return user
 
 
 @pytest.fixture
+def admin_user(db):
+    """Return a Django admin user."""
+    return User.objects.create_user(
+        "admin@example.com",
+        "password",
+        is_staff=True,
+        is_active=True,
+        is_superuser=True,
+    )
+
+
+@pytest.fixture
 def category():
-    return Category.objects.create(name="Category 1", slug="category-1")
+    return Category.objects.create(name="Category", slug="category")
 
 
 @pytest.fixture
@@ -80,6 +79,39 @@ def vehicle(category):
         is_published=True,
     )
     return vehicle
+
+
+@pytest.fixture
+def vehicle_list(category):
+    vehicles = Entry.objects.bulk_create(
+        [
+            Entry(
+                name="Vehicle 1",
+                slug="vehicle-1",
+                type=EntryType.VEHICLE,
+                document_number="123456789a",
+                category=category,
+                is_published=True,
+            ),
+            Entry(
+                name="Vehicle 2",
+                slug="vehicle-2",
+                type=EntryType.VEHICLE,
+                document_number="123456789b",
+                category=category,
+                is_published=True,
+            ),
+            Entry(
+                name="Vehicle 3",
+                slug="vehicle-3",
+                type=EntryType.VEHICLE,
+                document_number="123456789c",
+                category=category,
+                is_published=False,
+            ),
+        ]
+    )
+    return vehicles
 
 
 @pytest.fixture
