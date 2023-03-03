@@ -69,6 +69,18 @@ def category():
 
 
 @pytest.fixture
+def category_list():
+    categories = Category.objects.bulk_create(
+        [
+            Category(name="Category 1", slug="category-1"),
+            Category(name="Category 2", slug="category-2"),
+            Category(name="Category 3", slug="category-3"),
+        ]
+    )
+    return categories
+
+
+@pytest.fixture
 def vehicle(category):
     vehicle = Entry.objects.create(
         name="Vehicle",
@@ -115,19 +127,6 @@ def vehicle_list(category):
 
 
 @pytest.fixture
-def unpublished_vehicle(category):
-    vehicle = Entry.objects.create(
-        name="Unpublished vehicle",
-        slug="unpublished-vehicle",
-        type=EntryType.VEHICLE,
-        document_number="123456789",
-        category=category,
-        is_published=False,
-    )
-    return vehicle
-
-
-@pytest.fixture
 def provider(category):
     provider = Entry.objects.create(
         name="Provider",
@@ -141,30 +140,33 @@ def provider(category):
 
 
 @pytest.fixture
-def unpublished_vehicle(category):
-    provider = Entry.objects.create(
-        name="Unpublished provider",
-        slug="unpublished-provider",
-        type=EntryType.PROVIDER,
-        document_number="123456789",
-        category=category,
-        is_published=False,
-    )
-    return provider
-
-
-@pytest.fixture
 def default_file():
     document_file = DocumentFile.objects.create(file="/path/to/file.pdf")
     return document_file
 
 
 @pytest.fixture
-def document_from_provider(provider, default_file):
-    document = Document.objects.create(
-        name="Contrato de Serviço", entry=provider, default_file=default_file
+def document_list(vehicle):
+    default_files = DocumentFile.objects.bulk_create(
+        [DocumentFile(file="/path/to/file.pdf"), DocumentFile(file="/path/to/file.pdf")]
     )
-    return document
+    documents = Document.objects.bulk_create(
+        [
+            Document(
+                name="Document 1",
+                entry=vehicle,
+                default_file=default_files[0],
+                is_published=True,
+            ),
+            Document(
+                name="Document 2",
+                entry=vehicle,
+                default_file=default_files[1],
+                is_published=False,
+            ),
+        ]
+    )
+    return documents
 
 
 @pytest.fixture
