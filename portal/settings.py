@@ -48,11 +48,13 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     # apps
     "portal.account",
+    "portal.channel",
     "portal.core",
     "portal.document",
-    "portal.investment",
-    "portal.session",
     "portal.entry",
+    "portal.investment",
+    "portal.plugins",
+    "portal.session",
     # libs
     "corsheaders",
     "django_filters",

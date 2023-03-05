@@ -140,6 +140,39 @@ def provider(category):
 
 
 @pytest.fixture
+def provider_list(category):
+    providers = Entry.objects.bulk_create(
+        [
+            Entry(
+                name="Provider 1",
+                slug="provider-1",
+                type=EntryType.PROVIDER,
+                document_number="123456789a",
+                category=category,
+                is_published=True,
+            ),
+            Entry(
+                name="Provider 2",
+                slug="provider-2",
+                type=EntryType.PROVIDER,
+                document_number="123456789b",
+                category=category,
+                is_published=True,
+            ),
+            Entry(
+                name="Provider 3",
+                slug="provider-3",
+                type=EntryType.PROVIDER,
+                document_number="123456789c",
+                category=category,
+                is_published=False,
+            ),
+        ]
+    )
+    return providers
+
+
+@pytest.fixture
 def default_file():
     document_file = DocumentFile.objects.create(file="/path/to/file.pdf")
     return document_file

@@ -29,6 +29,7 @@ lazy-object-proxy==1.7.1
 mccabe==0.7.0
 mypy==0.942
 mypy-extensions==0.4.3
+opentracing==2.4.0
 packaging==21.3
 pathspec==0.10.1
 Pillow==9.4.0

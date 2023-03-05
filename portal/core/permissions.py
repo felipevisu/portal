@@ -30,7 +30,15 @@ class EntryPermissions(BasePermissionEnum):
 
 
 class DocumentPermissions(BasePermissionEnum):
-    MANAGE_DOCUMENTS = "provider.manage_documents"
+    MANAGE_DOCUMENTS = "document.manage_documents"
+
+
+class PluginsPermissions(BasePermissionEnum):
+    MANAGE_PLUGINS = "plugins.manage_plugins"
+
+
+class ChannelPermissions(BasePermissionEnum):
+    MANAGE_CHANNELS = "plugins.manage_channels"
 
 
 PERMISSIONS_ENUMS = [
@@ -39,6 +47,7 @@ PERMISSIONS_ENUMS = [
     SessionPermissions,
     EntryPermissions,
     DocumentPermissions,
+    PluginsPermissions,
 ]
 
 
