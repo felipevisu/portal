@@ -38,16 +38,17 @@ class PluginsPermissions(BasePermissionEnum):
 
 
 class ChannelPermissions(BasePermissionEnum):
-    MANAGE_CHANNELS = "plugins.manage_channels"
+    MANAGE_CHANNELS = "channel.manage_channels"
 
 
 PERMISSIONS_ENUMS = [
     AccountPermissions,
-    InvestmentPermissions,
-    SessionPermissions,
-    EntryPermissions,
+    ChannelPermissions,
     DocumentPermissions,
+    EntryPermissions,
+    InvestmentPermissions,
     PluginsPermissions,
+    SessionPermissions,
 ]
 
 

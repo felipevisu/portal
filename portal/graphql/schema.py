@@ -10,7 +10,9 @@ from .entry.schema import Mutation as EntryMutation
 from .entry.schema import Query as EntryQuery
 from .investment.schema import Mutation as InvestmentMutation
 from .investment.schema import Query as InvestmentQuery
-from .session.schema import Mutation as MutationQuery
+from .plugins.schema import Mutation as PluginsMutation
+from .plugins.schema import Query as PluginsQuery
+from .session.schema import Mutation as SessionMutation
 from .session.schema import Query as SessionQuery
 
 
@@ -18,9 +20,10 @@ class Query(
     AccountQuery,
     ChannelQuery,
     DocumentQuery,
-    InvestmentQuery,
-    SessionQuery,
     EntryQuery,
+    InvestmentQuery,
+    PluginsQuery,
+    SessionQuery,
     graphene.ObjectType,
 ):
     pass
@@ -32,7 +35,8 @@ class Mutation(
     DocumentMutation,
     EntryMutation,
     InvestmentMutation,
-    MutationQuery,
+    PluginsMutation,
+    SessionMutation,
 ):
     pass
 
