@@ -7,7 +7,7 @@ from ..core.permissions import PluginsPermissions
 
 
 class PluginConfiguration(models.Model):
-    identifier = models.CharField(max_length=128, unique=True)
+    identifier = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     channel = models.ForeignKey(
         Channel, blank=True, null=True, on_delete=models.CASCADE
@@ -19,6 +19,7 @@ class PluginConfiguration(models.Model):
     )
 
     class Meta:
+        unique_together = ("identifier", "channel")
         permissions = ((PluginsPermissions.MANAGE_PLUGINS.codename, "Manage plugins."),)
 
     def __str__(self):

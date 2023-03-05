@@ -6,7 +6,6 @@ from django.utils.module_loading import import_string
 
 class PluginConfig(AppConfig):
     name = "portal.plugins"
-    default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self):
         plugins = getattr(settings, "PLUGINS", [])
