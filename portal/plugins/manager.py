@@ -191,6 +191,27 @@ class PluginsManager:
                 return result
         return None
 
+    def notify(
+        self,
+        event: str,
+        payload: dict,
+        channel_slug: Optional[str] = None,
+        plugin_id: Optional[str] = None,
+    ):
+        default_value = None
+        if plugin_id:
+            plugin = self.get_plugin(plugin_id, channel_slug=channel_slug)
+            return self.__run_method_on_single_plugin(
+                plugin=plugin,
+                method_name="notify",
+                previous_value=default_value,
+                event=event,
+                payload=payload,
+            )
+        return self.__run_method_on_plugins(
+            "notify", default_value, event, payload, channel_slug=channel_slug
+        )
+
     def _get_all_plugin_configs(self):
         with opentracing.global_tracer().start_active_span("_get_all_plugin_configs"):
             if not hasattr(self, "_plugin_configs"):

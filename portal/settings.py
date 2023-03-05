@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     # apps
@@ -58,6 +59,8 @@ INSTALLED_APPS = [
     "portal.session",
     # libs
     "corsheaders",
+    "django_celery_beat",
+    "django_celery_results",
     "django_filters",
     "debug_toolbar",
     "graphene_django",
@@ -132,7 +135,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-BUILTIN_PLUGINS = []
+BUILTIN_PLUGINS = ["portal.plugins.admin_email.plugin.AdminEmailPlugin"]
 
 EXTERNAL_PLUGINS = []
 installed_plugins = pkg_resources.iter_entry_points("saleor.plugins")
@@ -197,5 +200,22 @@ JWT_TTL_ACCESS = timedelta(seconds=10)
 JWT_TTL_APP_ACCESS = timedelta(seconds=10)
 JWT_TTL_REFRESH = timedelta(days=30)
 JWT_TTL_REQUEST_EMAIL_CHANGE = timedelta(seconds=3600)
+
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+EMAIL_PORT = os.environ.get("EMAIL_POST", "")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "")
+EMAIL_USE_SSL = get_bool_from_env("EMAIL_USE_SSL", False)
+EMAIL_USE_TLS = get_bool_from_env("EMAIL_USE_TLS", True)
+
+# CELERY SETTINGS
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "")
+CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", None)
 
 django_on_heroku.settings(locals())

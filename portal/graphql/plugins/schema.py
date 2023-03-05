@@ -30,7 +30,6 @@ class Query(graphene.ObjectType):
     @traced_resolver
     @plugin_manager_promise_callback
     def resolve_plugins(_root, info, manager, **kwargs):
-        print(manager)
         qs = resolve_plugins(manager, **kwargs)
         return create_connection_slice(qs, info, kwargs, PluginCountableConnection)
 
