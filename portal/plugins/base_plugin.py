@@ -151,6 +151,14 @@ class BasePlugin:
         return
 
     @classmethod
+    def pre_save_plugin_configuration(cls, plugin_configuration: "PluginConfiguration"):
+        """Trigger before plugin configuration will be saved.
+
+        Overwrite this method if you need to trigger specific logic before saving a
+        plugin configuration.
+        """
+
+    @classmethod
     def save_plugin_configuration(
         cls, plugin_configuration: "PluginConfiguration", cleaned_data
     ):
