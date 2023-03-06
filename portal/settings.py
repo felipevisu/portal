@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "portal.core",
     "portal.document",
     "portal.entry",
+    "portal.event",
     "portal.investment",
     "portal.plugins",
     "portal.session",
