@@ -23,6 +23,17 @@ def from_global_id_or_error(
     return _type, _id
 
 
+def from_global_id_or_none(
+    global_id,
+    only_type: Union[graphene.ObjectType, str, None] = None,
+    raise_error: bool = False,
+):
+    if not global_id:
+        return None
+
+    return from_global_id_or_error(global_id, only_type, raise_error)[1]
+
+
 def snake_to_camel_case(name):
     if isinstance(name, str):
         split_name = name.split("_")

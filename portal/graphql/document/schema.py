@@ -8,6 +8,7 @@ from .mutations import (
     DocumentCreate,
     DocumentDelete,
     DocumentUpdate,
+    RequestNewDocument,
 )
 from .resolvers import resolve_document, resolve_documents
 from .sorters import DocumentSortingInput
@@ -36,3 +37,4 @@ class Mutation(graphene.ObjectType):
     document_update = DocumentUpdate.Field()
     document_delete = DocumentDelete.Field()
     document_bulk_delete = DocumentBulkDelete.Field()
+    request_new_document = RequestNewDocument.Field()

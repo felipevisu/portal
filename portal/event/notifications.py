@@ -1,3 +1,5 @@
+from django.core import serializers
+
 from ..core.notify_events import NotifyEventType
 from ..core.utils.notification import get_site_context
 

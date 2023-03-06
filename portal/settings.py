@@ -136,7 +136,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-BUILTIN_PLUGINS = ["portal.plugins.admin_email.plugin.AdminEmailPlugin"]
+BUILTIN_PLUGINS = [
+    "portal.plugins.admin_email.plugin.AdminEmailPlugin",
+    "portal.plugins.sendgrid.plugin.SendgridEmailPlugin",
+]
 
 EXTERNAL_PLUGINS = []
 installed_plugins = pkg_resources.iter_entry_points("saleor.plugins")
@@ -201,6 +204,15 @@ JWT_TTL_ACCESS = timedelta(seconds=10)
 JWT_TTL_APP_ACCESS = timedelta(seconds=10)
 JWT_TTL_REFRESH = timedelta(days=30)
 JWT_TTL_REQUEST_EMAIL_CHANGE = timedelta(seconds=3600)
+
+EMAIL_URL = os.environ.get("EMAIL_URL", None)
+SENDGRID_USERNAME = os.environ.get("SENDGRID_USERNAME")
+SENDGRID_PASSWORD = os.environ.get("SENDGRID_PASSWORD")
+if not EMAIL_URL and SENDGRID_USERNAME and SENDGRID_PASSWORD:
+    EMAIL_URL = (
+        f"smtp://{SENDGRID_USERNAME}"
+        f":{SENDGRID_PASSWORD}@smtp.sendgrid.net:587/?tls=True"
+    )
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
 EMAIL_PORT = os.environ.get("EMAIL_POST", "")

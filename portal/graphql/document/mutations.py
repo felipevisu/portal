@@ -4,7 +4,14 @@ from graphene_file_upload.scalars import Upload
 
 from ...core.permissions import DocumentPermissions
 from ...document import models
-from ..core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation, ModelMutation
+from ...event.notifications import send_request_new_document_from_provider
+from ...plugins.manager import get_plugins_manager
+from ..core.mutations import (
+    BaseMutation,
+    ModelBulkDeleteMutation,
+    ModelDeleteMutation,
+    ModelMutation,
+)
 from ..core.types import NonNullList
 from .types import Document
 
@@ -155,3 +162,20 @@ class DocumentBulkDelete(ModelBulkDeleteMutation):
         model = models.Document
         object_type = Document
         permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
+
+
+class RequestNewDocument(BaseMutation):
+    success = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    class Meta:
+        permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
+
+    @classmethod
+    def perform_mutation(cls, _root, info, id):
+        document = cls.get_node_or_error(info, id, only_type=Document)
+        manager = get_plugins_manager()
+        send_request_new_document_from_provider(document, manager)
+        return RequestNewDocument(success=True)
