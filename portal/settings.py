@@ -4,6 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
+import dj_email_url
 import django_on_heroku
 import pkg_resources
 from dotenv import load_dotenv
@@ -31,7 +32,7 @@ PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS"), "*"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -70,6 +71,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -142,7 +144,7 @@ BUILTIN_PLUGINS = [
 ]
 
 EXTERNAL_PLUGINS = []
-installed_plugins = pkg_resources.iter_entry_points("saleor.plugins")
+installed_plugins = pkg_resources.iter_entry_points("portal.plugins")
 for entry_point in installed_plugins:
     plugin_path = "{}.{}".format(entry_point.module_name, entry_point.attrs[0])
     if plugin_path not in BUILTIN_PLUGINS and plugin_path not in EXTERNAL_PLUGINS:
@@ -183,8 +185,8 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, "media")
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
+STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
     ("images", os.path.join(PROJECT_ROOT, "portal", "static", "images"))
 ]
@@ -192,7 +194,6 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -214,13 +215,18 @@ if not EMAIL_URL and SENDGRID_USERNAME and SENDGRID_PASSWORD:
         f":{SENDGRID_PASSWORD}@smtp.sendgrid.net:587/?tls=True"
     )
 
-EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
-EMAIL_PORT = os.environ.get("EMAIL_POST", "")
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "")
-EMAIL_USE_SSL = get_bool_from_env("EMAIL_USE_SSL", False)
-EMAIL_USE_TLS = get_bool_from_env("EMAIL_USE_TLS", True)
+email_config = dj_email_url.parse(
+    EMAIL_URL or "console://demo@example.com:console@example/"
+)
+
+EMAIL_FILE_PATH = email_config["EMAIL_FILE_PATH"]
+EMAIL_HOST_USER = email_config["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = email_config["EMAIL_HOST_PASSWORD"]
+EMAIL_HOST = email_config["EMAIL_HOST"]
+EMAIL_PORT = email_config["EMAIL_PORT"]
+EMAIL_BACKEND = email_config["EMAIL_BACKEND"]
+EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
+EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 
 # CELERY SETTINGS
 CELERY_TIMEZONE = TIME_ZONE
