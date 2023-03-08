@@ -1,10 +1,19 @@
 import os
 
 from django.db import models
+from django.utils.text import slugify
 
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import DocumentPermissions
 from ..entry.models import Entry
+
+
+def get_upload_path(instance, filename):
+    return os.path.join(
+        "entry_%d" % instance.document.entry.id,
+        "document_%d" % instance.document.id,
+        "{0}.{1}".format(slugify(instance.document.name), filename.split(".")[-1]),
+    )
 
 
 class Document(ModelWithDates, PublishableModel):
@@ -37,7 +46,7 @@ class Document(ModelWithDates, PublishableModel):
 
 
 class DocumentFile(ModelWithDates):
-    file = models.FileField(upload_to="documents")
+    file = models.FileField(upload_to=get_upload_path)
     begin_date = models.DateField(null=True, blank=True)
     expiration_date = models.DateField(null=True, blank=True)
     document = models.ForeignKey(
