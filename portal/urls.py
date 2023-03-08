@@ -8,9 +8,11 @@ from .graphql.views import GraphQLView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("__debug__/", include("debug_toolbar.urls")),
     path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True)), name="api"),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [
+        path("__debug__/", include("debug_toolbar.urls")),
+    ]
+    urlpatterns += static("/media/", document_root=settings.MEDIA_ROOT)

@@ -63,10 +63,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_celery_beat",
     "django_celery_results",
-    "django_filters",
-    "debug_toolbar",
+    "" "django_filters",
     "graphene_django",
-    "graphiql_debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -79,25 +77,39 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "graphiql_debug_toolbar.middleware.DebugToolbarMiddleware",
     "portal.core.middleware.jwt_refresh_token_middleware",
 ]
 
+if DEBUG:
+    INSTALLED_APPS += ["debug_toolbar", "graphiql_debug_toolbar"]
+    MIDDLEWARE += ["graphiql_debug_toolbar.middleware.DebugToolbarMiddleware"]
+
 ROOT_URLCONF = "portal.urls"
+
+context_processors = [
+    "django.template.context_processors.debug",
+    "django.template.context_processors.media",
+    "django.template.context_processors.static",
+    "django.contrib.auth.context_processors.auth",
+    "django.contrib.messages.context_processors.messages",
+    "portal.site.context_processors.site",
+]
+
+loaders = [
+    "django.template.loaders.filesystem.Loader",
+    "django.template.loaders.app_directories.Loader",
+]
 
 TEMPLATES_DIR = os.path.join(PROJECT_ROOT, "templates")
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [TEMPLATES_DIR],
-        "APP_DIRS": True,
         "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
+            "debug": DEBUG,
+            "context_processors": context_processors,
+            "loaders": loaders,
+            "string_if_invalid": '<< MISSING VARIABLE "%s" >>' if DEBUG else "",
         },
     },
 ]
@@ -184,16 +196,9 @@ DEFAULT_FILE_STORAGE = "portal.core.storages.S3MediaStorage"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "media")
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
-STATIC_URL = os.environ.get("STATIC_URL", "/static/")
-STATICFILES_DIRS = [
-    ("images", os.path.join(PROJECT_ROOT, "portal", "static", "images"))
-]
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-]
+STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
