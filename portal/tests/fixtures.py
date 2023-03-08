@@ -38,6 +38,10 @@ def permission_manage_entries():
     return Permission.objects.get(codename="manage_entries")
 
 
+def permission_manage_plugins():
+    return Permission.objects.get(codename="manage_plugins")
+
+
 @pytest.fixture
 def staff_user():
     user = User.objects.create_user(  # type: ignore
