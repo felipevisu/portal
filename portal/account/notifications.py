@@ -20,7 +20,7 @@ def get_default_user_payload(user: User):
         "is_active": user.is_active,
     }
     # Deprecated: override private_metadata with empty dict as it shouldn't be returned
-    # in the payload (see SALEOR-7046). Should be removed in Saleor 4.0.
+    # in the payload (see PORTAL-7046). Should be removed in Saleor 4.0.
     payload["private_metadata"] = {}
     return payload
 

@@ -2,6 +2,7 @@ import pytest
 from django.contrib.auth.models import Permission
 
 from portal.account.models import User
+from portal.channel.models import Channel
 from portal.document.models import Document, DocumentFile
 from portal.entry import EntryType
 from portal.entry.models import Category, Entry
@@ -38,6 +39,7 @@ def permission_manage_entries():
     return Permission.objects.get(codename="manage_entries")
 
 
+@pytest.fixture
 def permission_manage_plugins():
     return Permission.objects.get(codename="manage_plugins")
 
@@ -225,3 +227,23 @@ def investment_with_items():
         name="Internet", slug="internet", value=200, investment=investment
     )
     return investment
+
+
+@pytest.fixture
+def channel_city_1():
+    channel = Channel.objects.create(
+        name="Channel city 1",
+        slug="c-city-1",
+        is_active=True,
+    )
+    return channel
+
+
+@pytest.fixture
+def channel_city_2():
+    channel = Channel.objects.create(
+        name="Channel city 2",
+        slug="c-city-2",
+        is_active=True,
+    )
+    return channel

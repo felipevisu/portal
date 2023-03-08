@@ -47,6 +47,22 @@ def test_notify(mocked_get_event_map, event_type, admin_email_plugin):
     mocked_event.assert_called_with(payload, asdict(plugin.config), plugin)
 
 
+@patch.object(EmailBackend, "open")
+def test_save_plugin_configuration(mocked_open, admin_email_plugin):
+    plugin = admin_email_plugin()
+    configuration = PluginConfiguration.objects.get()
+    data_to_save = {
+        "configuration": [
+            {"name": "use_tls", "value": True},
+            {"name": "use_ssl", "value": False},
+        ]
+    }
+
+    plugin.save_plugin_configuration(configuration, data_to_save)
+
+    mocked_open.assert_called_with()
+
+
 @patch("portal.plugins.admin_email.plugin.get_admin_event_map")
 def test_notify_event_plugin_is_not_active(mocked_get_event_map, admin_email_plugin):
     event_type = NotifyEventType.ACCOUNT_STAFF_RESET_PASSWORD
@@ -176,6 +192,30 @@ QUERY_GET_PLUGIN = """
     }
   }
 """
+
+
+def test_configuration_resolver_returns_email_template_value(
+    staff_api_client,
+    admin_email_plugin,
+    admin_email_template,
+    permission_manage_plugins,
+):
+    plugin = admin_email_plugin()
+    response = staff_api_client.post_graphql(
+        QUERY_GET_PLUGIN,
+        {"id": plugin.PLUGIN_ID},
+        permissions=(permission_manage_plugins,),
+    )
+    content = get_graphql_content(response)
+    data = content["data"]["plugin"]
+
+    email_config_item = None
+    for config_item in data["globalConfiguration"]["configuration"]:
+        if config_item["name"] == admin_email_template.name:
+            email_config_item = config_item
+
+    assert email_config_item
+    assert email_config_item["value"] == admin_email_template.value
 
 
 def test_plugin_manager_doesnt_load_email_templates_from_db(

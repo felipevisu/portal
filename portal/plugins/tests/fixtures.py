@@ -43,25 +43,25 @@ def email_configuration():
 
 
 @pytest.fixture
-def channel_plugin_configurations(channel_USD, channel_PLN):
+def channel_plugin_configurations(channel_city_1, channel_city_2):
     usd_configuration = copy.deepcopy(ChannelPluginSample.DEFAULT_CONFIGURATION)
-    usd_configuration[0]["value"] = channel_USD.slug
+    usd_configuration[0]["value"] = channel_city_1.slug
 
     pln_configuration = copy.deepcopy(ChannelPluginSample.DEFAULT_CONFIGURATION)
-    pln_configuration[0]["value"] = channel_PLN.slug
+    pln_configuration[0]["value"] = channel_city_2.slug
 
     return PluginConfiguration.objects.bulk_create(
         [
             PluginConfiguration(
                 identifier=ChannelPluginSample.PLUGIN_ID,
-                channel=channel_USD,
+                channel=channel_city_1,
                 name=ChannelPluginSample.PLUGIN_NAME,
                 active=ChannelPluginSample.DEFAULT_ACTIVE,
                 configuration=usd_configuration,
             ),
             PluginConfiguration(
                 identifier=ChannelPluginSample.PLUGIN_ID,
-                channel=channel_PLN,
+                channel=channel_city_2,
                 name=ChannelPluginSample.PLUGIN_NAME,
                 active=ChannelPluginSample.DEFAULT_ACTIVE,
                 configuration=pln_configuration,
