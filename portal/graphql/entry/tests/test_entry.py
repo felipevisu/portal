@@ -194,6 +194,8 @@ CREATE_ENTRY_MUTATION = """
                 id
                 name
                 slug
+                email
+                documentNumber
             }
             errors{
                 message
@@ -212,6 +214,7 @@ def test_entry_create(staff_api_client, category, permission_manage_entries):
         "slug": "entry",
         "documentNumber": "123456789",
         "category": category_id,
+        "email": "vehicle@email.com",
     }
     variables = {"input": input, "type": "VEHICLE"}
     response = staff_api_client.post_graphql(
@@ -229,7 +232,12 @@ def test_entry_create_without_slug(
     staff_api_client, category, permission_manage_entries
 ):
     category_id = graphene.Node.to_global_id("Category", category.pk)
-    input = {"name": "Entry", "documentNumber": "123456789", "category": category_id}
+    input = {
+        "name": "Entry",
+        "documentNumber": "123456789",
+        "category": category_id,
+        "email": "vehicle@email.com",
+    }
     variables = {"input": input, "type": "VEHICLE"}
     response = staff_api_client.post_graphql(
         CREATE_ENTRY_MUTATION,
@@ -244,7 +252,11 @@ def test_entry_create_without_slug(
 
 
 def test_entry_create_without_category(staff_api_client, permission_manage_entries):
-    input = {"name": "Entry", "documentNumber": "123456789"}
+    input = {
+        "name": "Entry",
+        "documentNumber": "123456789",
+        "email": "vehicle@email.com",
+    }
     variables = {"input": input, "type": "VEHICLE"}
     response = staff_api_client.post_graphql(
         CREATE_ENTRY_MUTATION,
@@ -265,6 +277,7 @@ def test_entry_create_without_document(
         "name": "Entry",
         "slug": "entry",
         "category": category_id,
+        "email": "vehicle@email.com",
     }
     variables = {"input": input, "type": "VEHICLE"}
     response = staff_api_client.post_graphql(
@@ -276,6 +289,28 @@ def test_entry_create_without_document(
     data = content["data"]["entryCreate"]
     assert data["errors"]
     assert data["errors"][0]["field"] == "documentNumber"
+
+
+def test_entry_create_without_email(
+    staff_api_client, category, permission_manage_entries
+):
+    category_id = graphene.Node.to_global_id("Category", category.pk)
+    input = {
+        "name": "Entry",
+        "slug": "entry",
+        "category": category_id,
+        "documentNumber": "123456789",
+    }
+    variables = {"input": input, "type": "VEHICLE"}
+    response = staff_api_client.post_graphql(
+        CREATE_ENTRY_MUTATION,
+        variables=variables,
+        permissions=[permission_manage_entries],
+    )
+    content = get_graphql_content(response)
+    data = content["data"]["entryCreate"]
+    assert data["errors"]
+    assert data["errors"][0]["field"] == "email"
 
 
 UPDATE_ENTRY_MUTATION = """

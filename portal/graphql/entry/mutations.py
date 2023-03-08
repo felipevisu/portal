@@ -17,7 +17,7 @@ class EntryInput(graphene.InputObjectType):
     category = graphene.ID()
     is_published = graphene.Boolean(default=False)
     publication_date = graphene.Date(required=False)
-    email = graphene.String(required=False)
+    email = graphene.String()
     phone = graphene.String(required=False)
     address = graphene.String(required=False)
 

@@ -95,6 +95,7 @@ def vehicle(category):
         document_number="123456789",
         category=category,
         is_published=True,
+        email="vehicle@email.com",
     )
     return vehicle
 
@@ -110,6 +111,7 @@ def vehicle_list(category):
                 document_number="123456789a",
                 category=category,
                 is_published=True,
+                email="vehicle@email.com",
             ),
             Entry(
                 name="Vehicle 2",
@@ -118,6 +120,7 @@ def vehicle_list(category):
                 document_number="123456789b",
                 category=category,
                 is_published=True,
+                email="vehicle@email.com",
             ),
             Entry(
                 name="Vehicle 3",
@@ -126,6 +129,7 @@ def vehicle_list(category):
                 document_number="123456789c",
                 category=category,
                 is_published=False,
+                email="vehicle@email.com",
             ),
         ]
     )
@@ -141,6 +145,7 @@ def provider(category):
         document_number="123456789",
         category=category,
         is_published=True,
+        email="provider@email.com",
     )
     return provider
 
@@ -156,6 +161,7 @@ def provider_list(category):
                 document_number="123456789a",
                 category=category,
                 is_published=True,
+                email="provider@email.com",
             ),
             Entry(
                 name="Provider 2",
@@ -164,6 +170,7 @@ def provider_list(category):
                 document_number="123456789b",
                 category=category,
                 is_published=True,
+                email="provider@email.com",
             ),
             Entry(
                 name="Provider 3",
@@ -172,6 +179,7 @@ def provider_list(category):
                 document_number="123456789c",
                 category=category,
                 is_published=False,
+                email="provider@email.com",
             ),
         ]
     )
