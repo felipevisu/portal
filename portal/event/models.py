@@ -1,10 +1,11 @@
+import uuid
+
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.timezone import now
 
 from ..document.models import Document
-from ..entry.models import Entry
 from . import EventTypes
 
 
@@ -35,3 +36,14 @@ class Event(models.Model):
 
     def __repr__(self):
         return f"{self.__class__.__name__}(type={self.type!r}, user={self.user!r})"
+
+
+class OneTimeToken(models.Model):
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+    document = models.ForeignKey(
+        Document, on_delete=models.CASCADE, related_name="tokens"
+    )
+    created = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.token

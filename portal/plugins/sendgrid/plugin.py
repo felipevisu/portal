@@ -103,7 +103,7 @@ class SendgridEmailPlugin(BasePlugin):
             # the empty fields means that we should not send an email for this event.
             return previous_value
 
-        event_task.delay(payload, asdict(self.config))
+        event_task(payload, asdict(self.config))
 
     @classmethod
     def validate_plugin_configuration(

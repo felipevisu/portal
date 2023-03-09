@@ -90,25 +90,22 @@ context_processors = [
     "django.template.context_processors.debug",
     "django.template.context_processors.media",
     "django.template.context_processors.static",
+    "django.template.context_processors.request",
     "django.contrib.auth.context_processors.auth",
     "django.contrib.messages.context_processors.messages",
     "portal.site.context_processors.site",
 ]
 
-loaders = [
-    "django.template.loaders.filesystem.Loader",
-    "django.template.loaders.app_directories.Loader",
-]
 
 TEMPLATES_DIR = os.path.join(PROJECT_ROOT, "templates")
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [TEMPLATES_DIR],
+        "APP_DIRS": True,
         "OPTIONS": {
             "debug": DEBUG,
             "context_processors": context_processors,
-            "loaders": loaders,
             "string_if_invalid": '<< MISSING VARIABLE "%s" >>' if DEBUG else "",
         },
     },

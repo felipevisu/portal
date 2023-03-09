@@ -2,6 +2,8 @@ import graphene
 from django.core.exceptions import ValidationError
 from graphene_file_upload.scalars import Upload
 
+from portal.event.models import OneTimeToken
+
 from ...core.permissions import DocumentPermissions
 from ...document import models
 from ...event.notifications import send_request_new_document_from_provider
@@ -179,3 +181,18 @@ class RequestNewDocument(BaseMutation):
         manager = get_plugins_manager()
         send_request_new_document_from_provider(document, manager)
         return RequestNewDocument(success=True)
+
+
+class ValidateDocumentToken(BaseMutation):
+    success = graphene.Boolean()
+
+    class Arguments:
+        token = graphene.String(required=True)
+
+    @classmethod
+    def perform_mutation(cls, _root, info, token):
+        token = OneTimeToken.objects.filter(token=token).first()
+        success = False
+        if token:
+            success = True
+        return RequestNewDocument(success=success)

@@ -20,6 +20,7 @@ def send_email(configuration: SendgridConfiguration, template_id, payload):
     sendgrid_client = SendGridAPIClient(configuration.api_key)
     from_email = (configuration.sender_address, configuration.sender_name)
     message = Mail(from_email=from_email, to_emails=recipient_email)
+    message.dynamic_template_data = payload
     message.template_id = template_id
     try:
         sendgrid_client.send(message)
@@ -55,7 +56,7 @@ def send_document_updated_confirmation_to_staff_task(
 )
 def send_request_new_document_from_provider_task(payload: dict, configuration: dict):
     configuration = SendgridConfiguration(**configuration)
-    document_id = payload.get("document", {})
+    document_id = payload.get("document_id", {})
     send_email(
         configuration=configuration,
         template_id=configuration.request_new_document_from_provider_template_id,
