@@ -25,7 +25,7 @@ def get_bool_from_env(name, default_value):
     return default_value
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_celery_beat",
     "django_celery_results",
-    "" "django_filters",
+    "django_filters",
     "graphene_django",
 ]
 
@@ -89,30 +89,25 @@ if DEBUG:
 
 ROOT_URLCONF = "portal.urls"
 
-context_processors = [
-    "django.template.context_processors.debug",
-    "django.template.context_processors.media",
-    "django.template.context_processors.static",
-    "django.template.context_processors.request",
-    "django.contrib.auth.context_processors.auth",
-    "django.contrib.messages.context_processors.messages",
-    "portal.site.context_processors.site",
-]
-
-
 TEMPLATES_DIR = os.path.join(PROJECT_ROOT, "templates")
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [TEMPLATES_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
-            "debug": DEBUG,
-            "context_processors": context_processors,
-            "string_if_invalid": '<< MISSING VARIABLE "%s" >>' if DEBUG else "",
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "portal.site.context_processors.site",
+            ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = "portal.wsgi.application"
 
@@ -190,7 +185,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_LOCATION = "static"
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
@@ -202,12 +196,16 @@ AWS_DEFAULT_ACL = "public-read"
 
 DEFAULT_FILE_STORAGE = "portal.core.storages.S3MediaStorage"
 
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
+
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
 STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
