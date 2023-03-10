@@ -7,7 +7,10 @@ import dj_database_url
 import dj_email_url
 import django_on_heroku
 import pkg_resources
+import sentry_sdk
 from dotenv import load_dotenv
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv()
 
@@ -171,6 +174,15 @@ GRAPHENE = {
         "portal.graphql.middleware.JWTMiddleware",
     ],
 }
+
+SENTRY_DNS = os.environ.get("SENTRY_DNS", None)
+if SENTRY_DNS:
+    sentry_sdk.init(
+        dsn=SENTRY_DNS,
+        integrations=[DjangoIntegration(), CeleryIntegration()],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+    )
 
 AUTHENTICATION_BACKENDS = [
     "portal.core.auth_backend.JSONWebTokenBackend",
