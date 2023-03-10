@@ -13,7 +13,7 @@ def get_upload_path(instance, filename):
     return os.path.join(
         "entry_%d" % instance.document.entry.id,
         "document_%d" % instance.document.id,
-        "{0}.{1}".format(slugify(instance.document.name), filename.split(".")[-1]),
+        filename,
     )
 
 
@@ -30,7 +30,7 @@ class Document(ModelWithDates, PublishableModel):
     expires = models.BooleanField(default=False)
     default_file = models.OneToOneField(
         "DocumentFile",
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         blank=True,
         null=True,
         related_name="+",
@@ -51,7 +51,7 @@ class DocumentFile(ModelWithDates):
     begin_date = models.DateField(null=True, blank=True)
     expiration_date = models.DateField(null=True, blank=True)
     document = models.ForeignKey(
-        Document, on_delete=models.CASCADE, related_name="files", null=True, blank=True
+        Document, on_delete=models.CASCADE, related_name="files"
     )
     status = models.CharField(choices=DocumentFileStatus.CHOICES, max_length=100)
 

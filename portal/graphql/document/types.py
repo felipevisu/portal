@@ -49,10 +49,10 @@ class Document(ModelObjectType):
         interfaces = [graphene.relay.Node]
 
     def resolve_expired(self, info):
-        if not self.expires:
-            return False
-        today = datetime.date.today()
-        return self.default_file.expiration_date < today
+        if self.expires and self.default_file:
+            today = datetime.date.today()
+            return self.default_file.expiration_date < today
+        return False
 
     def resolve_entry(self, info):
         if self.entry_id:

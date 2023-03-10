@@ -187,42 +187,42 @@ def provider_list(category):
 
 
 @pytest.fixture
-def default_file():
-    document_file = DocumentFile.objects.create(file="/path/to/file.pdf")
-    return document_file
-
-
-@pytest.fixture
 def document(vehicle, default_file):
-    document = Document.objects.create(
-        name="Document", entry=vehicle, default_file=default_file
+    document = Document.objects.create(name="Document", entry=vehicle)
+    default_file = DocumentFile.objects.create(
+        file="/path/to/file.pdf", document=document
     )
-    default_file.document = document
-    default_file.save()
+    document.default_file = default_file
+    document.save()
     return document
 
 
 @pytest.fixture
 def document_list(vehicle):
-    default_files = DocumentFile.objects.bulk_create(
-        [DocumentFile(file="/path/to/file.pdf"), DocumentFile(file="/path/to/file.pdf")]
-    )
     documents = Document.objects.bulk_create(
         [
             Document(
                 name="Document 1",
                 entry=vehicle,
-                default_file=default_files[0],
                 is_published=True,
             ),
             Document(
                 name="Document 2",
                 entry=vehicle,
-                default_file=default_files[1],
                 is_published=False,
             ),
         ]
     )
+    default_files = DocumentFile.objects.bulk_create(
+        [
+            DocumentFile(file="/path/to/file.pdf", document=documents[0]),
+            DocumentFile(file="/path/to/file.pdf", document=documents[0]),
+        ]
+    )
+    documents[0].default_file = default_files[0]
+    documents[1].default_file = default_files[1]
+    documents[0].save()
+    documents[1].save()
     return documents
 
 

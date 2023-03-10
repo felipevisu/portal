@@ -22,7 +22,7 @@ from .types import Document, DocumentFile
 class DocumentInput(graphene.InputObjectType):
     name = graphene.String()
     description = graphene.String()
-    file = Upload()
+    file = Upload(required=False)
     provider = graphene.ID(required=False)
     entry = graphene.ID(required=False)
     is_published = graphene.Boolean(default=False)
@@ -46,24 +46,24 @@ class DocumentCreate(ModelMutation):
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data, input_cls)
         file = data.get("file", None)
-        if not file:
-            raise ValidationError(
-                {"file": "Você precisa adicionar um arquivo para criar o documento"}
-            )
         expires = data.get("expires", False)
         expiration_date = data.get("expiration_date", None)
-        if expires and not expiration_date:
+        if file and expires and not expiration_date:
             message = "Este campo não pode estar vazio se o documento é expirável."
             raise ValidationError({"expiration_date": message})
+        if not file and expires and expiration_date:
+            message = "Adicione um arquivo se quiser configurar uma data de expiração"
+            raise ValidationError({"file": message})
         return cleaned_input
 
     @classmethod
-    def clean_file_input(cls, input):
+    def clean_file_input(cls, input, instance):
         file_input = {
             "file": input.pop("file", None),
             "begin_date": input.pop("begin_date", None),
             "expiration_date": input.pop("expiration_date", None),
             "status": DocumentFileStatus.APPROVED,
+            "document": instance,
         }
         return {k: v for k, v in file_input.items() if v}
 
@@ -72,16 +72,17 @@ class DocumentCreate(ModelMutation):
         input = data.get("input")
         instance = models.Document()
         cleaned_input = cls.clean_input(info, instance, input)
-        file_input = cls.clean_file_input(cleaned_input)
+        file_input = cls.clean_file_input(cleaned_input, instance)
         instance = cls.construct_instance(instance, cleaned_input)
         cls.clean_instance(info, instance)
         instance.save()
-        default_file = models.DocumentFile()
-        default_file = cls.construct_instance(default_file, file_input)
-        default_file.document = instance
-        instance.default_file = default_file
-        default_file.save()
-        instance.save(update_fields=["default_file"])
+
+        if input.get("file", None):
+            default_file = models.DocumentFile()
+            default_file = cls.construct_instance(default_file, file_input)
+            default_file.save()
+            instance.default_file = default_file
+            instance.save(update_fields=["default_file"])
 
         return DocumentCreate(document=instance)
 
@@ -101,44 +102,48 @@ class DocumentUpdate(ModelMutation):
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data, input_cls)
+        file = data.get("file", None)
         expires = data.get("expires", False)
         expiration_date = data.get("expiration_date", None)
-        if expires and not expiration_date:
+        if file and expires and not expiration_date:
             message = "Este campo não pode estar vazio se o documento é expirável."
             raise ValidationError({"expiration_date": message})
-        if not expires:
-            cleaned_input["begin_date"] = None
-            cleaned_input["expiration_date"] = None
+        if not file and not instance.default_file and expires and expiration_date:
+            message = "Adicione um arquivo se quiser configurar uma data de expiração"
+            raise ValidationError({"file": message})
         return cleaned_input
 
     @classmethod
-    def clean_file_input(cls, input):
+    def clean_file_input(cls, input, instance):
         file_input = {
             "file": input.pop("file", None),
             "begin_date": input.pop("begin_date", None),
             "expiration_date": input.pop("expiration_date", None),
             "status": DocumentFileStatus.APPROVED,
+            "document": instance,
         }
         return {k: v for k, v in file_input.items() if v}
 
     @classmethod
+    def get_default_file(cls, instance, input):
+        if "file" in input and (instance.expires or instance.default_file is None):
+            return models.DocumentFile()
+        return instance.default_file
+
+    @classmethod
     def save_default_file(cls, instance, input):
-        if "file" in input and instance.expires:
-            default_file = models.DocumentFile()
+        default_file = cls.get_default_file(instance, input)
+        if default_file:
             default_file = cls.construct_instance(default_file, input)
-            default_file.document = instance
             default_file.save()
             instance.default_file = default_file
             instance.save(update_fields=["default_file"])
-        else:
-            default_file = cls.construct_instance(instance.default_file, input)
-            default_file.save()
 
     @classmethod
     def perform_mutation(cls, _root, info, id, input):
         instance = cls.get_node_or_error(info, id, only_type=Document)
         cleaned_input = cls.clean_input(info, instance, input)
-        file_input = cls.clean_file_input(cleaned_input)
+        file_input = cls.clean_file_input(cleaned_input, instance)
         instance = cls.construct_instance(instance, cleaned_input)
         cls.clean_instance(info, instance)
         instance.save()
