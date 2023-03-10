@@ -1,18 +1,11 @@
 import django_filters
 
+from ...document import DocumentFileStatus
 from ...document.models import Document
 from ..core.filters import EnumFilter, ObjectTypeFilter, search_filter
 from ..core.types import DateRangeInput, FilterInputObjectType
 from ..entry.enums import EntryTypeEnum
 from ..utils.filters import filter_range_field
-
-
-def filter_owner(queryset, _, value):
-    if value[0] == "entry":
-        return queryset.filter(provider=None)
-    if value[0] == "provider":
-        return queryset.filter(entry=None)
-    return queryset
 
 
 def filter_expiration_date_range(qs, _, value):
@@ -29,6 +22,12 @@ def filter_entry_type(qs, _, value):
     return qs.filter(entry__type=value)
 
 
+def waiting_filter(queryset, _, value):
+    if value:
+        return queryset.filter(files__status=DocumentFileStatus.WAITING)
+    return queryset.exclude(files__status=DocumentFileStatus.WAITING)
+
+
 class DocumentFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
     type = EnumFilter(input_class=EntryTypeEnum, method=filter_entry_type)
@@ -38,6 +37,7 @@ class DocumentFilter(django_filters.FilterSet):
     begin_date = ObjectTypeFilter(
         input_class=DateRangeInput, method=filter_begin_date_range
     )
+    waiting = django_filters.BooleanFilter(method=waiting_filter)
 
     class Meta:
         model = Document
