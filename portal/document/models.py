@@ -51,7 +51,7 @@ class DocumentFile(ModelWithDates):
     begin_date = models.DateField(null=True, blank=True)
     expiration_date = models.DateField(null=True, blank=True)
     document = models.ForeignKey(
-        Document, on_delete=models.CASCADE, related_name="files"
+        Document, on_delete=models.CASCADE, related_name="files", null=True, blank=True
     )
     status = models.CharField(choices=DocumentFileStatus.CHOICES, max_length=100)
 

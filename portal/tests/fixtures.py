@@ -193,6 +193,16 @@ def default_file():
 
 
 @pytest.fixture
+def document(vehicle, default_file):
+    document = Document.objects.create(
+        name="Document", entry=vehicle, default_file=default_file
+    )
+    default_file.document = document
+    default_file.save()
+    return document
+
+
+@pytest.fixture
 def document_list(vehicle):
     default_files = DocumentFile.objects.bulk_create(
         [DocumentFile(file="/path/to/file.pdf"), DocumentFile(file="/path/to/file.pdf")]
