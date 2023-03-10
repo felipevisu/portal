@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import DocumentPermissions
 from ..entry.models import Entry
+from . import DocumentFileStatus
 
 
 def get_upload_path(instance, filename):
@@ -50,8 +51,9 @@ class DocumentFile(ModelWithDates):
     begin_date = models.DateField(null=True, blank=True)
     expiration_date = models.DateField(null=True, blank=True)
     document = models.ForeignKey(
-        Document, on_delete=models.SET_NULL, null=True, related_name="files"
+        Document, on_delete=models.CASCADE, related_name="files"
     )
+    status = models.CharField(choices=DocumentFileStatus.CHOICES, max_length=100)
 
     class Meta:
         ordering = ["-created"]

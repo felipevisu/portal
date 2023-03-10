@@ -8,6 +8,7 @@ from ..core.types import File, ModelObjectType
 from ..core.types.common import NonNullList
 from ..entry.dataloaders import EntryByIdLoader
 from .dataloaders import DocumentFilesByDocumentIdLoader
+from .enums import DocumentFileStatusEnum
 
 
 class DocumentFile(ModelObjectType):
@@ -17,6 +18,7 @@ class DocumentFile(ModelObjectType):
     expiration_date = graphene.Date()
     created = graphene.DateTime()
     updated = graphene.DateTime()
+    status = DocumentFileStatusEnum()
 
     class Meta:
         model = models.DocumentFile

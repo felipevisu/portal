@@ -2,10 +2,11 @@ import graphene
 from django.core.exceptions import ValidationError
 from graphene_file_upload.scalars import Upload
 
+from portal.core.exeptions import PermissionDenied
 from portal.event.models import OneTimeToken
 
 from ...core.permissions import DocumentPermissions
-from ...document import models
+from ...document import DocumentFileStatus, models
 from ...event.notifications import send_request_new_document_from_provider
 from ...plugins.manager import get_plugins_manager
 from ..core.mutations import (
@@ -15,7 +16,7 @@ from ..core.mutations import (
     ModelMutation,
 )
 from ..core.types import NonNullList
-from .types import Document
+from .types import Document, DocumentFile
 
 
 class DocumentInput(graphene.InputObjectType):
@@ -62,6 +63,7 @@ class DocumentCreate(ModelMutation):
             "file": input.pop("file", None),
             "begin_date": input.pop("begin_date", None),
             "expiration_date": input.pop("expiration_date", None),
+            "status": DocumentFileStatus.APPROVED,
         }
         return {k: v for k, v in file_input.items() if v}
 
@@ -115,6 +117,7 @@ class DocumentUpdate(ModelMutation):
             "file": input.pop("file", None),
             "begin_date": input.pop("begin_date", None),
             "expiration_date": input.pop("expiration_date", None),
+            "status": DocumentFileStatus.APPROVED,
         }
         return {k: v for k, v in file_input.items() if v}
 
@@ -196,3 +199,84 @@ class ValidateDocumentToken(BaseMutation):
         if token:
             success = True
         return RequestNewDocument(success=success)
+
+
+class ApproveDocumentFile(BaseMutation):
+    document_file = graphene.Field(DocumentFile)
+
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    @classmethod
+    def perform_mutation(cls, _root, info, id):
+        document_file = cls.get_node_or_error(info, id, only_type=DocumentFile)
+        document_file.status = DocumentFileStatus.APPROVED
+        document_file.save(update_fields=["status", "updated"])
+        document = document_file.document
+        document.default_document = document_file
+        document.save(update_fields=["document_file", "updated"])
+        return ApproveDocumentFile(document_file=document_file)
+
+
+class RefuseDocumentFile(BaseMutation):
+    document_file = graphene.Field(DocumentFile)
+
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    @classmethod
+    def perform_mutation(cls, _root, info, id):
+        document_file = cls.get_node_or_error(info, id, only_type=DocumentFile)
+        document_file.status = DocumentFileStatus.REFUSED
+        document_file.save(update_fields=["status", "updated"])
+        return RefuseDocumentFile(document_file=document_file)
+
+
+class RestoreDocumentFile(BaseMutation):
+    document_file = graphene.Field(DocumentFile)
+
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    @classmethod
+    def perform_mutation(cls, _root, info, id):
+        document_file = cls.get_node_or_error(info, id, only_type=DocumentFile)
+        document = document_file.document
+        document.default_file = document_file
+        document.save(update_fields=["default_file", "updated"])
+        return RestoreDocumentFile(document_file=document_file)
+
+
+class DocumentFileDelete(ModelDeleteMutation):
+    class Arguments:
+        id = graphene.ID()
+
+    @classmethod
+    def clean_instance(cls, info, instance):
+        document = instance.document
+        if document.default_file == instance:
+            raise ValidationError(
+                {"id": "Não é possível excluir o arquivo principal do documento"}
+            )
+
+    class Meta:
+        model = models.DocumentFile
+        permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
+        object_type = DocumentFile
+
+    @classmethod
+    def perform_mutation(cls, root, info, **data):
+        if not cls.check_permissions(info.context):
+            return PermissionDenied()
+
+        node_id = data.get("id")
+        model_type = cls.get_type_for_model()
+        instance = cls.get_node_or_error(info, node_id, only_type=model_type)
+        cls.clean_instance(info, instance)
+
+        if instance:
+            db_id = instance.id
+            instance.delete()
+            instance.id = db_id
+
+        return cls.success_response(instance)

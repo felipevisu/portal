@@ -4,11 +4,15 @@ from ..core.connection import create_connection_slice, filter_connection_queryse
 from ..core.fields import FilterConnectionField
 from .filters import DocumentFilterInput
 from .mutations import (
+    ApproveDocumentFile,
     DocumentBulkDelete,
     DocumentCreate,
     DocumentDelete,
+    DocumentFileDelete,
     DocumentUpdate,
+    RefuseDocumentFile,
     RequestNewDocument,
+    RestoreDocumentFile,
     ValidateDocumentToken,
 )
 from .resolvers import resolve_document, resolve_documents
@@ -38,5 +42,9 @@ class Mutation(graphene.ObjectType):
     document_update = DocumentUpdate.Field()
     document_delete = DocumentDelete.Field()
     document_bulk_delete = DocumentBulkDelete.Field()
+    document_file_delete = DocumentFileDelete.Field()
     request_new_document = RequestNewDocument.Field()
     validate_token = ValidateDocumentToken.Field()
+    approve_document_file = ApproveDocumentFile.Field()
+    refuse_document_file = RefuseDocumentFile.Field()
+    restore_document_file = RestoreDocumentFile.Field()
