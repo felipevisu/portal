@@ -105,7 +105,7 @@ class DocumentUpdate(ModelMutation):
         file = data.get("file", None)
         expires = data.get("expires", False)
         expiration_date = data.get("expiration_date", None)
-        if file and expires and not expiration_date:
+        if (file or instance.default_file) and expires and not expiration_date:
             message = "Este campo não pode estar vazio se o documento é expirável."
             raise ValidationError({"expiration_date": message})
         if not file and not instance.default_file and expires and expiration_date:
@@ -175,8 +175,6 @@ class DocumentBulkDelete(ModelBulkDeleteMutation):
 
 
 class RequestNewDocument(BaseMutation):
-    success = graphene.Boolean()
-
     class Arguments:
         id = graphene.ID(required=True)
 
@@ -187,8 +185,9 @@ class RequestNewDocument(BaseMutation):
     def perform_mutation(cls, _root, info, id):
         document = cls.get_node_or_error(info, id, only_type=Document)
         manager = get_plugins_manager()
-        send_request_new_document_from_provider(document, manager)
-        return RequestNewDocument(success=True)
+        user = info.context.user
+        send_request_new_document_from_provider(document, manager, user)
+        return RequestNewDocument()
 
 
 class ValidateDocumentToken(BaseMutation):

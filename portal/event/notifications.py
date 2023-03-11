@@ -3,7 +3,7 @@ from ..core.utils.notification import get_site_context
 from .utils import build_request_new_document_payload
 
 
-def send_document_updated_confirmation_to_staff(document, user, manager):
+def send_document_updated_confirmation_to_staff(document, manager, user):
     payload = {
         "document": document.id,
         "recipient_email": user.email,
@@ -12,6 +12,6 @@ def send_document_updated_confirmation_to_staff(document, user, manager):
     manager.notify(NotifyEventType.DOCUMENT_UPDATED_BY_PROVIDER, payload)
 
 
-def send_request_new_document_from_provider(document, manager):
-    payload = build_request_new_document_payload(document)
+def send_request_new_document_from_provider(document, manager, user):
+    payload = build_request_new_document_payload(document, user)
     manager.notify(NotifyEventType.REQUEST_NEW_DOCUMENT_FROM_PROVIDER, payload)
