@@ -7,7 +7,7 @@ from portal.event.models import OneTimeToken
 
 from ...core.permissions import DocumentPermissions
 from ...document import DocumentFileStatus, models
-from ...event.notifications import send_request_new_document_from_provider
+from ...event.notifications import send_request_new_document
 from ...plugins.manager import get_plugins_manager
 from ..core.mutations import (
     BaseMutation,
@@ -186,7 +186,7 @@ class RequestNewDocument(BaseMutation):
         document = cls.get_node_or_error(info, id, only_type=Document)
         manager = get_plugins_manager()
         user = info.context.user
-        send_request_new_document_from_provider(document, manager, user)
+        send_request_new_document(document, manager, user)
         return RequestNewDocument()
 
 

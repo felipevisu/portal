@@ -9,22 +9,32 @@ from ..base_plugin import BasePlugin, ConfigurationTypeField
 from ..models import PluginConfiguration
 from . import SendgridConfiguration
 from .tasks import (
-    send_document_updated_confirmation_to_staff_task,
+    send_document_approved_task,
+    send_document_declined_task,
+    send_document_received_task,
     send_email_with_dynamic_template_id,
-    send_request_new_document_from_provider_task,
+    send_request_new_document_task,
 )
 
 logger = logging.getLogger(__name__)
 
 
 EVENT_MAP = {
-    NotifyEventType.REQUEST_NEW_DOCUMENT_FROM_PROVIDER: (
-        send_request_new_document_from_provider_task,
-        "request_new_document_from_provider_template_id",
+    NotifyEventType.REQUEST_NEW_DOCUMENT: (
+        send_request_new_document_task,
+        "request_new_document_template_id",
     ),
-    NotifyEventType.DOCUMENT_UPDATED_BY_PROVIDER: (
-        send_document_updated_confirmation_to_staff_task,
-        "document_updated_confirmation_to_staff_template_id",
+    NotifyEventType.DOCUMENT_RECEIVED: (
+        send_document_received_task,
+        "document_received_template_id",
+    ),
+    NotifyEventType.DOCUMENT_APPROVED: (
+        send_document_approved_task,
+        "document_approved_template_id",
+    ),
+    NotifyEventType.DOCUMENT_DECLINED: (
+        send_document_declined_task,
+        "document_declined_template_id",
     ),
 }
 
@@ -40,8 +50,10 @@ class SendgridEmailPlugin(BasePlugin):
     DEFAULT_CONFIGURATION = [
         {"name": "sender_name", "value": ""},
         {"name": "sender_address", "value": ""},
-        {"name": "request_new_document_from_provider_template_id", "value": None},
-        {"name": "document_updated_confirmation_to_staff_template_id", "value": None},
+        {"name": "request_new_document_template_id", "value": None},
+        {"name": "document_received_template_id", "value": None},
+        {"name": "document_approved_template_id", "value": None},
+        {"name": "document_declined_template_id", "value": None},
         {"name": "api_key", "value": None},
     ]
     CONFIG_STRUCTURE = {
@@ -55,15 +67,25 @@ class SendgridEmailPlugin(BasePlugin):
             "help_text": "Sender email which will be visible as 'from' email.",
             "label": "Sender email",
         },
-        "request_new_document_from_provider_template_id": {
+        "request_new_document_template_id": {
             "type": ConfigurationTypeField.STRING,
             "help_text": HELP_TEXT_TEMPLATE,
             "label": "Request new document email template",
         },
-        "document_updated_confirmation_to_staff_template_id": {
+        "document_received_template_id": {
             "type": ConfigurationTypeField.STRING,
             "help_text": HELP_TEXT_TEMPLATE,
-            "label": "Document updated email template",
+            "label": "Document refused email template",
+        },
+        "document_approved_template_id": {
+            "type": ConfigurationTypeField.STRING,
+            "help_text": HELP_TEXT_TEMPLATE,
+            "label": "Document approved email template",
+        },
+        "document_declined_template_id": {
+            "type": ConfigurationTypeField.STRING,
+            "help_text": HELP_TEXT_TEMPLATE,
+            "label": "Document declined email template",
         },
         "api_key": {
             "type": ConfigurationTypeField.SECRET,
@@ -99,6 +121,7 @@ class SendgridEmailPlugin(BasePlugin):
 
         event_task, event_template = EVENT_MAP.get(event)  # type: ignore
         template_id = configuration.get(event_template)
+
         if not template_id:
             # the empty fields means that we should not send an email for this event.
             return previous_value

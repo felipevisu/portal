@@ -1,20 +1,12 @@
 class EventTypes:
-    DOCUMENT_UPDATED_BY_PROVIDER = "document_updated_by_provider"
-    DOCUMENT_UPDATED_BY_STAFF = "document_updated_by_staff"
-    PROVIDER_NOTIFIED_ABOUT_EXPIRED_DOCUMENT = (
-        "provider_notified_about_expired_document"
-    )
-    NEW_DOCUMENT_REQUESTED_BY_STAFF = "new_document_requested_by_staff"
+    DOCUMENT_RECEIVED = "document_received"
+    DOCUMENT_APPROVED = "document_approved"
+    DOCUMENT_DECLINED = "document_declined"
+    DOCUMENT_REQUESTED = "document_requested"
 
     CHOICES = [
-        (DOCUMENT_UPDATED_BY_PROVIDER, "Documento atualizado pelo fornecedor"),
-        (DOCUMENT_UPDATED_BY_STAFF, "Documento atualizado pelo administrador"),
-        (
-            PROVIDER_NOTIFIED_ABOUT_EXPIRED_DOCUMENT,
-            "Fornecedor foi notificado sobre documento expirado",
-        ),
-        (
-            NEW_DOCUMENT_REQUESTED_BY_STAFF,
-            "Novo documento foi requisitado pelo administrador",
-        ),
+        (DOCUMENT_RECEIVED, "Documento recebido"),
+        (DOCUMENT_APPROVED, "Documento aprovado"),
+        (DOCUMENT_DECLINED, "Document recusado"),
+        (DOCUMENT_REQUESTED, "Documento solicitado pela plataforma"),
     ]

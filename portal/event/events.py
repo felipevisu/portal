@@ -2,28 +2,26 @@ from . import EventTypes
 from .models import Event
 
 
-def event_document_updated_by_provider(document_id):
+def event_document_received(document_id):
     return Event.objects.create(
-        document_id=document_id, type=EventTypes.DOCUMENT_UPDATED_BY_PROVIDER
+        document_id=document_id, type=EventTypes.DOCUMENT_RECEIVED
     )
 
 
-def event_document_updated_by_staff(document_id, user):
+def event_document_approved(document_id, user_id):
     return Event.objects.create(
-        document_id=document_id, user=user, type=EventTypes.DOCUMENT_UPDATED_BY_STAFF
+        document_id=document_id, user_id=user_id, type=EventTypes.DOCUMENT_APPROVED
     )
 
 
-def event_provider_notified_about_expired_document(document_id):
+def event_document_declined(document_id, user_id):
+    return Event.objects.create(
+        document_id=document_id, user_id=user_id, type=EventTypes.DOCUMENT_DECLINED
+    )
+
+
+def event_document_requested(document_id):
     return Event.objects.create(
         document_id=document_id,
-        type=EventTypes.PROVIDER_NOTIFIED_ABOUT_EXPIRED_DOCUMENT,
-    )
-
-
-def event_new_document_requested_by_staff(document_id, user):
-    return Event.objects.create(
-        document_id=document_id,
-        user=user,
-        type=EventTypes.NEW_DOCUMENT_REQUESTED_BY_STAFF,
+        type=EventTypes.DOCUMENT_REQUESTED,
     )

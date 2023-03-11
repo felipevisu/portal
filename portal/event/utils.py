@@ -11,10 +11,10 @@ def get_document_token(document):
     return str(token.token)
 
 
-def build_request_new_document_payload(document, user):
+def build_request_new_document_payload(document, user=None):
     payload = {
         "document_id": document.id,
-        "user_id": user.id,
+        "user_id": user.id if user else None,
         "document_global_id": to_global_id("Document", document.id),
         "document_name": document.name,
         "token": get_document_token(document),
