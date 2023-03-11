@@ -3,10 +3,13 @@ import datetime
 import graphene
 
 from ...document import models
-from ..core.connection import CountableConnection
+from ..core.connection import CountableConnection, create_connection_slice
+from ..core.fields import ConnectionField
 from ..core.types import File, ModelObjectType
 from ..core.types.common import NonNullList
 from ..entry.dataloaders import EntryByIdLoader
+from ..event.dataloaders import EventsByDocumentIdLoader
+from ..event.types import EventCountableConnection
 from .dataloaders import DocumentFilesByDocumentIdLoader
 from .enums import DocumentFileStatusEnum
 
@@ -43,6 +46,7 @@ class Document(ModelObjectType):
     expires = graphene.Boolean()
     expired = graphene.Boolean()
     files = NonNullList(lambda: DocumentFile)
+    events = ConnectionField(EventCountableConnection)
 
     class Meta:
         model = models.Document
@@ -63,6 +67,14 @@ class Document(ModelObjectType):
 
     def resolve_files(self, info):
         return DocumentFilesByDocumentIdLoader(info.context).load(self.id)
+
+    def resolve_events(self, info, **kwargs):
+        def _resolve(events):
+            return create_connection_slice(
+                events, info, kwargs, EventCountableConnection
+            )
+
+        return EventsByDocumentIdLoader(info.context).load(self.id).then(_resolve)
 
 
 class DocumentCountableConnection(CountableConnection):

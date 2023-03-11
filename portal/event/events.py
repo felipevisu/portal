@@ -20,8 +20,9 @@ def event_document_declined(document_id, user_id):
     )
 
 
-def event_document_requested(document_id):
+def event_document_requested(document_id, user_id=None):
     return Event.objects.create(
         document_id=document_id,
+        user_id=user_id,
         type=EventTypes.DOCUMENT_REQUESTED,
     )

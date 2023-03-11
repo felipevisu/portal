@@ -32,7 +32,7 @@ class Event(models.Model):
     )
 
     class Meta:
-        ordering = ("date",)
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.__class__.__name__}(type={self.type!r}, user={self.user!r})"

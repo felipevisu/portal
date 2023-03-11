@@ -8,6 +8,7 @@ from .document.schema import Mutation as DocumentMutation
 from .document.schema import Query as DocumentQuery
 from .entry.schema import Mutation as EntryMutation
 from .entry.schema import Query as EntryQuery
+from .event.schema import Query as EventQuery
 from .investment.schema import Mutation as InvestmentMutation
 from .investment.schema import Query as InvestmentQuery
 from .plugins.schema import Mutation as PluginsMutation
@@ -21,6 +22,7 @@ class Query(
     ChannelQuery,
     DocumentQuery,
     EntryQuery,
+    EventQuery,
     InvestmentQuery,
     PluginsQuery,
     SessionQuery,

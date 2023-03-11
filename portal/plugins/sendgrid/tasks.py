@@ -36,13 +36,14 @@ def send_email(configuration: SendgridConfiguration, template_id, payload):
 )
 def send_request_new_document_task(payload: dict, configuration: dict):
     configuration = SendgridConfiguration(**configuration)
-    document_id = payload.get("document_id", {})
+    document_id = payload.get("document_id", None)
+    user_id = payload.get("user_id", None)
     send_email(
         configuration=configuration,
         template_id=configuration.request_new_document_template_id,
         payload=payload,
     )
-    events.event_document_requested(document_id=document_id)
+    events.event_document_requested(document_id=document_id, user_id=user_id)
 
 
 @app.task(

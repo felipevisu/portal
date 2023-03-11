@@ -41,11 +41,16 @@ class ChannelPermissions(BasePermissionEnum):
     MANAGE_CHANNELS = "channel.manage_channels"
 
 
+class EventPermissions(BasePermissionEnum):
+    MANAGE_EVENTS = "channel.manage_events"
+
+
 PERMISSIONS_ENUMS = [
     AccountPermissions,
     ChannelPermissions,
     DocumentPermissions,
     EntryPermissions,
+    EventPermissions,
     InvestmentPermissions,
     PluginsPermissions,
     SessionPermissions,
