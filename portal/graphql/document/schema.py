@@ -1,5 +1,7 @@
 import graphene
 
+from portal.core.permissions import DocumentPermissions
+
 from ..core.connection import create_connection_slice, filter_connection_queryset
 from ..core.fields import FilterConnectionField
 from .filters import DocumentFilterInput

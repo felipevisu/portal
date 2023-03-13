@@ -1,13 +1,48 @@
 from functools import wraps
+from typing import Iterable, Optional
 
 import graphene
 from graphene.relay import Connection, is_node
+
+from ...core.permissions import BasePermissionEnum
+from ..decorators import one_of_permissions_required
 
 FILTERS_NAME = "_FILTERS_NAME"
 FILTERSET_CLASS = "_FILTERSET_CLASS"
 
 
-class ConnectionField(graphene.Field):
+def message_one_of_permissions_required(
+    permissions: Iterable[BasePermissionEnum],
+) -> str:
+    permission_msg = ", ".join([p.name for p in permissions])
+    return f"\n\nRequires one of the following permissions: {permission_msg}."
+
+
+class PermissionsField(graphene.Field):
+    description: Optional[str]
+
+    def __init__(self, *args, **kwargs):
+        self.permissions = kwargs.pop("permissions", [])
+        auto_permission_message = kwargs.pop("auto_permission_message", True)
+        assert isinstance(self.permissions, list), (
+            "FieldWithPermissions `permissions` argument must be a list: "
+            f"{self.permissions}"
+        )
+
+        super(PermissionsField, self).__init__(*args, **kwargs)
+        if auto_permission_message and self.permissions:
+            permissions_msg = message_one_of_permissions_required(self.permissions)
+            description = self.description or ""
+            self.description = description + permissions_msg
+
+    def get_resolver(self, parent_resolver):
+        resolver = self.resolver or parent_resolver
+        if self.permissions:
+            resolver = one_of_permissions_required(self.permissions)(resolver)
+        return resolver
+
+
+class ConnectionField(PermissionsField):
     def __init__(self, type_, *args, **kwargs):
         kwargs.setdefault("before", graphene.String())
         kwargs.setdefault("after", graphene.String())

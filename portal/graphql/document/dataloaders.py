@@ -4,6 +4,14 @@ from ...document.models import Document, DocumentFile
 from ..core.dataloaders import DataLoader
 
 
+class DocumentByIdLoader(DataLoader):
+    context_key = "document_by_id"
+
+    def batch_load(self, keys):
+        documents = Document.objects.in_bulk(keys)
+        return [documents.get(document_id) for document_id in keys]
+
+
 class DocumentsByEntryIdLoader(DataLoader):
     context_key = "documents_by_entry_id"
 

@@ -118,3 +118,54 @@ def get_permissions_from_codenames(permission_codenames: List[str]):
         .prefetch_related("content_type")
         .order_by("codename")
     )
+
+
+def is_staff_user(context):
+    return context.user.is_staff
+
+
+class AuthorizationFilters(BasePermissionEnum):
+    AUTHENTICATED_STAFF_USER = "authorization_filters.authenticated_staff_user"
+
+
+AUTHORIZATION_FILTER_MAP = {
+    AuthorizationFilters.AUTHENTICATED_STAFF_USER: is_staff_user,
+}
+
+
+def resolve_authorization_filter_fn(perm):
+    return AUTHORIZATION_FILTER_MAP.get(perm)
+
+
+def one_of_permissions_or_auth_filter_required(
+    context, permissions: Iterable[BasePermissionEnum]
+):
+    if not permissions:
+        return True
+
+    authorization_filters = [
+        p for p in permissions if isinstance(p, AuthorizationFilters)
+    ]
+    permissions = [p for p in permissions if not isinstance(p, AuthorizationFilters)]
+
+    granted_by_permissions = False
+    granted_by_authorization_filters = False
+
+    requestor = context.user
+
+    if requestor and permissions:
+        perm_checks_results = []
+        for permission in permissions:
+            perm_checks_results.append(requestor.has_perm(permission))
+        granted_by_permissions = any(perm_checks_results)
+
+    if authorization_filters:
+        auth_filters_results = []
+        for p in authorization_filters:
+            perm_fn = resolve_authorization_filter_fn(p)
+            if perm_fn:
+                res = perm_fn(context)
+                auth_filters_results.append(bool(res))
+        granted_by_authorization_filters = any(auth_filters_results)
+
+    return granted_by_permissions or granted_by_authorization_filters

@@ -2,14 +2,15 @@ import datetime
 
 import graphene
 
+from ...core.permissions import DocumentPermissions, EventPermissions
 from ...document import models
 from ..core.connection import CountableConnection, create_connection_slice
-from ..core.fields import ConnectionField
+from ..core.fields import ConnectionField, PermissionsField
 from ..core.types import File, ModelObjectType
 from ..core.types.common import NonNullList
 from ..entry.dataloaders import EntryByIdLoader
 from ..event.dataloaders import EventsByDocumentIdLoader
-from ..event.types import EventCountableConnection
+from ..event.types import Event, EventCountableConnection
 from .dataloaders import DocumentFilesByDocumentIdLoader
 from .enums import DocumentFileStatusEnum
 
@@ -45,8 +46,14 @@ class Document(ModelObjectType):
     is_published = graphene.Boolean()
     expires = graphene.Boolean()
     expired = graphene.Boolean()
-    files = NonNullList(lambda: DocumentFile)
-    events = ConnectionField(EventCountableConnection)
+    files = PermissionsField(
+        NonNullList(lambda: DocumentFile),
+        permissions=[DocumentPermissions.MANAGE_DOCUMENTS],
+    )
+    events = PermissionsField(
+        NonNullList(lambda: Event),
+        permissions=[EventPermissions.MANAGE_EVENTS],
+    )
 
     class Meta:
         model = models.Document
@@ -69,12 +76,7 @@ class Document(ModelObjectType):
         return DocumentFilesByDocumentIdLoader(info.context).load(self.id)
 
     def resolve_events(self, info, **kwargs):
-        def _resolve(events):
-            return create_connection_slice(
-                events, info, kwargs, EventCountableConnection
-            )
-
-        return EventsByDocumentIdLoader(info.context).load(self.id).then(_resolve)
+        return EventsByDocumentIdLoader(info.context).load(self.id)
 
 
 class DocumentCountableConnection(CountableConnection):
