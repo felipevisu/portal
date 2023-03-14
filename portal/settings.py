@@ -5,7 +5,6 @@ from pathlib import Path
 
 import dj_database_url
 import dj_email_url
-import django_on_heroku
 import pkg_resources
 import sentry_sdk
 from dotenv import load_dotenv
@@ -113,16 +112,11 @@ WSGI_APPLICATION = "portal.wsgi.application"
 
 DATABASE_CONNECTION_DEFAULT_NAME = "default"
 
-DB_USER = os.environ.get("DB_USER", "")
-
-DB_PASSWORD = os.environ.get("DB_PASSWORD", "")
-
-DB_NAME = os.environ.get("DB_NAME", "")
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 DATABASES = {
     DATABASE_CONNECTION_DEFAULT_NAME: dj_database_url.config(
-        default=f"postgres://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}",
-        conn_max_age=600,
+        default=DATABASE_URL, conn_max_age=600
     ),
 }
 
@@ -200,12 +194,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "portal", "static"),
 ]
+
+# Enable WhiteNoise's GZip compression of static assets.
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -248,5 +245,3 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", None)
-
-django_on_heroku.settings(locals())
