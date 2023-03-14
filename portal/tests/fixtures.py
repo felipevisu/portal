@@ -71,16 +71,18 @@ def admin_user(db):
 
 @pytest.fixture
 def category():
-    return Category.objects.create(name="Category", slug="category")
+    return Category.objects.create(
+        name="Category", slug="category", type=EntryType.VEHICLE
+    )
 
 
 @pytest.fixture
 def category_list():
     categories = Category.objects.bulk_create(
         [
-            Category(name="Category 1", slug="category-1"),
-            Category(name="Category 2", slug="category-2"),
-            Category(name="Category 3", slug="category-3"),
+            Category(name="Category 1", slug="category-1", type=EntryType.VEHICLE),
+            Category(name="Category 2", slug="category-2", type=EntryType.VEHICLE),
+            Category(name="Category 3", slug="category-3", type=EntryType.VEHICLE),
         ]
     )
     return categories
@@ -138,6 +140,8 @@ def vehicle_list(category):
 
 @pytest.fixture
 def provider(category):
+    category.type = EntryType.PROVIDER
+    category.save()
     provider = Entry.objects.create(
         name="Provider",
         slug="provider",
@@ -152,6 +156,8 @@ def provider(category):
 
 @pytest.fixture
 def provider_list(category):
+    category.type = EntryType.PROVIDER
+    category.save()
     providers = Entry.objects.bulk_create(
         [
             Entry(
