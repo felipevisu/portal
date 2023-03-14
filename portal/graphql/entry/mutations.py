@@ -96,6 +96,7 @@ class EntryBulkDelete(ModelBulkDeleteMutation):
 class CategoryInput(graphene.InputObjectType):
     name = graphene.String()
     slug = graphene.String()
+    type = EntryTypeEnum()
 
 
 class CategoryCreate(ModelMutation):

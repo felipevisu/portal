@@ -6,6 +6,8 @@ from . import EntryType
 
 
 class Category(ModelWithDates, ModelWithSlug):
+    type = models.CharField(choices=EntryType.CHOICES, max_length=24)
+
     class Meta:
         ordering = ["name"]
         permissions = (

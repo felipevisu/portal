@@ -25,6 +25,7 @@ def filter_categories(qs, _, value):
 
 class CategoryFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
+    type = EnumFilter(input_class=EntryTypeEnum, method=filter_entry_type)
 
     class Meta:
         model = Category

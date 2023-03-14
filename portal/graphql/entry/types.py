@@ -54,6 +54,7 @@ class Category(ModelObjectType):
     id = graphene.GlobalID(required=True)
     name = graphene.String(required=True)
     slug = graphene.String()
+    type = EntryTypeEnum()
     entries = ConnectionField(EntryCountableConnection)
     total_entries = graphene.Int()
 
