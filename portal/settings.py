@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     # apps
     "portal.account",
+    "portal.attribute",
     "portal.channel",
     "portal.core",
     "portal.document",
