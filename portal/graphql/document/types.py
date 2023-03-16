@@ -4,13 +4,13 @@ import graphene
 
 from ...core.permissions import DocumentPermissions, EventPermissions
 from ...document import models
-from ..core.connection import CountableConnection, create_connection_slice
-from ..core.fields import ConnectionField, PermissionsField
+from ..core.connection import CountableConnection
+from ..core.fields import PermissionsField
 from ..core.types import File, ModelObjectType
 from ..core.types.common import NonNullList
 from ..entry.dataloaders import EntryByIdLoader
 from ..event.dataloaders import EventsByDocumentIdLoader
-from ..event.types import Event, EventCountableConnection
+from ..event.types import Event
 from .dataloaders import DocumentFilesByDocumentIdLoader
 from .enums import DocumentFileStatusEnum
 

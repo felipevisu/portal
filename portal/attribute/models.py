@@ -164,6 +164,7 @@ class AttributeValue(SortableModel):
         null=True,
     )
     boolean = models.BooleanField(blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
     date_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:

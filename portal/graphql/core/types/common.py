@@ -68,3 +68,8 @@ class DateRangeInput(graphene.InputObjectType):
 class DateTimeRangeInput(graphene.InputObjectType):
     gte = graphene.DateTime(description="Start date.", required=False)
     lte = graphene.DateTime(description="End date.", required=False)
+
+
+class IntRangeInput(graphene.InputObjectType):
+    gte = graphene.Int(description="Value greater than or equal to.", required=False)
+    lte = graphene.Int(description="Value less than or equal to.", required=False)
