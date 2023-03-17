@@ -45,8 +45,13 @@ class EventPermissions(BasePermissionEnum):
     MANAGE_EVENTS = "channel.manage_events"
 
 
+class AttributePermissions(BasePermissionEnum):
+    MANAGE_ATTRIBUTES = "attribute.manage_attributes"
+
+
 PERMISSIONS_ENUMS = [
     AccountPermissions,
+    AttributePermissions,
     ChannelPermissions,
     DocumentPermissions,
     EntryPermissions,

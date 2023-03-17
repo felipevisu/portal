@@ -96,7 +96,7 @@ class Attribute(ModelObjectType):
         required=True,
     )
     entries = ConnectionField(
-        "saleor.graphql.entry.types.EntryCountableConnection",
+        "portal.graphql.entry.types.EntryCountableConnection",
         required=True,
     )
 

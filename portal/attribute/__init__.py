@@ -55,7 +55,29 @@ class AttributeEntryType:
     VEHICLE_AND_PROVIDER = "vehicle_and_provider"
 
     CHOICES = [
-        (VEHICLE, "Veículo"),
-        (PROVIDER, "Fornecedor"),
-        (VEHICLE_AND_PROVIDER, "Veículo e fornecedor"),
+        (VEHICLE, "vehicle"),
+        (PROVIDER, "provider"),
+        (VEHICLE_AND_PROVIDER, "vehicle and provider"),
     ]
+
+
+ATTRIBUTE_PROPERTIES_CONFIGURATION = {
+    "filterable_in_website": [
+        AttributeInputType.DROPDOWN,
+        AttributeInputType.MULTISELECT,
+        AttributeInputType.NUMERIC,
+        AttributeInputType.SWATCH,
+        AttributeInputType.BOOLEAN,
+        AttributeInputType.DATE,
+        AttributeInputType.DATE_TIME,
+    ],
+    "filterable_in_dashboard": [
+        AttributeInputType.DROPDOWN,
+        AttributeInputType.MULTISELECT,
+        AttributeInputType.NUMERIC,
+        AttributeInputType.SWATCH,
+        AttributeInputType.BOOLEAN,
+        AttributeInputType.DATE,
+        AttributeInputType.DATE_TIME,
+    ],
+}
