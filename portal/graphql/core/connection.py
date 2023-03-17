@@ -4,7 +4,8 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, 
 
 import graphene
 from django.conf import settings
-from django.db.models import Model as DjangoModel, Q, QuerySet
+from django.db.models import Model as DjangoModel
+from django.db.models import Q, QuerySet
 from graphene.relay import Connection
 from graphql import GraphQLError, ResolveInfo
 from graphql.language.ast import FragmentSpread

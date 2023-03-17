@@ -149,3 +149,18 @@ class GlobalIDMultipleChoiceFilter(MultipleChoiceFilter):
     def filter(self, qs, value):
         gids = [from_global_id(v)[1] for v in value]
         return super(GlobalIDMultipleChoiceFilter, self).filter(qs, gids)
+
+
+class DefaultOperationField(Field):
+    def validate(self, value):
+        if value and len(value) > 1:
+            raise ValidationError("Only one option can be specified.", code="invalid")
+        return super().validate(value)
+
+
+class OperationObjectTypeFilter(django_filters.Filter):
+    field_class = DefaultOperationField
+
+    def __init__(self, input_class, *args, **kwargs):
+        self.input_class = input_class
+        super().__init__(*args, **kwargs)

@@ -1,5 +1,6 @@
 import itertools
 
+import graphene
 from django.db import models
 from django_filters.filterset import FILTER_FOR_DBFIELD_DEFAULTS, BaseFilterSet
 from graphene import Argument, InputField, InputObjectType, String
@@ -7,6 +8,7 @@ from graphene.types.inputobjecttype import InputObjectTypeOptions
 from graphene.types.utils import yank_fields_from_attrs
 
 from ..filters import GlobalIDFilter, GlobalIDMultipleChoiceFilter
+from .common import NonNullList
 from .converter import convert_form_field
 
 GLOBAL_ID_FILTERS = {
@@ -74,3 +76,31 @@ class FilterInputObjectType(InputObjectType):
             field_type.kwargs = kwargs
             args[name] = field_type
         return args
+
+
+class StringFilterInput(graphene.InputObjectType):
+    eq = graphene.String(required=False)
+    one_of = NonNullList(graphene.String, required=False)
+
+
+class WhereInputObjectType(FilterInputObjectType):
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def __init_subclass_with_meta__(cls, _meta=None, **options):
+        super().__init_subclass_with_meta__(_meta=_meta, **options)
+        cls._meta.fields.update(
+            {
+                "AND": graphene.Field(
+                    NonNullList(
+                        cls,
+                    )
+                ),
+                "OR": graphene.Field(
+                    NonNullList(
+                        cls,
+                    )
+                ),
+            }
+        )
