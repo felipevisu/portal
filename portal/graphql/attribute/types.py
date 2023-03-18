@@ -77,11 +77,11 @@ class AttributeValueCountableConnection(CountableConnection):
 
 class Attribute(ModelObjectType):
     id = graphene.GlobalID(required=True)
+    type = AttributeTypeEnum()
     input_type = AttributeInputTypeEnum()
-    entity_type = AttributeEntryTypeEnum(required=False)
+    entry_type = AttributeEntryTypeEnum(required=False)
     name = graphene.String()
     slug = graphene.String()
-    type = AttributeTypeEnum()
     choices = FilterConnectionField(
         AttributeValueCountableConnection,
         sort_by=AttributeChoicesSortingInput(),
