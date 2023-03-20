@@ -141,7 +141,7 @@ class Attribute(models.Model):
     objects = AttributeManager()
 
     class Meta:
-        ordering = ("website_search_position", "slug")
+        ordering = ("name",)
 
     def __str__(self) -> str:
         return self.name
@@ -168,7 +168,7 @@ class AttributeValue(SortableModel):
     date_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:
-        ordering = ("sort_order", "pk")
+        ordering = ("name",)
         unique_together = ("slug", "attribute")
 
     def __str__(self) -> str:

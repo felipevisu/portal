@@ -9,9 +9,9 @@ def resolve_attributes(info, qs=None):
 
 def resolve_attribute(info, global_attribute_id=None, slug=None):
     if info.context.user.is_staff:
-        attributes = models.Attribute.objects.get_public_attributes()
-    else:
         attributes = models.Attribute.objects.all()
+    else:
+        attributes = models.Attribute.objects.get_public_attributes()
     if global_attribute_id:
         _, attribute_pk = from_global_id_or_error(global_attribute_id)
         attribute = attributes.filter(pk=attribute_pk).first()
