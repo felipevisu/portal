@@ -1,9 +1,7 @@
 import graphene
-from django.db.models import Exists, OuterRef, Q
 
 from ....attribute import models as models
 from ....core.permissions import AttributePermissions
-from ....entry import models as EntryModels
 from ...core.mutations import ModelDeleteMutation
 from ..types import Attribute, AttributeValue
 

@@ -43,18 +43,13 @@ class AttributeInputType:
 
 
 class AttributeType:
-    ENTRY = "entry"
     DOCUMENT = "document"
-
-    CHOICES = [(ENTRY, "Cadastri"), (DOCUMENT, "Documento")]
-
-
-class AttributeEntryType:
     VEHICLE = "vehicle"
     PROVIDER = "provider"
     VEHICLE_AND_PROVIDER = "vehicle_and_provider"
 
     CHOICES = [
+        (DOCUMENT, "document"),
         (VEHICLE, "vehicle"),
         (PROVIDER, "provider"),
         (VEHICLE_AND_PROVIDER, "vehicle and provider"),

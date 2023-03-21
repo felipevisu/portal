@@ -166,7 +166,7 @@ GRAPHENE = {
 }
 
 SENTRY_DNS = os.environ.get("SENTRY_DNS", None)
-if SENTRY_DNS:
+if SENTRY_DNS and not DEBUG:
     sentry_sdk.init(
         dsn=SENTRY_DNS,
         integrations=[DjangoIntegration(), CeleryIntegration()],

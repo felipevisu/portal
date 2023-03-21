@@ -14,9 +14,24 @@ from ..core.types import File, ModelObjectType, NonNullList
 from ..core.types.common import DateRangeInput, DateTimeRangeInput, IntRangeInput
 from ..decorators import check_attribute_required_permissions
 from .dataloaders import AttributesByAttributeId
-from .enums import AttributeEntryTypeEnum, AttributeInputTypeEnum, AttributeTypeEnum
+from .enums import AttributeInputTypeEnum, AttributeTypeEnum
 from .filters import AttributeValueFilterInput
 from .sorters import AttributeChoicesSortingInput
+
+
+class AttributeValueSelectableTypeInput(graphene.InputObjectType):
+    id = graphene.ID(required=False)
+    value = graphene.String(required=False)
+
+
+class AttributeValueInput(graphene.InputObjectType):
+    id = graphene.ID()
+    values = NonNullList(graphene.String, required=False)
+    dropdown = AttributeValueSelectableTypeInput(required=False)
+    multiselect = NonNullList(AttributeValueSelectableTypeInput, required=False)
+    plain_text = graphene.String(required=False)
+    boolean = graphene.Boolean(required=False)
+    date = graphene.Date(required=False)
 
 
 class AttributeValue(ModelObjectType):
@@ -79,7 +94,6 @@ class Attribute(ModelObjectType):
     id = graphene.GlobalID(required=True)
     type = AttributeTypeEnum()
     input_type = AttributeInputTypeEnum()
-    entry_type = AttributeEntryTypeEnum(required=False)
     name = graphene.String()
     slug = graphene.String()
     choices = FilterConnectionField(

@@ -6,19 +6,13 @@ from ...attribute import AttributeInputType
 from ...attribute.models import Attribute, AttributeValue
 from ..core.filters import (
     EnumFilter,
-    GlobalIDFilter,
     GlobalIDMultipleChoiceFilter,
     ListObjectTypeFilter,
-    OperationObjectTypeFilter,
 )
 from ..core.types.common import NonNullList
-from ..core.types.filter_input import (
-    FilterInputObjectType,
-    StringFilterInput,
-    WhereInputObjectType,
-)
-from ..utils.filters import filter_by_id, filter_by_string_field
-from .enums import AttributeEntryTypeEnum, AttributeInputTypeEnum, AttributeTypeEnum
+from ..core.types.filter_input import FilterInputObjectType
+from ..utils.filters import filter_by_string_field
+from .enums import AttributeInputTypeEnum, AttributeTypeEnum
 
 
 def filter_attribute_search(qs, _, value):
@@ -85,19 +79,9 @@ class AttributeInputTypeEnumFilterInput(graphene.InputObjectType):
     one_of = NonNullList(AttributeInputTypeEnum, required=False)
 
 
-class AttributeEntryTypeEnumFilterInput(graphene.InputObjectType):
-    eq = AttributeEntryTypeEnum(required=False)
-    one_of = NonNullList(AttributeEntryTypeEnum, required=False)
-
-
 class AttributeTypeEnumFilterInput(graphene.InputObjectType):
     eq = AttributeTypeEnum(required=False)
     one_of = NonNullList(AttributeTypeEnum, required=False)
-
-
-class AttributeEntryTypeEnumFilterInput(graphene.InputObjectType):
-    eq = AttributeEntryTypeEnum(required=False)
-    one_of = NonNullList(AttributeEntryTypeEnum, required=False)
 
 
 def filter_attribute_name(qs, _, value):
@@ -119,10 +103,6 @@ def filter_with_choices(qs, _, value):
 
 def filter_attribute_input_type(qs, _, value):
     return filter_by_string_field(qs, "input_type", value)
-
-
-def filter_attribute_entry_type(qs, _, value):
-    return filter_by_string_field(qs, "entry_type", value)
 
 
 def filter_attribute_type(qs, _, value):

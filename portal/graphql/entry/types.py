@@ -1,12 +1,13 @@
 import graphene
 
-from portal.graphql.document.dataloaders import DocumentsByEntryIdLoader
-from portal.graphql.entry.enums import EntryTypeEnum
-
 from ...entry import models
+from ..attribute.dataloaders import SelectedAttributesByEntryIdLoader
+from ..attribute.types import SelectedAttribute
 from ..core.connection import CountableConnection, create_connection_slice
 from ..core.fields import ConnectionField
 from ..core.types import ModelObjectType
+from ..core.types.common import NonNullList
+from ..document.dataloaders import DocumentsByEntryIdLoader
 from ..document.types import DocumentCountableConnection
 from .dataloaders import CategoryByIdLoader, EntriesByCategoryIdLoader
 from .enums import EntryTypeEnum
@@ -24,6 +25,7 @@ class Entry(ModelObjectType):
     address = graphene.String()
     documents = ConnectionField(DocumentCountableConnection)
     type = EntryTypeEnum()
+    attributes = NonNullList(SelectedAttribute, required=True)
 
     class Meta:
         model = models.Entry
@@ -43,6 +45,10 @@ class Entry(ModelObjectType):
         else:
             return None
         return CategoryByIdLoader(info.context).load(category_id)
+
+    @staticmethod
+    def resolve_attributes(root, info):
+        return SelectedAttributesByEntryIdLoader(info.context).load(root.id)
 
 
 class EntryCountableConnection(CountableConnection):

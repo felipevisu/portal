@@ -4,7 +4,7 @@ from ....attribute import models as models
 from ....core.permissions import AttributePermissions
 from ...core.mutations import ModelMutation
 from ...core.types import NonNullList
-from ..enums import AttributeEntryTypeEnum, AttributeInputTypeEnum, AttributeTypeEnum
+from ..enums import AttributeInputTypeEnum, AttributeTypeEnum
 from ..types import Attribute
 from .mixins import AttributeMixin
 
@@ -20,11 +20,10 @@ class AttributeValueCreateInput(AttributeValueInput):
 
 
 class AttributeCreateInput(graphene.InputObjectType):
+    type = AttributeTypeEnum(required=True)
     input_type = AttributeInputTypeEnum()
-    entry_type = AttributeEntryTypeEnum()
     name = graphene.String(required=True)
     slug = graphene.String(required=False)
-    type = AttributeTypeEnum(required=True)
     values = NonNullList(AttributeValueCreateInput)
     value_required = graphene.Boolean()
     visible_in_website = graphene.Boolean()

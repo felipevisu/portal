@@ -4,7 +4,7 @@ from django.db.models import Exists, OuterRef, Q
 from ..core.models import SortableModel
 from ..document.models import Document
 from ..entry.models import Entry
-from . import AttributeEntryType, AttributeInputType, AttributeType
+from . import AttributeInputType, AttributeType
 
 
 class BaseAttributeQuerySet(models.QuerySet):
@@ -49,7 +49,7 @@ class BaseAssignedAttribute(models.Model):
         return self.assignment.attribute
 
 
-class AssignedProductAttributeValue(SortableModel):
+class AssignedEntryAttributeValue(models.Model):
     value = models.ForeignKey(
         "AttributeValue",
         on_delete=models.CASCADE,
@@ -63,7 +63,24 @@ class AssignedProductAttributeValue(SortableModel):
 
     class Meta:
         unique_together = (("value", "assignment"),)
-        ordering = ("sort_order", "pk")
+        ordering = ("pk",)
+
+
+class AssignedDocumentAttributeValue(models.Model):
+    value = models.ForeignKey(
+        "AttributeValue",
+        on_delete=models.CASCADE,
+        related_name="documentvalueassignment",
+    )
+    assignment = models.ForeignKey(
+        "AssignedDocumentAttribute",
+        on_delete=models.CASCADE,
+        related_name="documentvalueassignment",
+    )
+
+    class Meta:
+        unique_together = (("value", "assignment"),)
+        ordering = ("pk",)
 
 
 class AssignedEntryAttribute(BaseAssignedAttribute):
@@ -77,6 +94,8 @@ class AssignedEntryAttribute(BaseAssignedAttribute):
         "AttributeValue",
         blank=True,
         related_name="entryassignments",
+        through=AssignedEntryAttributeValue,
+        through_fields=("assignment", "value"),
     )
 
     class Meta:
@@ -94,6 +113,8 @@ class AssignedDocumentAttribute(BaseAssignedAttribute):
         "AttributeValue",
         blank=True,
         related_name="documentassignments",
+        through=AssignedDocumentAttributeValue,
+        through_fields=("assignment", "value"),
     )
 
     class Meta:
@@ -110,10 +131,6 @@ class Attribute(models.Model):
         choices=AttributeInputType.CHOICES,
         default=AttributeInputType.DROPDOWN,
     )
-    entry_type = models.CharField(
-        max_length=50, choices=AttributeEntryType.CHOICES, blank=True, null=True
-    )
-
     assigned_entries = models.ManyToManyField(
         Entry,
         blank=True,
