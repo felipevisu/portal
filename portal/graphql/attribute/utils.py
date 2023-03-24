@@ -199,9 +199,7 @@ class AttributeAssignmentMixin:
 
         # drop attribute assignment model when values are unassigned from instance
         if clean_assignment:
-            instance.attributes.filter(
-                assignment__attribute_id__in=clean_assignment
-            ).delete()
+            instance.attributes.filter(id__in=clean_assignment).delete()
 
     @classmethod
     def _pre_save_dropdown_value(

@@ -1,7 +1,7 @@
 import graphene
 import pytest
 
-from portal.entry.models import Category, Entry
+from portal.entry.models import Entry
 
 from ...tests.utils import get_graphql_content, get_graphql_content_from_response
 
@@ -188,8 +188,8 @@ def test_entries_filter_by_type(staff_api_client, vehicle_list, provider_list):
 
 
 CREATE_ENTRY_MUTATION = """
-    mutation EntryCreate($input: EntryInput!, $type: EntryTypeEnum){
-        entryCreate(input: $input, type: $type){
+    mutation EntryCreate($input: EntryInput!){
+        entryCreate(input: $input){
             entry{
                 id
                 name
@@ -215,8 +215,9 @@ def test_entry_create(staff_api_client, category, permission_manage_entries):
         "documentNumber": "123456789",
         "category": category_id,
         "email": "vehicle@email.com",
+        "type": "VEHICLE",
     }
-    variables = {"input": input, "type": "VEHICLE"}
+    variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_ENTRY_MUTATION,
         variables=variables,
@@ -237,8 +238,9 @@ def test_entry_create_without_slug(
         "documentNumber": "123456789",
         "category": category_id,
         "email": "vehicle@email.com",
+        "type": "VEHICLE",
     }
-    variables = {"input": input, "type": "VEHICLE"}
+    variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_ENTRY_MUTATION,
         variables=variables,
@@ -256,8 +258,9 @@ def test_entry_create_without_category(staff_api_client, permission_manage_entri
         "name": "Entry",
         "documentNumber": "123456789",
         "email": "vehicle@email.com",
+        "type": "VEHICLE",
     }
-    variables = {"input": input, "type": "VEHICLE"}
+    variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_ENTRY_MUTATION,
         variables=variables,
@@ -278,8 +281,9 @@ def test_entry_create_without_document(
         "slug": "entry",
         "category": category_id,
         "email": "vehicle@email.com",
+        "type": "VEHICLE",
     }
-    variables = {"input": input, "type": "VEHICLE"}
+    variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_ENTRY_MUTATION,
         variables=variables,
@@ -300,8 +304,9 @@ def test_entry_create_without_email(
         "slug": "entry",
         "category": category_id,
         "documentNumber": "123456789",
+        "type": "VEHICLE",
     }
-    variables = {"input": input, "type": "VEHICLE"}
+    variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_ENTRY_MUTATION,
         variables=variables,

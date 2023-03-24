@@ -63,7 +63,6 @@ class EntryCreate(ModelMutation):
 
         attributes = cleaned_input.get("attributes")
         entry_type = cleaned_input.get("type")
-
         if attributes and entry_type:
             try:
                 cleaned_input["attributes"] = cls.clean_attributes(

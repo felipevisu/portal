@@ -2,7 +2,7 @@ import django_filters
 import graphene
 from django.db.models import Q
 
-from ...attribute import AttributeInputType
+from ...attribute import AttributeInputType, AttributeType
 from ...attribute.models import Attribute, AttributeValue
 from ..core.filters import (
     EnumFilter,
@@ -24,7 +24,10 @@ def filter_attribute_search(qs, _, value):
 def filter_by_attribute_type(qs, _, value):
     if not value:
         return qs
-    return qs.filter(type=value)
+    values = [value]
+    if value in [AttributeType.VEHICLE, AttributeType.PROVIDER]:
+        values.append(AttributeType.VEHICLE_AND_PROVIDER)
+    return qs.filter(type__in=values)
 
 
 def filter_slug_list(qs, _, values):
