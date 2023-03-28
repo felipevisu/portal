@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 
+from portal.graphql.core.types.common import EntryError
+
 from ...attribute import AttributeType
 from ...attribute.models import Attribute
 from ...core.permissions import EntryPermissions
@@ -40,6 +42,7 @@ class EntryCreate(ModelMutation):
         model = models.Entry
         permissions = (EntryPermissions.MANAGE_ENTRIES,)
         object_type = Entry
+        error_type_class = EntryError
 
     @classmethod
     def clean_attributes(cls, attributes, entry_type):
@@ -83,7 +86,7 @@ class EntryCreate(ModelMutation):
                 AttributeAssignmentMixin.save(instance, attributes)
 
 
-class EntryUpdate(ModelMutation):
+class EntryUpdate(EntryCreate):
     entry = graphene.Field(Entry)
 
     class Arguments:
@@ -94,6 +97,38 @@ class EntryUpdate(ModelMutation):
         model = models.Entry
         permissions = (EntryPermissions.MANAGE_ENTRIES,)
         object_type = Entry
+        error_type_class = EntryError
+
+    @classmethod
+    def clean_input(cls, info, instance, data, input_cls=None):
+        cleaned_input = super().clean_input(info, instance, data, input_cls)
+        try:
+            cleaned_input = validate_slug_and_generate_if_needed(
+                instance, "name", cleaned_input
+            )
+        except ValidationError as error:
+            raise ValidationError({"slug": error})
+
+        attributes = cleaned_input.get("attributes")
+        if attributes:
+            try:
+                cleaned_input["attributes"] = cls.clean_attributes(
+                    attributes, instance.type
+                )
+            except ValidationError as exc:
+                raise ValidationError({"attributes": exc})
+
+        return cleaned_input
+
+    @classmethod
+    def clean_attributes(cls, attributes, entry_type):
+        attributes_qs = Attribute.objects.filter(
+            type__in=[AttributeType.VEHICLE_AND_PROVIDER, entry_type]
+        )
+        attributes = AttributeAssignmentMixin.clean_input(
+            attributes, attributes_qs, creation=False, is_document_attributes=False
+        )
+        return attributes
 
 
 class EntryDelete(ModelDeleteMutation):
