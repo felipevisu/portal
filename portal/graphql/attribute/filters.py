@@ -18,7 +18,7 @@ from .enums import AttributeInputTypeEnum, AttributeTypeEnum
 def filter_attribute_search(qs, _, value):
     if not value:
         return qs
-    return qs.filter(Q(slug__ilike=value) | Q(name__ilike=value))
+    return qs.filter(Q(slug__icontains=value) | Q(name__icontains=value))
 
 
 def filter_by_attribute_type(qs, _, value):
@@ -67,7 +67,7 @@ class AttributeValueFilter(django_filters.FilterSet):
     def filter_search(cls, queryset, _name, value):
         if not value:
             return queryset
-        name_slug_qs = Q(name__ilike=value) | Q(slug__ilike=value)
+        name_slug_qs = Q(name__icontains=value) | Q(slug__icontains=value)
 
         return queryset.filter(name_slug_qs)
 
