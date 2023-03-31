@@ -4,13 +4,34 @@ from ...entry import models
 from ..attribute.dataloaders import SelectedAttributesByEntryIdLoader
 from ..attribute.types import SelectedAttribute
 from ..core.connection import CountableConnection, create_connection_slice
-from ..core.fields import ConnectionField
+from ..core.fields import ConnectionField, PermissionsField
 from ..core.types import ModelObjectType
 from ..core.types.common import NonNullList
 from ..document.dataloaders import DocumentsByEntryIdLoader
 from ..document.types import DocumentCountableConnection
-from .dataloaders import CategoryByIdLoader, EntriesByCategoryIdLoader
+from .dataloaders import (
+    CategoryByIdLoader,
+    ConsultByEntryIdLoader,
+    EntriesByCategoryIdLoader,
+)
 from .enums import EntryTypeEnum
+
+
+class Consult(ModelObjectType):
+    id = graphene.GlobalID(required=True)
+    entry = graphene.Field(lambda: Entry)
+    response = graphene.JSONString()
+    plugin = graphene.String()
+    created = graphene.DateTime()
+
+    class Meta:
+        model = models.Consult
+        interfaces = [graphene.relay.Node]
+
+
+class ConsultCountableConnection(CountableConnection):
+    class Meta:
+        node = Consult
 
 
 class Entry(ModelObjectType):
@@ -26,6 +47,7 @@ class Entry(ModelObjectType):
     documents = ConnectionField(DocumentCountableConnection)
     type = EntryTypeEnum()
     attributes = NonNullList(SelectedAttribute, required=True)
+    consult = PermissionsField(NonNullList(Consult))
 
     class Meta:
         model = models.Entry
@@ -49,6 +71,10 @@ class Entry(ModelObjectType):
     @staticmethod
     def resolve_attributes(root, info):
         return SelectedAttributesByEntryIdLoader(info.context).load(root.id)
+
+    @staticmethod
+    def resolve_consult(root, info, **kwargs):
+        return ConsultByEntryIdLoader(info.context).load(root.id)
 
 
 class EntryCountableConnection(CountableConnection):

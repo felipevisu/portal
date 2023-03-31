@@ -1,3 +1,4 @@
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 from ..core.models import ModelWithDates, ModelWithSlug, PublishableModel
@@ -35,3 +36,12 @@ class Entry(ModelWithDates, ModelWithSlug, PublishableModel):
 
     def __str__(self):
         return self.name
+
+
+class Consult(ModelWithDates):
+    entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="consult")
+    plugin = models.CharField(max_length=64)
+    response = models.JSONField(blank=True, default=dict, encoder=DjangoJSONEncoder)
+
+    class Meta:
+        ordering = ["-created"]

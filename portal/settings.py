@@ -143,6 +143,7 @@ USE_TZ = True
 BUILTIN_PLUGINS = [
     "portal.plugins.admin_email.plugin.AdminEmailPlugin",
     "portal.plugins.sendgrid.plugin.SendgridEmailPlugin",
+    "portal.plugins.cnpjws.plugin.CNPJWSPlugin",
 ]
 
 EXTERNAL_PLUGINS = []

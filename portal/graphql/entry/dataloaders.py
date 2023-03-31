@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from ...entry.models import Category, Entry
+from ...entry.models import Category, Consult, Entry
 from ..core.dataloaders import DataLoader
 
 
@@ -33,3 +33,18 @@ class EntriesByCategoryIdLoader(DataLoader):
         ):
             entries_by_category_ids[entry.category_id].append(entry)
         return [entries_by_category_ids.get(key, []) for key in keys]
+
+
+class ConsultByEntryIdLoader(DataLoader):
+    context_key = "consult_by_entry_id"
+
+    def batch_load(self, keys):
+        consult_by_entry_ids = defaultdict(list)
+        for consult in (
+            Consult.objects.all()
+            .using(self.database_connection_name)
+            .filter(entry_id__in=keys)
+            .iterator()
+        ):
+            consult_by_entry_ids[consult.entry_id].append(consult)
+        return [consult_by_entry_ids.get(key, []) for key in keys]

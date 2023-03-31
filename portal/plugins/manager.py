@@ -1,17 +1,5 @@
 from collections import defaultdict
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    DefaultDict,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, DefaultDict, Dict, List, Optional, Type
 
 import opentracing
 from django.conf import settings
@@ -22,7 +10,7 @@ from .models import PluginConfiguration
 
 if TYPE_CHECKING:
     from ..account.models import User
-    from ..entry.models import Category
+    from ..entry.models import Category, Entry
     from .base_plugin import BasePlugin
 
 
@@ -151,6 +139,21 @@ class PluginsManager:
             return previous_value
         return returned_value
 
+    def __run_plugin_method_until_first_success(
+        self,
+        method_name: str,
+        default_value,
+        *args,
+    ):
+        plugins = self.get_plugins()
+        for plugin in plugins:
+            result = self.__run_method_on_single_plugin(
+                plugin, method_name, default_value, *args
+            )
+            if result is not None:
+                return result
+        return None
+
     def category_created(self, category: "Category"):
         default_value = None
         return self.__run_method_on_plugins("category_created", default_value, category)
@@ -162,6 +165,12 @@ class PluginsManager:
     def category_deleted(self, category: "Category"):
         default_value = None
         return self.__run_method_on_plugins("category_deleted", default_value, category)
+
+    def consult_document(self, entry: "Entry"):
+        default_value = None
+        return self.__run_plugin_method_until_first_success(
+            "consult_document", default_value, entry
+        )
 
     def get_plugins(
         self, channel_slug: Optional[str] = None, active_only=False
@@ -175,21 +184,6 @@ class PluginsManager:
         if active_only:
             plugins = [plugin for plugin in plugins if plugin.active]
         return plugins
-
-    def __run_plugin_method_until_first_success(
-        self,
-        method_name: str,
-        *args,
-        channel_slug: Optional[str] = None,
-    ):
-        plugins = self.get_plugins(channel_slug=channel_slug)
-        for plugin in plugins:
-            result = self.__run_method_on_single_plugin(
-                plugin, method_name, None, *args
-            )
-            if result is not None:
-                return result
-        return None
 
     def notify(
         self,

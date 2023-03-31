@@ -83,6 +83,7 @@ class BasePlugin:
     session_created: Callable[["Session", None], None]
     session_deleted: Callable[["Session", None], None]
     session_updated: Callable[["Session", None], None]
+    consult_document: Callable[["Entry", None], None]
 
     @classmethod
     def _update_config_items(

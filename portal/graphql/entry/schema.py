@@ -12,6 +12,7 @@ from .mutations import (
     CategoryCreate,
     CategoryDelete,
     CategoryUpdate,
+    ConsultDocument,
     EntryBulkDelete,
     EntryCreate,
     EntryDelete,
@@ -80,3 +81,4 @@ class Mutation(graphene.ObjectType):
     entry_update = EntryUpdate.Field()
     entry_delete = EntryDelete.Field()
     entry_bulk_delete = EntryBulkDelete.Field()
+    consult_document = ConsultDocument.Field()
