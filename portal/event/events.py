@@ -2,6 +2,21 @@ from . import EventTypes
 from .models import Event
 
 
+def event_document_created(document, user):
+    Event.objects.create(type=EventTypes.DOCUMENT_CREATED, instance=document, user=user)
+
+
+def event_document_updated(document, user):
+    Event.objects.create(type=EventTypes.DOCUMENT_UPDATED, instance=document, user=user)
+
+
+def event_document_deleted(document, user):
+    parameters = {"name": document.name, "entry": document.entry.name}
+    Event.objects.create(
+        type=EventTypes.DOCUMENT_DELETED, parameters=parameters, user=user
+    )
+
+
 def event_document_received(document_id):
     return Event.objects.create(
         document_id=document_id, type=EventTypes.DOCUMENT_RECEIVED

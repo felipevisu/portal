@@ -2,11 +2,15 @@ import graphene
 from django.core.exceptions import ValidationError
 from graphene_file_upload.scalars import Upload
 
-from portal.core.exeptions import PermissionDenied
-from portal.event.models import OneTimeToken
-
+from ...core.exeptions import PermissionDenied
 from ...core.permissions import DocumentPermissions
 from ...document import DocumentFileStatus, models
+from ...event.events import (
+    event_document_created,
+    event_document_deleted,
+    event_document_updated,
+)
+from ...event.models import OneTimeToken
 from ...event.notifications import send_request_new_document
 from ...plugins.manager import get_plugins_manager
 from ..core.mutations import (
@@ -86,6 +90,10 @@ class DocumentCreate(ModelMutation):
 
         return DocumentCreate(document=instance)
 
+    @classmethod
+    def post_save_action(cls, info, instance, cleaned_input):
+        event_document_created(instance, info.context.user)
+
 
 class DocumentUpdate(ModelMutation):
     document = graphene.Field(Document)
@@ -150,6 +158,10 @@ class DocumentUpdate(ModelMutation):
         cls.save_default_file(instance, file_input)
         return DocumentCreate(document=instance)
 
+    @classmethod
+    def post_save_action(cls, info, instance, cleaned_input):
+        event_document_updated(instance, info.context.user)
+
 
 class DocumentDelete(ModelDeleteMutation):
     class Arguments:
@@ -160,12 +172,14 @@ class DocumentDelete(ModelDeleteMutation):
         permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
         object_type = Document
 
+    @classmethod
+    def post_save_action(cls, info, instance):
+        event_document_deleted(instance, info.context.user)
+
 
 class DocumentBulkDelete(ModelBulkDeleteMutation):
     class Arguments:
-        ids = NonNullList(
-            graphene.ID, required=True, description="List of documents IDs to delete."
-        )
+        ids = NonNullList(graphene.ID, required=True)
 
     class Meta:
         description = "Deletes segments."

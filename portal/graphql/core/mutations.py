@@ -402,6 +402,7 @@ class ModelDeleteMutation(ModelMutation):
             instance.delete()
             instance.id = db_id
 
+        cls.post_save_action(info, instance, None)
         return cls.success_response(instance)
 
 
