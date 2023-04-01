@@ -2,6 +2,9 @@ import pytest
 from django.contrib.auth.models import Permission
 
 from portal.account.models import User
+from portal.attribute import AttributeInputType, AttributeType
+from portal.attribute.models import Attribute, AttributeValue
+from portal.attribute.utils import associate_attribute_values_to_instance
 from portal.channel.models import Channel
 from portal.document.models import Document, DocumentFile
 from portal.entry import EntryType
@@ -45,6 +48,11 @@ def permission_manage_plugins():
 
 
 @pytest.fixture
+def permission_manage_attributes():
+    return Permission.objects.get(codename="manage_attributes")
+
+
+@pytest.fixture
 def staff_user():
     user = User.objects.create_user(  # type: ignore
         email="test@example.com",
@@ -67,6 +75,66 @@ def admin_user(db):
         is_active=True,
         is_superuser=True,
     )
+
+
+@pytest.fixture
+def color_attribute():
+    attribute = Attribute.objects.create(
+        slug="color",
+        name="Color",
+        type=AttributeType.PROVIDER,
+        input_type=AttributeInputType.MULTISELECT,
+        filterable_in_website=True,
+        filterable_in_dashboard=True,
+    )
+    AttributeValue.objects.create(attribute=attribute, name="Red", slug="red")
+    AttributeValue.objects.create(attribute=attribute, name="Blue", slug="blue")
+    return attribute
+
+
+@pytest.fixture
+def color_attribute_without_values():
+    return Attribute.objects.create(
+        slug="color",
+        name="Color",
+        type=AttributeType.PROVIDER,
+        filterable_in_website=True,
+        filterable_in_dashboard=True,
+    )
+
+
+@pytest.fixture
+def attribute_without_values():
+    return Attribute.objects.create(
+        slug="dropdown",
+        name="Dropdown",
+        type=AttributeType.PROVIDER,
+        filterable_in_website=True,
+        filterable_in_dashboard=True,
+        visible_in_website=True,
+    )
+
+
+@pytest.fixture
+def pink_attribute_value(color_attribute):  # pylint: disable=W0613
+    value = AttributeValue.objects.create(
+        slug="pink", name="Pink", attribute=color_attribute, value="#FF69B4"
+    )
+    return value
+
+
+@pytest.fixture
+def size_attribute():
+    attribute = Attribute.objects.create(
+        slug="size",
+        name="Size",
+        type=AttributeType.DOCUMENT,
+        filterable_in_website=True,
+        filterable_in_dashboard=True,
+    )
+    AttributeValue.objects.create(attribute=attribute, name="Small", slug="small")
+    AttributeValue.objects.create(attribute=attribute, name="Big", slug="big")
+    return attribute
 
 
 @pytest.fixture
@@ -139,7 +207,7 @@ def vehicle_list(category):
 
 
 @pytest.fixture
-def provider(category):
+def provider(category, color_attribute):
     category.type = EntryType.PROVIDER
     category.save()
     provider = Entry.objects.create(
@@ -151,6 +219,8 @@ def provider(category):
         is_published=True,
         email="provider@email.com",
     )
+    attribute_value = color_attribute.values.first()
+    associate_attribute_values_to_instance(provider, color_attribute, attribute_value)
     return provider
 
 
@@ -193,7 +263,7 @@ def provider_list(category):
 
 
 @pytest.fixture
-def document(vehicle, default_file):
+def document(vehicle):
     document = Document.objects.create(name="Document", entry=vehicle)
     default_file = DocumentFile.objects.create(
         file="/path/to/file.pdf", document=document

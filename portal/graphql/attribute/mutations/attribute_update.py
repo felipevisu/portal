@@ -56,9 +56,9 @@ class AttributeUpdate(AttributeMixin, ModelMutation):
 
     @classmethod
     def perform_mutation(  # type: ignore[override]
-        cls, _root, info, /, *, external_reference=None, id=None, input
+        cls, _root, info, /, *, id=None, input
     ):
-        instance = cls.get_instance(info, external_reference=external_reference, id=id)
+        instance = cls.get_instance(info, id=id)
 
         # Do cleaning and uniqueness checks
         cleaned_input = cls.clean_input(info, instance, input)

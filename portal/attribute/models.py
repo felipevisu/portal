@@ -1,7 +1,8 @@
 from django.db import models
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Exists, OuterRef
 
 from ..core.models import SortableModel
+from ..core.permissions import AttributePermissions
 from ..document.models import Document
 from ..entry.models import Entry
 from . import AttributeInputType, AttributeType
@@ -159,6 +160,9 @@ class Attribute(models.Model):
 
     class Meta:
         ordering = ("name",)
+        permissions = (
+            (AttributePermissions.MANAGE_ATTRIBUTES.codename, "Manage attributes."),
+        )
 
     def __str__(self) -> str:
         return self.name

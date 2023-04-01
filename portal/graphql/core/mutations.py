@@ -339,7 +339,9 @@ class ModelMutation(BaseMutation):
                 # handle list of IDs field
                 if value is not None and is_list_of_ids(field_item):
                     instances = (
-                        cls.get_nodes_or_error(value, field_name) if value else []
+                        cls.get_nodes_or_error(value, field_name, schema=info.schema)
+                        if value
+                        else []
                     )
                     cleaned_input[field_name] = instances
 
