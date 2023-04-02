@@ -12,7 +12,7 @@ from ..core.connection import (
 from ..core.fields import ConnectionField, FilterConnectionField
 from ..core.types import File, ModelObjectType, NonNullList
 from ..core.types.common import DateRangeInput, DateTimeRangeInput, IntRangeInput
-from ..decorators import check_required_permissions
+from ..decorators import check_attribute_required_permissions
 from .dataloaders import AttributesByAttributeId
 from .enums import AttributeInputTypeEnum, AttributeTypeEnum
 from .filters import AttributeValueFilterInput
@@ -134,22 +134,22 @@ class Attribute(ModelObjectType):
         )
 
     @staticmethod
-    @check_required_permissions()
+    @check_attribute_required_permissions()
     def resolve_value_required(root, _info):
         return root.value_required
 
     @staticmethod
-    @check_required_permissions()
+    @check_attribute_required_permissions()
     def resolve_visible_in_website(root: models.Attribute, _info):
         return root.visible_in_website
 
     @staticmethod
-    @check_required_permissions()
+    @check_attribute_required_permissions()
     def resolve_filterable_in_website(root: models.Attribute, _info):
         return root.filterable_in_website
 
     @staticmethod
-    @check_required_permissions()
+    @check_attribute_required_permissions()
     def resolve_filterable_in_dashboard(root: models.Attribute, _info):
         return root.filterable_in_dashboard
 

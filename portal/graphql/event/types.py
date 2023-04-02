@@ -1,6 +1,6 @@
 import graphene
 
-from ...event import models
+from ...event import EventTypes, models
 from ..account.types import User
 from ..core.connection import CountableConnection
 from ..core.types import ModelObjectType
@@ -21,8 +21,7 @@ class Event(ModelObjectType):
         interfaces = [graphene.relay.Node]
 
     def resolve_type(self, info):
-        print(self.get_type_display())
-        return self.get_type_display()
+        return self.type
 
     def resolve_document(self, info):
         if self.document_id:

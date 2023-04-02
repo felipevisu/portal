@@ -205,7 +205,7 @@ class RequestNewDocument(BaseMutation):
 
 
 class ValidateDocumentToken(BaseMutation):
-    success = graphene.Boolean()
+    document = graphene.Field(Document)
 
     class Arguments:
         token = graphene.String(required=True)
@@ -213,10 +213,9 @@ class ValidateDocumentToken(BaseMutation):
     @classmethod
     def perform_mutation(cls, _root, info, token):
         token = OneTimeToken.objects.filter(token=token).first()
-        success = False
-        if token:
-            success = True
-        return RequestNewDocument(success=success)
+        if not token:
+            raise ValidationError("Token expirado")
+        return ValidateDocumentToken(document=token.document)
 
 
 class ApproveDocumentFile(BaseMutation):
