@@ -29,6 +29,7 @@ class Entry(ModelWithDates, ModelWithSlug, PublishableModel):
     email = models.CharField(max_length=258)
     phone = models.CharField(max_length=258, null=True, blank=True)
     address = models.CharField(max_length=258, null=True, blank=True)
+    active = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["name"]

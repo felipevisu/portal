@@ -35,6 +35,7 @@ class EntryInput(graphene.InputObjectType):
     phone = graphene.String(required=False)
     address = graphene.String(required=False)
     attributes = NonNullList(AttributeValueInput)
+    active = graphene.Boolean()
 
 
 class EntryCreate(ModelMutation):

@@ -48,6 +48,7 @@ class Entry(ModelObjectType):
     type = EntryTypeEnum()
     attributes = NonNullList(SelectedAttribute, required=True)
     consult = PermissionsField(NonNullList(Consult))
+    active = graphene.Boolean()
 
     class Meta:
         model = models.Entry
