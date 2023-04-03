@@ -15,8 +15,8 @@ def build_request_new_document_payload(document, user=None):
     site_context = get_site_context()
     payload = {
         "document_id": document.id,
-        "user_id": user.id if user else None,
         "document_global_id": to_global_id("Document", document.id),
+        "user_id": user.id if user else None,
         "document_name": document.name,
         "token": get_document_token(document),
         "entry_name": document.entry.name,

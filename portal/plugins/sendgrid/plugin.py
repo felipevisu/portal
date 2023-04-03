@@ -75,7 +75,7 @@ class SendgridEmailPlugin(BasePlugin):
         "document_received_template_id": {
             "type": ConfigurationTypeField.STRING,
             "help_text": HELP_TEXT_TEMPLATE,
-            "label": "Document refused email template",
+            "label": "Document received email template",
         },
         "document_approved_template_id": {
             "type": ConfigurationTypeField.STRING,
@@ -126,7 +126,7 @@ class SendgridEmailPlugin(BasePlugin):
             # the empty fields means that we should not send an email for this event.
             return previous_value
 
-        event_task(payload, asdict(self.config))
+        event_task.delay(payload, asdict(self.config))
 
     @classmethod
     def validate_plugin_configuration(

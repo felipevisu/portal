@@ -7,7 +7,10 @@ from ....core.permissions import DocumentPermissions
 from ....document import DocumentFileStatus, models
 from ....event.events import event_document_created
 from ....event.models import OneTimeToken
-from ....event.notifications import send_request_new_document
+from ....event.notifications import (
+    send_new_document_received,
+    send_request_new_document,
+)
 from ....plugins.manager import get_plugins_manager
 from ...core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
 from ..types import Document, DocumentFile
@@ -177,4 +180,10 @@ class DocumentUpdateByEntry(TokenMixin, ModelMutation):
         instance.status = DocumentFileStatus.WAITING
         instance.save()
         token.delete()
+        cls.post_save_action(info, instance, cleaned_input)
         return DocumentUpdateByEntry()
+
+    @classmethod
+    def post_save_action(cls, info, instance, cleaned_input):
+        manager = get_plugins_manager()
+        send_new_document_received(instance.document, manager)
