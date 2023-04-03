@@ -18,7 +18,7 @@ class DocumentDelete(ModelDeleteMutation):
         object_type = Document
 
     @classmethod
-    def post_save_action(cls, info, instance):
+    def post_save_action(cls, info, instance, cleaned_input):
         event_document_deleted(instance, info.context.user)
 
 
