@@ -12,7 +12,7 @@ from ..entry.dataloaders import EntryByIdLoader
 from ..event.dataloaders import EventsByDocumentIdLoader
 from ..event.types import Event
 from .dataloaders import DocumentFilesByDocumentIdLoader
-from .enums import DocumentFileStatusEnum
+from .enums import DocumentFileStatusEnum, DocumentLoadOptionsEnum
 
 
 class DocumentFile(ModelObjectType):
@@ -54,6 +54,7 @@ class Document(ModelObjectType):
         NonNullList(lambda: Event),
         permissions=[EventPermissions.MANAGE_EVENTS],
     )
+    load_type = DocumentLoadOptionsEnum()
 
     class Meta:
         model = models.Document

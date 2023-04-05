@@ -6,6 +6,7 @@ from ....core.permissions import DocumentPermissions
 from ....document import DocumentFileStatus, models
 from ....event.events import event_document_created
 from ...core.mutations import ModelMutation
+from ..enums import DocumentLoadOptionsEnum
 from ..types import Document
 
 
@@ -20,6 +21,7 @@ class DocumentInput(graphene.InputObjectType):
     expires = graphene.Boolean(default=False)
     begin_date = graphene.Date(required=False)
     expiration_date = graphene.Date(required=False)
+    load_type = DocumentLoadOptionsEnum()
 
 
 class DocumentCreate(ModelMutation):

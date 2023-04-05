@@ -4,8 +4,8 @@ from graphene_file_upload.scalars import Upload
 
 from ....core.exeptions import PermissionDenied
 from ....core.permissions import DocumentPermissions
-from ....document import DocumentFileStatus, models
-from ....event.events import event_document_created
+from ....document import DocumentFileStatus, DocumentLoadOptions, models
+from ....document.tasks import load_new_document_from_api
 from ....event.models import OneTimeToken
 from ....event.notifications import (
     send_new_document_received,
@@ -30,6 +30,32 @@ class RequestNewDocument(BaseMutation):
         user = info.context.user
         send_request_new_document(document, manager, user)
         return RequestNewDocument()
+
+
+class LoadNewDocumentFromAPI(BaseMutation):
+    document = graphene.Field(Document)
+
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    class Meta:
+        permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
+
+    @classmethod
+    def clean_instance(cls, info, instance):
+        if instance.load_type == DocumentLoadOptions.EMPTY:
+            raise ValidationError(
+                {"load_type": "O documento precisa ter um tipo de consulta definido."}
+            )
+
+    @classmethod
+    def perform_mutation(cls, _root, info, id):
+        document = cls.get_node_or_error(info, id, only_type=Document)
+        cls.clean_instance(info, document)
+        manager = get_plugins_manager()
+        load_new_document_from_api(document, manager)
+        document.refresh_from_db()
+        return LoadNewDocumentFromAPI(document=document)
 
 
 class TokenMixin:

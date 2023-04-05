@@ -84,6 +84,7 @@ class BasePlugin:
     session_deleted: Callable[["Session", None], None]
     session_updated: Callable[["Session", None], None]
     consult_document: Callable[["Entry", None], None]
+    consult_correctional_negative_certificate: Callable[["Document", None], None]
 
     @classmethod
     def _update_config_items(

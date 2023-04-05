@@ -11,6 +11,7 @@ from .mutations import (
     DocumentFileDelete,
     DocumentUpdate,
     DocumentUpdateByEntry,
+    LoadNewDocumentFromAPI,
     RefuseDocumentFile,
     RequestNewDocument,
     RestoreDocumentFile,
@@ -45,6 +46,7 @@ class Mutation(graphene.ObjectType):
     document_bulk_delete = DocumentBulkDelete.Field()
     document_file_delete = DocumentFileDelete.Field()
     document_update_by_entry = DocumentUpdateByEntry.Field()
+    load_new_document_from_API = LoadNewDocumentFromAPI.Field()
     request_new_document = RequestNewDocument.Field()
     validate_token = ValidateDocumentToken.Field()
     approve_document_file = ApproveDocumentFile.Field()

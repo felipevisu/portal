@@ -6,7 +6,7 @@ from django.utils.text import slugify
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import DocumentPermissions
 from ..entry.models import Entry
-from . import DocumentFileStatus
+from . import DocumentFileStatus, DocumentLoadOptions
 
 
 def get_upload_path(instance, filename):
@@ -34,6 +34,11 @@ class Document(ModelWithDates, PublishableModel):
         blank=True,
         null=True,
         related_name="+",
+    )
+    load_type = models.CharField(
+        max_length=256,
+        choices=DocumentLoadOptions.CHOICES,
+        default=DocumentLoadOptions.EMPTY,
     )
 
     class Meta:

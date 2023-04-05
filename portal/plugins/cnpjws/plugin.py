@@ -56,4 +56,4 @@ class CNPJWSPlugin(BasePlugin):
             message = parsed.get("detalhes", None)
             raise ValidationError(message)
 
-        raise ValidationError("Erro na requisição")
+        return None, None

@@ -10,6 +10,7 @@ from .models import PluginConfiguration
 
 if TYPE_CHECKING:
     from ..account.models import User
+    from ..document.models import Document
     from ..entry.models import Category, Entry
     from .base_plugin import BasePlugin
 
@@ -170,6 +171,12 @@ class PluginsManager:
         default_value = None
         return self.__run_plugin_method_until_first_success(
             "consult_document", default_value, entry
+        )
+
+    def consult_correctional_negative_certificate(self, document: "Document"):
+        default_value = None
+        return self.__run_plugin_method_until_first_success(
+            "consult_correctional_negative_certificate", default_value, document
         )
 
     def get_plugins(

@@ -144,6 +144,7 @@ BUILTIN_PLUGINS = [
     "portal.plugins.admin_email.plugin.AdminEmailPlugin",
     "portal.plugins.sendgrid.plugin.SendgridEmailPlugin",
     "portal.plugins.cnpjws.plugin.CNPJWSPlugin",
+    "portal.plugins.infosimples.plugin.InfoSimplesPlugin",
 ]
 
 EXTERNAL_PLUGINS = []
