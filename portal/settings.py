@@ -189,6 +189,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 AWS_HEADERS = {"Access-Control-Allow-Origin": "*"}
 AWS_DEFAULT_ACL = "public-read"
+AWS_LOCATION = "static"
 
 DEFAULT_FILE_STORAGE = "portal.core.storages.S3MediaStorage"
 
@@ -196,14 +197,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "portal", "static"),
+    ("images", os.path.join(PROJECT_ROOT, "portal", "static", "images"))
+]
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-# Enable WhiteNoise's GZip compression of static assets.
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
