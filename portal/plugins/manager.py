@@ -179,6 +179,12 @@ class PluginsManager:
             "consult_correctional_negative_certificate", default_value, document
         )
 
+    def consult_labor_debit_clearance_certifiacate(self, document: "Document"):
+        default_value = None
+        return self.__run_plugin_method_until_first_success(
+            "consult_labor_debit_clearance_certifiacate", default_value, document
+        )
+
     def get_plugins(
         self, channel_slug: Optional[str] = None, active_only=False
     ) -> List["BasePlugin"]:

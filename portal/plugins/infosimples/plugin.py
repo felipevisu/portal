@@ -1,5 +1,5 @@
 from ..base_plugin import BasePlugin, ConfigurationTypeField
-from .tasks import correctional_negative_certificate
+from .tasks import correctional_negative_certificate, labor_debit_clearance_certifiacate
 
 
 class InfoSimplesPlugin(BasePlugin):
@@ -31,3 +31,9 @@ class InfoSimplesPlugin(BasePlugin):
             return previous_value
 
         return correctional_negative_certificate(self.config.get("token"), document)
+
+    def consult_labor_debit_clearance_certifiacate(self, document, previous_value):
+        if not self.active:
+            return previous_value
+
+        return labor_debit_clearance_certifiacate(self.config.get("token"), document)
