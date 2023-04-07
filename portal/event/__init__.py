@@ -7,6 +7,7 @@ class EventTypes:
     DOCUMENT_APPROVED = "document_approved"
     DOCUMENT_DECLINED = "document_declined"
     DOCUMENT_REQUESTED = "document_requested"
+    DOCUMENT_LOADED_FROM_API = "document_loaded_from_api"
 
     ENTRY_CREATED = "entry_created"
     ENTRY_UPDATED = "entry_updated"
@@ -20,6 +21,7 @@ class EventTypes:
         (DOCUMENT_APPROVED, "Documento aprovado"),
         (DOCUMENT_DECLINED, "Documento recusado"),
         (DOCUMENT_REQUESTED, "Documento solicitado pela plataforma"),
+        (DOCUMENT_LOADED_FROM_API, "Documento atualizado por API"),
         (ENTRY_CREATED, "Cadastro adicionado"),
         (ENTRY_UPDATED, "Cadastro atualizado"),
         (ENTRY_DELETED, "Cadastro excluído"),

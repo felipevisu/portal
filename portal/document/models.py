@@ -6,7 +6,7 @@ from django.utils.text import slugify
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import DocumentPermissions
 from ..entry.models import Entry
-from . import DocumentFileStatus, DocumentLoadOptions
+from . import DocumentFileStatus, DocumentLoadOptions, DocumentLoadStatus
 
 
 def get_upload_path(instance, filename):
@@ -73,3 +73,16 @@ class DocumentFile(ModelWithDates):
     def extension(self):
         _, extension = os.path.splitext(self.file.name)
         return extension
+
+
+class DocumentLoad(ModelWithDates):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    document_file = models.ForeignKey(
+        DocumentFile, blank=True, null=True, on_delete=models.CASCADE
+    )
+    status = models.CharField(
+        max_length=256,
+        choices=DocumentLoadStatus.CHOICES,
+        default=DocumentLoadStatus.PENDING,
+    )
+    error_message = models.CharField(max_length=256, null=True, blank=True)

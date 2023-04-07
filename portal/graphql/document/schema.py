@@ -1,7 +1,8 @@
 import graphene
 
+from ...core.permissions import DocumentPermissions
 from ..core.connection import create_connection_slice, filter_connection_queryset
-from ..core.fields import FilterConnectionField
+from ..core.fields import FilterConnectionField, PermissionsField
 from .filters import DocumentFilterInput
 from .mutations import (
     ApproveDocumentFile,
@@ -17,9 +18,9 @@ from .mutations import (
     RestoreDocumentFile,
     ValidateDocumentToken,
 )
-from .resolvers import resolve_document, resolve_documents
+from .resolvers import resolve_document, resolve_document_load, resolve_documents
 from .sorters import DocumentSortingInput
-from .types import Document, DocumentCountableConnection
+from .types import Document, DocumentCountableConnection, DocumentLoad
 
 
 class Query(graphene.ObjectType):
@@ -29,6 +30,11 @@ class Query(graphene.ObjectType):
         sort_by=DocumentSortingInput(),
         filter=DocumentFilterInput(),
     )
+    document_load = PermissionsField(
+        DocumentLoad,
+        id=graphene.Argument(graphene.ID),
+        permissions=[DocumentPermissions.MANAGE_DOCUMENTS],
+    )
 
     def resolve_documents(self, info, **kwargs):
         qs = resolve_documents(info)
@@ -37,6 +43,9 @@ class Query(graphene.ObjectType):
 
     def resolve_document(self, info, id=None):
         return resolve_document(info, id)
+
+    def resolve_document_load(self, info, id=None):
+        return resolve_document_load(info, id)
 
 
 class Mutation(graphene.ObjectType):

@@ -20,3 +20,11 @@ class DocumentLoadOptions:
         (CNC, "Certidão Negativa Correcionalo"),
         (CNDT, "Certidão negativa de débitos trabalhistas"),
     ]
+
+
+class DocumentLoadStatus:
+    PENDING = "pending"
+    SUCCESS = "success"
+    ERROR = "error"
+
+    CHOICES = [(PENDING, "Pendendte"), (SUCCESS, "Bem sucedido"), (ERROR, "Erro")]

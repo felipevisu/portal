@@ -2,7 +2,7 @@ import graphene
 
 from ....core.permissions import DocumentPermissions
 from ....document import models
-from ....event.events import event_document_deleted
+from ....document.events import event_document_deleted
 from ...core.mutations import ModelBulkDeleteMutation, ModelDeleteMutation
 from ...core.types.common import NonNullList
 from ..types import Document

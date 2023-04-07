@@ -15,3 +15,8 @@ def resolve_document(info, global_document_id=None):
         .visible_to_user(user)
         .first()
     )
+
+
+def resolve_document_load(info, global_document_load_id=None):
+    _, document_load_pk = from_global_id_or_error(global_document_load_id)
+    return models.DocumentLoad.objects.filter(pk=document_load_pk).first()

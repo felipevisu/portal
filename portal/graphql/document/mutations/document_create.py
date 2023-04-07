@@ -4,7 +4,7 @@ from graphene_file_upload.scalars import Upload
 
 from ....core.permissions import DocumentPermissions
 from ....document import DocumentFileStatus, models
-from ....event.events import event_document_created
+from ....document.events import event_document_created
 from ...core.mutations import ModelMutation
 from ..enums import DocumentLoadOptionsEnum
 from ..types import Document
@@ -81,4 +81,4 @@ class DocumentCreate(ModelMutation):
 
     @classmethod
     def post_save_action(cls, info, instance, cleaned_input):
-        event_document_created(instance, info.context.user)
+        event_document_created(instance.id, info.context.user)

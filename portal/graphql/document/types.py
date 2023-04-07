@@ -12,7 +12,11 @@ from ..entry.dataloaders import EntryByIdLoader
 from ..event.dataloaders import EventsByDocumentIdLoader
 from ..event.types import Event
 from .dataloaders import DocumentFilesByDocumentIdLoader
-from .enums import DocumentFileStatusEnum, DocumentLoadOptionsEnum
+from .enums import (
+    DocumentFileStatusEnum,
+    DocumentLoadOptionsEnum,
+    DocumentLoadStatusEnum,
+)
 
 
 class DocumentFile(ModelObjectType):
@@ -83,3 +87,15 @@ class Document(ModelObjectType):
 class DocumentCountableConnection(CountableConnection):
     class Meta:
         node = Document
+
+
+class DocumentLoad(ModelObjectType):
+    id = graphene.GlobalID(required=True)
+    document = graphene.Field(Document)
+    document_file = graphene.Field(DocumentFile)
+    status = DocumentLoadStatusEnum()
+    error_message = graphene.String()
+
+    class Meta:
+        model = models.DocumentLoad
+        interfaces = [graphene.relay.Node]

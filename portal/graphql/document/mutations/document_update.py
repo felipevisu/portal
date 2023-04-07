@@ -4,7 +4,7 @@ from graphene_file_upload.scalars import Upload
 
 from ....core.permissions import DocumentPermissions
 from ....document import DocumentFileStatus, models
-from ....event.events import event_document_updated
+from ....document.events import event_document_updated
 from ...core.mutations import ModelMutation
 from ..types import Document
 from .document_create import DocumentInput
@@ -75,4 +75,4 @@ class DocumentUpdate(ModelMutation):
 
     @classmethod
     def post_save_action(cls, info, instance, cleaned_input):
-        event_document_updated(instance, info.context.user)
+        event_document_updated(instance.id, info.context.user)

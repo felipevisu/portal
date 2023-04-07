@@ -5,7 +5,7 @@ from sendgrid import SendGridAPIClient, SendGridException
 from sendgrid.helpers.mail import Mail
 
 from ...celeryconf import app
-from ...event import events
+from ...document import events
 from ...graphql.core.utils import from_global_id_or_none
 from . import SendgridConfiguration
 

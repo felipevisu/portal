@@ -5,15 +5,15 @@ from graphene_file_upload.scalars import Upload
 from ....core.exeptions import PermissionDenied
 from ....core.permissions import DocumentPermissions
 from ....document import DocumentFileStatus, DocumentLoadOptions, models
-from ....document.tasks import load_new_document_from_api
-from ....event.models import OneTimeToken
-from ....event.notifications import (
+from ....document.notifications import (
     send_new_document_received,
     send_request_new_document,
 )
+from ....document.tasks import load_new_document_from_api
+from ....event.models import OneTimeToken
 from ....plugins.manager import get_plugins_manager
 from ...core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
-from ..types import Document, DocumentFile
+from ..types import Document, DocumentFile, DocumentLoad
 
 
 class RequestNewDocument(BaseMutation):
@@ -33,7 +33,7 @@ class RequestNewDocument(BaseMutation):
 
 
 class LoadNewDocumentFromAPI(BaseMutation):
-    document = graphene.Field(Document)
+    document_load = graphene.Field(DocumentLoad)
 
     class Arguments:
         id = graphene.ID(required=True)
@@ -52,10 +52,8 @@ class LoadNewDocumentFromAPI(BaseMutation):
     def perform_mutation(cls, _root, info, id):
         document = cls.get_node_or_error(info, id, only_type=Document)
         cls.clean_instance(info, document)
-        manager = get_plugins_manager()
-        load_new_document_from_api(document, manager)
-        document.refresh_from_db()
-        return LoadNewDocumentFromAPI(document=document)
+        document_load = load_new_document_from_api(document_id=document.id)
+        return LoadNewDocumentFromAPI(document_load=document_load)
 
 
 class TokenMixin:

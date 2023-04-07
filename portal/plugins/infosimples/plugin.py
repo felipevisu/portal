@@ -22,7 +22,6 @@ class InfoSimplesPlugin(BasePlugin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Convert to dict to easier take config elements
         configuration = {item["name"]: item["value"] for item in self.configuration}
         self.config = configuration
 
@@ -30,10 +29,12 @@ class InfoSimplesPlugin(BasePlugin):
         if not self.active:
             return previous_value
 
-        return correctional_negative_certificate(self.config.get("token"), document)
+        token = self.config.get("token")
+        return correctional_negative_certificate(token, document)
 
     def consult_labor_debit_clearance_certifiacate(self, document, previous_value):
         if not self.active:
             return previous_value
 
-        return labor_debit_clearance_certifiacate(self.config.get("token"), document)
+        token = self.config.get("token")
+        return labor_debit_clearance_certifiacate(token, document)
