@@ -77,6 +77,7 @@ class DocumentCreate(ModelMutation):
             instance.default_file = default_file
             instance.save(update_fields=["default_file"])
 
+        cls.post_save_action(info, instance, cleaned_input)
         return DocumentCreate(document=instance)
 
     @classmethod

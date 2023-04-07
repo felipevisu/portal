@@ -86,6 +86,7 @@ class BasePlugin:
     consult_document: Callable[["Entry", None], None]
     consult_correctional_negative_certificate: Callable[["Document", None], None]
     consult_labor_debit_clearance_certifiacate: Callable[["Document", None], None]
+    consult_employer_regularity_fgts: Callable[["Document", None], None]
 
     @classmethod
     def _update_config_items(

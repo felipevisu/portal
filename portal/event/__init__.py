@@ -1,5 +1,5 @@
 class EventTypes:
-    DOCUMENT_CREATED = "document_create"
+    DOCUMENT_CREATED = "document_created"
     DOCUMENT_UPDATED = "document_updated"
     DOCUMENT_DELETED = "document_deleted"
 

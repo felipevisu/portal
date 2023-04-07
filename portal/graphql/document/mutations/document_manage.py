@@ -129,14 +129,6 @@ class DocumentFileDelete(ModelDeleteMutation):
     class Arguments:
         id = graphene.ID()
 
-    @classmethod
-    def clean_instance(cls, info, instance):
-        document = instance.document
-        if document.default_file == instance:
-            raise ValidationError(
-                {"id": "Não é possível excluir o arquivo principal do documento"}
-            )
-
     class Meta:
         model = models.DocumentFile
         permissions = (DocumentPermissions.MANAGE_DOCUMENTS,)
