@@ -213,7 +213,6 @@ def test_retrieving_the_restricted_attributes_restricted(
         (AttributeInputType.DROPDOWN, True),
         (AttributeInputType.MULTISELECT, True),
         (AttributeInputType.FILE, False),
-        (AttributeInputType.NUMERIC, False),
         (AttributeInputType.BOOLEAN, False),
     ],
 )

@@ -1,6 +1,6 @@
 import logging
 
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 
 from portal.document import DocumentLoadStatus
 

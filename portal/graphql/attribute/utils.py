@@ -13,6 +13,7 @@ from graphql.error import GraphQLError
 from text_unidecode import unidecode
 
 from portal.attribute.utils import associate_attribute_values_to_instance
+from portal.graphql.utils import get_nodes
 
 from ...attribute import AttributeInputType
 from ...attribute import models as attribute_models
@@ -47,6 +48,7 @@ class AttrValuesInput:
     plain_text: Optional[str] = None
     boolean: Optional[bool] = None
     date: Optional[datetime.date] = None
+    references: Union[List[str], List[entry_models.Entry], None] = None
 
 
 T_INSTANCE = Union[entry_models.Entry, document_models.Document]
@@ -138,10 +140,24 @@ class AttributeAssignmentMixin:
         attributes = cls._resolve_attribute_nodes(
             attributes_qs, global_ids=global_ids, pks=pks.keys()
         )
+        attr_with_invalid_references = []
         cleaned_input = []
         for attribute in attributes:
             key = pks[attribute.pk]
+            if attribute.input_type == AttributeInputType.REFERENCE:
+                try:
+                    key = cls._validate_references(attribute, key)
+                except GraphQLError:
+                    attr_with_invalid_references.append(attribute)
+
             cleaned_input.append((attribute, key))
+
+        if attr_with_invalid_references:
+            raise ValidationError(
+                "Provided references are invalid. Some of the nodes "
+                "do not exist or are different types than types defined "
+                "in attribute entity type.",
+            )
 
         cls._validate_attributes_input(
             cleaned_input,
@@ -169,14 +185,34 @@ class AttributeAssignmentMixin:
             raise ValidationError(errors)
 
     @classmethod
+    def _validate_references(
+        cls, attribute: attribute_models.Attribute, values: AttrValuesInput
+    ) -> AttrValuesInput:
+        references = values.references
+        if not references:
+            return values
+
+        if not attribute.entity_type:
+            # FIXME: entity type is nullable for whatever reason
+            raise ValidationError("Invalid reference type.")
+        try:
+            ref_instances = get_nodes(
+                references, attribute.entity_type, model=entry_models.Entry
+            )
+            values.references = ref_instances
+            return values
+        except GraphQLError:
+            raise ValidationError("Invalid reference type.")
+
+    @classmethod
     def save(cls, instance: T_INSTANCE, cleaned_input: T_INPUT_MAP):
         pre_save_methods_mapping = {
             AttributeInputType.BOOLEAN: cls._pre_save_boolean_values,
             AttributeInputType.DATE: cls._pre_save_date_time_values,
             AttributeInputType.DROPDOWN: cls._pre_save_dropdown_value,
-            AttributeInputType.NUMERIC: cls._pre_save_numeric_values,
             AttributeInputType.MULTISELECT: cls._pre_save_multiselect_values,
             AttributeInputType.PLAIN_TEXT: cls._pre_save_plain_text_values,
+            AttributeInputType.REFERENCE: cls._pre_save_reference_values,
         }
         clean_assignment = []
         for attribute, attr_values in cleaned_input:
@@ -258,23 +294,34 @@ class AttributeAssignmentMixin:
         return attribute_values
 
     @classmethod
-    def _pre_save_numeric_values(
+    def _pre_save_reference_values(
         cls,
-        instance: T_INSTANCE,
+        instance,
         attribute: attribute_models.Attribute,
         attr_values: AttrValuesInput,
     ):
-        if attr_values.values:
-            value = attr_values.values[0]
-        elif attr_values.numeric:
-            value = attr_values.numeric
-        else:
+        """Lazy-retrieve or create the database objects from the supplied raw values.
+
+        Slug value is generated based on instance and reference entity id.
+        """
+        if not attr_values.references or not attribute.entity_type:
             return tuple()
 
-        defaults = {
-            "name": value,
-        }
-        return cls._update_or_create_value(instance, attribute, defaults)
+        get_or_create = attribute.values.get_or_create
+
+        reference_list = []
+        attr_value_field = "reference"
+        for ref in attr_values.references:
+            name = getattr(ref, name)
+            reference_list.append(
+                get_or_create(
+                    attribute=attribute,
+                    slug=slugify(unidecode(f"{instance.id}_{ref.id}")),  # type: ignore
+                    defaults={"name": name},
+                    **{attr_value_field: ref},
+                )[0]
+            )
+        return tuple(reference_list)
 
     @classmethod
     def _pre_save_values(
@@ -454,12 +501,6 @@ class AttributeInputErrors:
         "REQUIRED",
     )
 
-    # numeric errors
-    ERROR_NUMERIC_VALUE_REQUIRED = (
-        "Numeric value is required.",
-        "INVALID",
-    )
-
     # text errors
     ERROR_MAX_LENGTH = (
         "Attribute value length is exceeded.",
@@ -474,15 +515,14 @@ def validate_attributes_input(
     is_document_attributes: bool,
     creation: bool,
 ):
-
     attribute_errors: T_ERROR_DICT = defaultdict(list)
     input_type_to_validation_func_mapping = {
         AttributeInputType.BOOLEAN: validate_boolean_input,
         AttributeInputType.DATE: validate_date_time_input,
         AttributeInputType.DROPDOWN: validate_dropdown_input,
-        AttributeInputType.NUMERIC: validate_numeric_input,
         AttributeInputType.MULTISELECT: validate_multiselect_input,
         AttributeInputType.PLAIN_TEXT: validate_plain_text_attributes_input,
+        AttributeInputType.REFERENCE: validate_reference_attributes_input,
     }
 
     for attribute, attr_values in input_data:
@@ -494,8 +534,6 @@ def validate_attributes_input(
         is_handled_by_values_field = attr_values.values and attribute.input_type in (
             AttributeInputType.DROPDOWN,
             AttributeInputType.MULTISELECT,
-            AttributeInputType.NUMERIC,
-            AttributeInputType.SWATCH,
         )
         if is_handled_by_values_field:
             validate_standard_attributes_input(*attrs)
@@ -525,6 +563,20 @@ def validate_boolean_input(
         attribute_errors[AttributeInputErrors.ERROR_BLANK_VALUE].append(attribute_id)
 
 
+def validate_reference_attributes_input(
+    attribute: "Attribute",
+    attr_values: "AttrValuesInput",
+    attribute_errors: T_ERROR_DICT,
+):
+    attribute_id = attr_values.global_id
+    references = attr_values.references
+    if not references:
+        if attribute.value_required:
+            attribute_errors[AttributeInputErrors.ERROR_NO_REFERENCE_GIVEN].append(
+                attribute_id
+            )
+
+
 def validate_plain_text_attributes_input(
     attribute: "Attribute",
     attr_values: "AttrValuesInput",
@@ -546,12 +598,8 @@ def validate_date_time_input(
     is_blank_date = (
         attribute.input_type == AttributeInputType.DATE and not attr_values.date
     )
-    is_blank_date_time = (
-        attribute.input_type == AttributeInputType.DATE_TIME
-        and not attr_values.date_time
-    )
 
-    if attribute.value_required and (is_blank_date or is_blank_date_time):
+    if attribute.value_required and is_blank_date:
         attribute_errors[AttributeInputErrors.ERROR_NO_VALUE_GIVEN].append(
             attr_values.global_id
         )
@@ -683,33 +731,6 @@ def validate_multiselect_input(
             )
 
 
-def validate_numeric_input(
-    attribute: "Attribute",
-    attr_values: "AttrValuesInput",
-    attribute_errors: T_ERROR_DICT,
-):
-    attribute_id = attr_values.global_id
-    if attr_values.numeric is None:
-        if attribute.value_required:
-            attribute_errors[AttributeInputErrors.ERROR_NO_VALUE_GIVEN].append(
-                attribute_id
-            )
-            return
-        return
-
-    try:
-        float(attr_values.numeric)
-    except ValueError:
-        attribute_errors[AttributeInputErrors.ERROR_NUMERIC_VALUE_REQUIRED].append(
-            attribute_id
-        )
-
-    if isinstance(attr_values.numeric, bool):
-        attribute_errors[AttributeInputErrors.ERROR_NUMERIC_VALUE_REQUIRED].append(
-            attribute_id
-        )
-
-
 def validate_values(
     attribute_id: str,
     attribute: "Attribute",
@@ -718,23 +739,15 @@ def validate_values(
 ):
     """To be deprecated together with `AttributeValueInput.values` field."""
     name_field = attribute.values.model.name.field  # type: ignore
-    is_numeric = attribute.input_type == AttributeInputType.NUMERIC
     if get_duplicated_values(values):
         attribute_errors[AttributeInputErrors.ERROR_DUPLICATED_VALUES].append(
             attribute_id
         )
     for value in values:
-        if value is None or (not is_numeric and not value.strip()):
+        if value is None or not value.strip():
             attribute_errors[AttributeInputErrors.ERROR_BLANK_VALUE].append(
                 attribute_id
             )
-        elif is_numeric:
-            try:
-                float(value)
-            except ValueError:
-                attribute_errors[
-                    AttributeInputErrors.ERROR_NUMERIC_VALUE_REQUIRED
-                ].append(attribute_id)
         elif len(value) > name_field.max_length:
             attribute_errors[AttributeInputErrors.ERROR_MAX_LENGTH].append(attribute_id)
 

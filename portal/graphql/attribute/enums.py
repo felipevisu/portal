@@ -1,7 +1,12 @@
 import graphene
 
-from ...attribute import AttributeInputType, AttributeType
+from ...attribute import AttributeEntityType, AttributeInputType, AttributeType
 from ..core.enums import to_enum
+from ..core.utils import str_to_enum
 
 AttributeInputTypeEnum = to_enum(AttributeInputType)
 AttributeTypeEnum = to_enum(AttributeType)
+AttributeEntityTypeEnum = graphene.Enum(
+    "AttributeEntityTypeEnum",
+    [(str_to_enum(name.upper()), code) for code, name in AttributeEntityType.CHOICES],
+)

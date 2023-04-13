@@ -4,6 +4,7 @@ import graphene
 from django.db.models import QuerySet
 
 from ...attribute import AttributeInputType, models
+from ...entry import models as entry_models
 from ..core.connection import (
     CountableConnection,
     create_connection_slice,
@@ -14,7 +15,7 @@ from ..core.types import File, ModelObjectType, NonNullList
 from ..core.types.common import DateRangeInput, DateTimeRangeInput, IntRangeInput
 from ..decorators import check_attribute_required_permissions
 from .dataloaders import AttributesByAttributeId
-from .enums import AttributeInputTypeEnum, AttributeTypeEnum
+from .enums import AttributeEntityTypeEnum, AttributeInputTypeEnum, AttributeTypeEnum
 from .filters import AttributeValueFilterInput
 from .sorters import AttributeChoicesSortingInput
 
@@ -44,7 +45,7 @@ class AttributeValue(ModelObjectType):
     plain_text = graphene.String(required=False)
     boolean = graphene.Boolean(required=False)
     date = graphene.Date(required=False)
-    date_time = graphene.DateTime(required=False)
+    reference = graphene.ID()
 
     class Meta:
         interfaces = [graphene.relay.Node]
@@ -56,19 +57,6 @@ class AttributeValue(ModelObjectType):
             AttributesByAttributeId(info.context)
             .load(root.attribute_id)
             .then(lambda attribute: attribute.input_type)
-        )
-
-    @staticmethod
-    def resolve_date_time(root, info):
-        def _resolve_date(attribute):
-            if attribute.input_type == AttributeInputType.DATE_TIME:
-                return root.date_time
-            return None
-
-        return (
-            AttributesByAttributeId(info.context)
-            .load(root.attribute_id)
-            .then(_resolve_date)
         )
 
     @staticmethod
@@ -84,6 +72,23 @@ class AttributeValue(ModelObjectType):
             .then(_resolve_date)
         )
 
+    @staticmethod
+    def resolve_reference(root: models.AttributeValue, info):
+        def prepare_reference(attribute):
+            if attribute.input_type != AttributeInputType.REFERENCE:
+                return
+            reference_pk = getattr(root, "reference_id", None)
+            if reference_pk is None:
+                return
+            reference_id = graphene.Node.to_global_id(entry_models.Entry, reference_pk)
+            return reference_id
+
+        return (
+            AttributesByAttributeId(info.context)
+            .load(root.attribute_id)
+            .then(prepare_reference)
+        )
+
 
 class AttributeValueCountableConnection(CountableConnection):
     class Meta:
@@ -94,6 +99,7 @@ class Attribute(ModelObjectType):
     id = graphene.GlobalID(required=True)
     type = AttributeTypeEnum()
     input_type = AttributeInputTypeEnum()
+    entity_type = AttributeEntityTypeEnum(required=False)
     name = graphene.String()
     slug = graphene.String()
     choices = FilterConnectionField(
@@ -203,7 +209,6 @@ class AttributeValueInput(graphene.InputObjectType):
     id = graphene.ID()
     values = NonNullList(graphene.String, required=False)
     dropdown = AttributeValueSelectableTypeInput(required=False)
-    swatch = AttributeValueSelectableTypeInput(required=False)
     multiselect = NonNullList(AttributeValueSelectableTypeInput, required=False)
     numeric = graphene.String(required=False)
     file = graphene.String(required=False)
@@ -211,4 +216,8 @@ class AttributeValueInput(graphene.InputObjectType):
     plain_text = graphene.String(required=False)
     boolean = graphene.Boolean(required=False)
     date = graphene.Date(required=False)
-    date_time = graphene.DateTime(required=False)
+    references = NonNullList(
+        graphene.ID,
+        description="List of entity IDs that will be used as references.",
+        required=False,
+    )

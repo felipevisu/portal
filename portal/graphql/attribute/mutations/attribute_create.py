@@ -1,10 +1,12 @@
 import graphene
+from django.core.exceptions import ValidationError
 
+from ....attribute import AttributeInputType
 from ....attribute import models as models
 from ....core.permissions import AttributePermissions
 from ...core.mutations import ModelMutation
 from ...core.types import NonNullList
-from ..enums import AttributeInputTypeEnum, AttributeTypeEnum
+from ..enums import AttributeEntityTypeEnum, AttributeInputTypeEnum, AttributeTypeEnum
 from ..types import Attribute
 from .mixins import AttributeMixin
 
@@ -22,6 +24,7 @@ class AttributeValueCreateInput(AttributeValueInput):
 class AttributeCreateInput(graphene.InputObjectType):
     type = AttributeTypeEnum(required=True)
     input_type = AttributeInputTypeEnum()
+    entity_type = AttributeEntityTypeEnum()
     name = graphene.String(required=True)
     slug = graphene.String(required=False)
     values = NonNullList(AttributeValueCreateInput)
@@ -42,6 +45,21 @@ class AttributeCreate(AttributeMixin, ModelMutation):
         model = models.Attribute
         object_type = Attribute
         permissions = (AttributePermissions.MANAGE_ATTRIBUTES,)
+
+    @classmethod
+    def clean_input(cls, info, instance, data, **kwargs):
+        cleaned_input = super().clean_input(info, instance, data, **kwargs)
+        if cleaned_input.get(
+            "input_type"
+        ) == AttributeInputType.REFERENCE and not cleaned_input.get("entity_type"):
+            raise ValidationError(
+                {
+                    "entity_type": ValidationError(
+                        "Entity type is required when REFERENCE input type is used."
+                    )
+                }
+            )
+        return cleaned_input
 
     @classmethod
     def perform_mutation(cls, _root, info, /, *, input):

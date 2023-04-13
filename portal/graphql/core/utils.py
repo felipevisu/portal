@@ -41,6 +41,11 @@ def snake_to_camel_case(name):
     return name
 
 
+def str_to_enum(name):
+    """Create an enum value from a string."""
+    return name.replace(" ", "_").replace("-", "_").upper()
+
+
 DJANGO_VALIDATORS_ERROR_CODES = [
     "invalid",
     "invalid_extension",

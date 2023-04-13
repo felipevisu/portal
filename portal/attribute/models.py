@@ -5,7 +5,7 @@ from ..core.models import SortableModel
 from ..core.permissions import AttributePermissions
 from ..document.models import Document
 from ..entry.models import Entry
-from . import AttributeInputType, AttributeType
+from . import AttributeEntityType, AttributeInputType, AttributeType
 
 
 class BaseAttributeQuerySet(models.QuerySet):
@@ -126,11 +126,13 @@ class Attribute(models.Model):
     slug = models.SlugField(max_length=250, unique=True, allow_unicode=True)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=50, choices=AttributeType.CHOICES)
-
     input_type = models.CharField(
         max_length=50,
         choices=AttributeInputType.CHOICES,
         default=AttributeInputType.DROPDOWN,
+    )
+    entity_type = models.CharField(
+        max_length=50, choices=AttributeEntityType.CHOICES, blank=True, null=True
     )
     assigned_entries = models.ManyToManyField(
         Entry,
@@ -185,8 +187,14 @@ class AttributeValue(SortableModel):
         null=True,
     )
     boolean = models.BooleanField(blank=True, null=True)
-    date = models.DateField(blank=True, null=True)
     date_time = models.DateTimeField(blank=True, null=True)
+    reference = models.ForeignKey(
+        Entry,
+        related_name="references",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         ordering = ("name",)
