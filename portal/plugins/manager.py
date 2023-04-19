@@ -173,24 +173,6 @@ class PluginsManager:
             "consult_document", default_value, entry
         )
 
-    def consult_correctional_negative_certificate(self, document: "Document"):
-        default_value = None
-        return self.__run_plugin_method_until_first_success(
-            "consult_correctional_negative_certificate", default_value, document
-        )
-
-    def consult_labor_debit_clearance_certifiacate(self, document: "Document"):
-        default_value = None
-        return self.__run_plugin_method_until_first_success(
-            "consult_labor_debit_clearance_certifiacate", default_value, document
-        )
-
-    def consult_employer_regularity_fgts(self, document: "Document"):
-        default_value = None
-        return self.__run_plugin_method_until_first_success(
-            "consult_employer_regularity_fgts", default_value, document
-        )
-
     def get_plugins(
         self, channel_slug: Optional[str] = None, active_only=False
     ) -> List["BasePlugin"]:
@@ -223,6 +205,26 @@ class PluginsManager:
             )
         return self.__run_method_on_plugins(
             "notify", default_value, event, payload, channel_slug=channel_slug
+        )
+
+    def consult(
+        self,
+        type: str,
+        document: dict,
+        plugin_id: Optional[str] = None,
+    ):
+        default_value = None
+        if plugin_id:
+            plugin = self.get_plugin(plugin_id)
+            return self.__run_method_on_single_plugin(
+                plugin=plugin,
+                method_name="consult",
+                previous_value=default_value,
+                type=type,
+                document=document,
+            )
+        return self.__run_plugin_method_until_first_success(
+            "consult", default_value, type, document
         )
 
     def _get_all_plugin_configs(self):

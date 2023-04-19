@@ -1,9 +1,18 @@
+from typing import Union
+
+from ...document import DocumentLoadOptions
+from ...document.models import Document
 from ..base_plugin import BasePlugin, ConfigurationTypeField
-from .tasks import (
-    correctional_negative_certificate,
-    employer_regularity_fgts,
-    labor_debit_clearance_certifiacate,
-)
+from .tasks import cnd, cndt, cnep, fgts, sefaz_mg, sefaz_sp
+
+LOAD_MAP = {
+    DocumentLoadOptions.CNEP: cnep,
+    DocumentLoadOptions.CNDT: cndt,
+    DocumentLoadOptions.CND: cnd,
+    DocumentLoadOptions.FGTS: fgts,
+    DocumentLoadOptions.SEFAZ_MG: sefaz_mg,
+    DocumentLoadOptions.SEFAZ_SP: sefaz_sp,
+}
 
 
 class InfoSimplesPlugin(BasePlugin):
@@ -29,23 +38,19 @@ class InfoSimplesPlugin(BasePlugin):
         configuration = {item["name"]: item["value"] for item in self.configuration}
         self.config = configuration
 
-    def consult_correctional_negative_certificate(self, document, previous_value):
+    def consult(
+        self, type: Union[DocumentLoadOptions, str], document: Document, previous_value
+    ):
         if not self.active:
             return previous_value
 
-        token = self.config.get("token")
-        return correctional_negative_certificate(token, document)
+        type_in_load_options = (type, type) in DocumentLoadOptions.CHOICES
+        if not type_in_load_options:
+            return previous_value
 
-    def consult_labor_debit_clearance_certifiacate(self, document, previous_value):
-        if not self.active:
+        if type not in LOAD_MAP:
             return previous_value
 
         token = self.config.get("token")
-        return labor_debit_clearance_certifiacate(token, document)
-
-    def consult_employer_regularity_fgts(self, document, previous_value):
-        if not self.active:
-            return previous_value
-
-        token = self.config.get("token")
-        return employer_regularity_fgts(token, document)
+        load_task = LOAD_MAP[type]
+        return load_task(token, document)

@@ -19,10 +19,9 @@ def load_new_document_from_api_task(document_id, load_id):
         logging.warning(f"Cannot find document with id: {document_id}.")
 
     manager = get_plugins_manager()
-    consult_func = getattr(manager, document.load_type)
 
     try:
-        document_file = consult_func(document)
+        document_file = manager.consult(document.load_type, document)
         document_load.status = DocumentLoadStatus.SUCCESS
         document_load.document_file = document_file
         document_load.save()

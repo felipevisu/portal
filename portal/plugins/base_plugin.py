@@ -84,9 +84,6 @@ class BasePlugin:
     session_deleted: Callable[["Session", None], None]
     session_updated: Callable[["Session", None], None]
     consult_document: Callable[["Entry", None], None]
-    consult_correctional_negative_certificate: Callable[["Document", None], None]
-    consult_labor_debit_clearance_certifiacate: Callable[["Document", None], None]
-    consult_employer_regularity_fgts: Callable[["Document", None], None]
 
     @classmethod
     def _update_config_items(
@@ -195,7 +192,6 @@ class BasePlugin:
         config_structure = getattr(cls, "CONFIG_STRUCTURE") or {}
         fields_without_structure = []
         for configuration_field in configuration:
-
             structure_to_add = config_structure.get(configuration_field.get("name"))
             if structure_to_add:
                 configuration_field.update(structure_to_add)

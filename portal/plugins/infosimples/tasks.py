@@ -12,8 +12,8 @@ from portal.document import DocumentFileStatus
 from ...document.models import DocumentFile
 
 
-def get_data(api, token, cnpj):
-    parameters = "?token={}&timeout=600&cnpj={}".format(token, cnpj)
+def get_data(api, token, cnpj, extra_params=""):
+    parameters = "?token={}&timeout=600&cnpj={}&{}".format(token, cnpj, extra_params)
     url = api + parameters
     response = requests.get(url)
 
@@ -72,7 +72,57 @@ def load_file_and_convert(expiration_date, file_url, document):
         raise ValidationError("Erro ao processar o arquivo")
 
 
-def correctional_negative_certificate(token, document):
+def cnd(token, document):
+    cnpj = document.entry.document_number
+    cnpj = re.sub("[^0-9]", "", cnpj)
+
+    api = "https://api.infosimples.com/api/v2/consultas/receita-federal/pgfn"
+    data = get_data(api, token, cnpj)
+
+    expiration_date = data.get("validade_data", None)
+    expiration_date = expiration_date.split("/")[::-1]
+    expiration_date = "-".join(expiration_date)
+    file_url = data.get("site_receipt", None)
+    return load_file(expiration_date, file_url, document)
+
+
+def sefaz_mg(token, document):
+    cnpj = document.entry.document_number
+    cnpj = re.sub("[^0-9]", "", cnpj)
+    api = "https://api.infosimples.com/api/v2/consultas/sefaz/mg/certidao-debitos"
+
+    consult = document.entry.consult.first()
+    if not consult:
+        return
+
+    cep = consult.response["estabelecimento"]["cep"]
+    if not cep:
+        return
+
+    data = get_data(api, token, cnpj, "cep={}".format(cep))
+
+    expiration_date = data.get("validade_data", None)
+    expiration_date = expiration_date.split("/")[::-1]
+    expiration_date = "-".join(expiration_date)
+    file_url = data.get("site_receipt", None)
+    return load_file_and_convert(expiration_date, file_url, document)
+
+
+def sefaz_sp(token, document):
+    cnpj = document.entry.document_number
+    cnpj = re.sub("[^0-9]", "", cnpj)
+
+    api = "https://api.infosimples.com/api/v2/consultas/sefaz/sp/certidao-debitos"
+    data = get_data(api, token, cnpj)
+
+    expiration_date = data.get("validade_data", None)
+    expiration_date = expiration_date.split("/")[::-1]
+    expiration_date = "-".join(expiration_date)
+    file_url = data.get("site_receipt", None)
+    return load_file(expiration_date, file_url, document)
+
+
+def cnep(token, document):
     cnpj = document.entry.document_number
     cnpj = re.sub("[^0-9]", "", cnpj)
 
@@ -86,7 +136,7 @@ def correctional_negative_certificate(token, document):
     return load_file(expiration_date, file_url, document)
 
 
-def labor_debit_clearance_certifiacate(token, document):
+def cndt(token, document):
     cnpj = document.entry.document_number
     cnpj = re.sub("[^0-9]", "", cnpj)
 
@@ -100,7 +150,7 @@ def labor_debit_clearance_certifiacate(token, document):
     return load_file(expiration_date, file_url, document)
 
 
-def employer_regularity_fgts(token, document):
+def fgts(token, document):
     cnpj = document.entry.document_number
     cnpj = re.sub("[^0-9]", "", cnpj)
 
