@@ -40,7 +40,7 @@ def account_passes_test(test_func):
 def one_of_permissions_required(perms: Iterable[BasePermissionEnum]):
     def check_perms(context):
         if not one_of_permissions_or_auth_filter_required(context, perms):
-            raise PermissionDenied(permissions=perms)
+            raise PermissionDenied()
 
     return account_passes_test(check_perms)
 
