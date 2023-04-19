@@ -209,7 +209,6 @@ class PluginsManager:
 
     def consult(
         self,
-        type: str,
         document: dict,
         plugin_id: Optional[str] = None,
     ):
@@ -220,11 +219,10 @@ class PluginsManager:
                 plugin=plugin,
                 method_name="consult",
                 previous_value=default_value,
-                type=type,
                 document=document,
             )
         return self.__run_plugin_method_until_first_success(
-            "consult", default_value, type, document
+            "consult", default_value, document
         )
 
     def _get_all_plugin_configs(self):

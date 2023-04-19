@@ -1,3 +1,4 @@
+import logging
 import re
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
@@ -18,14 +19,10 @@ def get_data(api, token, cnpj, extra_params=""):
     response = requests.get(url)
 
     parsed = response.json()
-    if response.status_code in range(600, 799):
-        raise ValidationError(parsed.get("code_message", ""))
+    if parsed["code"] in range(600, 799):
+        raise ValidationError(message=parsed["code_message"])
 
-    data = parsed.get("data", [])
-    if len(data) == 0:
-        raise ValidationError("Nenhum dado encontrado")
-
-    return data[0]
+    return parsed["data"][0]
 
 
 def load_file(expiration_date, file_url, document):
@@ -43,7 +40,8 @@ def load_file(expiration_date, file_url, document):
         document.default_file = document_file
         document.save()
         return document_file
-    except:
+    except Exception as e:
+        logging.warning(str(e))
         raise ValidationError("Erro ao processar o arquivo")
 
 
@@ -68,7 +66,8 @@ def load_file_and_convert(expiration_date, file_url, document):
         document.default_file = document_file
         document.save()
         return document_file
-    except:
+    except Exception as e:
+        logging.warning(str(e))
         raise ValidationError("Erro ao processar o arquivo")
 
 
@@ -93,12 +92,11 @@ def sefaz_mg(token, document):
 
     consult = document.entry.consult.first()
     if not consult:
-        return
+        raise ValidationError(
+            "Para solicitar este arquivo faça primeiro uma consulta do cartão CNPJ"
+        )
 
     cep = consult.response["estabelecimento"]["cep"]
-    if not cep:
-        return
-
     data = get_data(api, token, cnpj, "cep={}".format(cep))
 
     expiration_date = data.get("validade_data", None)

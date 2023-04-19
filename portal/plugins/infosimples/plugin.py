@@ -1,5 +1,3 @@
-from typing import Union
-
 from ...document import DocumentLoadOptions
 from ...document.models import Document
 from ..base_plugin import BasePlugin, ConfigurationTypeField
@@ -38,11 +36,11 @@ class InfoSimplesPlugin(BasePlugin):
         configuration = {item["name"]: item["value"] for item in self.configuration}
         self.config = configuration
 
-    def consult(
-        self, type: Union[DocumentLoadOptions, str], document: Document, previous_value
-    ):
+    def consult(self, document: Document, previous_value):
         if not self.active:
             return previous_value
+
+        type = document.load_type
 
         type_in_load_options = (type, type) in DocumentLoadOptions.CHOICES
         if not type_in_load_options:

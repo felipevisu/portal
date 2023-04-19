@@ -21,7 +21,7 @@ def load_new_document_from_api_task(document_id, load_id):
     manager = get_plugins_manager()
 
     try:
-        document_file = manager.consult(document.load_type, document)
+        document_file = manager.consult(document)
         document_load.status = DocumentLoadStatus.SUCCESS
         document_load.document_file = document_file
         document_load.save()
@@ -30,7 +30,7 @@ def load_new_document_from_api_task(document_id, load_id):
         )
     except Exception as e:
         document_load.status = DocumentLoadStatus.ERROR
-        document_load.error_message = str(e)
+        document_load.error_message = str(e.message)
         document_load.save()
 
 
