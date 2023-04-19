@@ -6,7 +6,7 @@ from portal.document import DocumentLoadStatus
 
 from ..celeryconf import app
 from ..plugins.manager import get_plugins_manager
-from .events import event_document_loaded_from_api
+from .events import event_document_loaded_fail, event_document_loaded_from_api
 from .models import Document, DocumentLoad
 
 
@@ -29,9 +29,11 @@ def load_new_document_from_api_task(document_id, load_id):
             document_id=document.id, document_file_id=document_file.id
         )
     except Exception as e:
+        error_message = str(e.message)
         document_load.status = DocumentLoadStatus.ERROR
-        document_load.error_message = str(e.message)
+        document_load.error_message = error_message
         document_load.save()
+        event_document_loaded_fail(document_id, error_message)
 
 
 def load_new_document_from_api(document_id):

@@ -52,3 +52,11 @@ def event_document_loaded_from_api(document_id, document_file_id):
         document_id=document_id,
         parameters=parameters,
     )
+
+
+def event_document_loaded_fail(document_id, error_message):
+    return Event.objects.create(
+        type=EventTypes.DOCUMENT_LOADED_FAIL,
+        document_id=document_id,
+        message=error_message,
+    )

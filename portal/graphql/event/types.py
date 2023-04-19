@@ -14,6 +14,7 @@ class Event(ModelObjectType):
     document = graphene.Field("portal.graphql.document.types.Document")
     user = graphene.Field(lambda: User)
     parameters = graphene.JSONString()
+    message = graphene.String()
     date = graphene.DateTime()
 
     class Meta:
