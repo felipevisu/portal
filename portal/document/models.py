@@ -85,4 +85,4 @@ class DocumentLoad(ModelWithDates):
         choices=DocumentLoadStatus.CHOICES,
         default=DocumentLoadStatus.PENDING,
     )
-    error_message = models.CharField(max_length=256, null=True, blank=True)
+    error_message = models.TextField(blank=True)
