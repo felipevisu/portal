@@ -1,7 +1,6 @@
 import os
 
 from django.db import models
-from django.utils.text import slugify
 
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import DocumentPermissions

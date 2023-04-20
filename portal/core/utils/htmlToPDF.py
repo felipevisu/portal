@@ -1,14 +1,13 @@
 import base64
 import json
+import os
 from tempfile import NamedTemporaryFile
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.expected_conditions import staleness_of
 from selenium.webdriver.support.ui import WebDriverWait
-from webdriver_manager.chrome import ChromeDriverManager
 
 file_temp = NamedTemporaryFile(delete=True)
 
@@ -25,15 +24,19 @@ def send_devtools(driver, cmd, params={}):
     return response.get("value")
 
 
-def converter(
+def htmlToPDF(
     path: str,
     timeout: int = 2,
     print_options: dict = {},
 ):
-    webdriver_options = Options()
     webdriver_prefs = {}
     driver = None
 
+    binary_location = os.environ.get("GOOGLE_CHROME_BIN", "")
+    executable_path = os.environ.get("CHROMEDRIVER_PATH", "")
+
+    webdriver_options = webdriver.ChromeOptions()
+    webdriver_options.binary_location = binary_location
     webdriver_options.add_argument("--headless")
     webdriver_options.add_argument("--disable-gpu")
     webdriver_options.add_argument("--no-sandbox")
@@ -42,7 +45,9 @@ def converter(
 
     webdriver_prefs["profile.default_content_settings"] = {"images": 2}
 
-    driver = webdriver.Chrome(options=webdriver_options)
+    driver = webdriver.Chrome(
+        options=webdriver_options, executable_path=executable_path
+    )
     driver.get(path)
 
     try:
