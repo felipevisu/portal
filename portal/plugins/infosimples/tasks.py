@@ -4,13 +4,13 @@ from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
 import requests
-import weasyprint
 from django.core.exceptions import ValidationError
 from django.core.files import File
 
 from portal.document import DocumentFileStatus
 
 from ...document.models import DocumentFile
+from .converter import converter
 
 
 def get_data(api, token, cnpj, extra_params=""):
@@ -47,12 +47,7 @@ def load_file(expiration_date, file_url, document):
 
 def load_file_and_convert(expiration_date, file_url, document):
     try:
-        html = weasyprint.HTML(file_url)
-        content_print_layout = "@page {size: A4 portrait; margin: 0;}"
-        main_doc = html.render(
-            stylesheets=[weasyprint.CSS(string=content_print_layout)]
-        )
-        pdf = main_doc.write_pdf()
+        pdf = converter(file_url)
         file_temp = NamedTemporaryFile(delete=True)
         file_temp.write(pdf)
         file_name = file_url.split("/")[-1]
@@ -68,7 +63,7 @@ def load_file_and_convert(expiration_date, file_url, document):
         return document_file
     except Exception as e:
         logging.warning(str(e))
-        raise ValidationError("Erro ao processar o arquivo")
+        raise ValidationError("Erro ao processar o arquivo, {}".format(str(e)))
 
 
 def cnd(token, document):
