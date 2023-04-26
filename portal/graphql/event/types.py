@@ -1,6 +1,7 @@
 import graphene
 
-from ...event import EventTypes, models
+from ...event import models
+from ..account.dataloaders import UserByIdLoader
 from ..account.types import User
 from ..core.connection import CountableConnection
 from ..core.types import ModelObjectType
@@ -30,6 +31,13 @@ class Event(ModelObjectType):
         else:
             return None
         return DocumentByIdLoader(info.context).load(document_id)
+
+    def resolver_user(self, info):
+        if self.user_id:
+            user_id = self.user_id
+        else:
+            return None
+        return UserByIdLoader(info.context).load(user_id)
 
 
 class EventCountableConnection(CountableConnection):

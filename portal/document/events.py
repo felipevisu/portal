@@ -2,22 +2,16 @@ from ..event import EventTypes
 from ..event.models import Event
 
 
-def event_document_created(document_id, user):
+def event_document_created(document_id, user_id=None):
     Event.objects.create(
-        type=EventTypes.DOCUMENT_CREATED, document_id=document_id, user=user
+        type=EventTypes.DOCUMENT_CREATED, document_id=document_id, user_id=user_id
     )
 
 
-def event_document_updated(document_id, user):
-    Event.objects.create(
-        type=EventTypes.DOCUMENT_UPDATED, document_id=document_id, user=user
-    )
-
-
-def event_document_deleted(document, user):
+def event_document_deleted(document, user_id=None):
     parameters = {"name": document.name, "entry": document.entry.name}
     Event.objects.create(
-        type=EventTypes.DOCUMENT_DELETED, parameters=parameters, user=user
+        type=EventTypes.DOCUMENT_DELETED, parameters=parameters, user_id=user_id
     )
 
 
@@ -27,13 +21,13 @@ def event_document_received(document_id):
     )
 
 
-def event_document_approved(document_id, user_id):
+def event_document_approved(document_id, user_id=None):
     return Event.objects.create(
         type=EventTypes.DOCUMENT_APPROVED, document_id=document_id, user_id=user_id
     )
 
 
-def event_document_declined(document_id, user_id):
+def event_document_declined(document_id, user_id=None):
     return Event.objects.create(
         type=EventTypes.DOCUMENT_DECLINED, document_id=document_id, user_id=user_id
     )
@@ -45,18 +39,20 @@ def event_document_requested(document_id, user_id=None):
     )
 
 
-def event_document_loaded_from_api(document_id, document_file_id):
+def event_document_loaded_from_api(document_id, document_file_id, user_id=None):
     parameters = {"document_file_id": document_file_id}
     return Event.objects.create(
         type=EventTypes.DOCUMENT_LOADED_FROM_API,
         document_id=document_id,
         parameters=parameters,
+        user_id=user_id,
     )
 
 
-def event_document_loaded_fail(document_id, error_message):
+def event_document_loaded_fail(document_id, error_message, user_id=None):
     return Event.objects.create(
         type=EventTypes.DOCUMENT_LOADED_FAIL,
         document_id=document_id,
         message=error_message,
+        user_id=user_id,
     )

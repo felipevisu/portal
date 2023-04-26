@@ -5,6 +5,7 @@ from graphene_file_upload.scalars import Upload
 from ....core.exeptions import PermissionDenied
 from ....core.permissions import DocumentPermissions
 from ....document import DocumentFileStatus, DocumentLoadOptions, models
+from ....document.events import event_document_approved, event_document_declined
 from ....document.notifications import (
     send_new_document_received,
     send_request_new_document,
@@ -52,7 +53,9 @@ class LoadNewDocumentFromAPI(BaseMutation):
     def perform_mutation(cls, _root, info, id):
         document = cls.get_node_or_error(info, id, only_type=Document)
         cls.clean_instance(info, document)
-        document_load = load_new_document_from_api(document_id=document.id)
+        document_load = load_new_document_from_api(
+            document_id=document.id, user_id=info.context.user.id
+        )
         return LoadNewDocumentFromAPI(document_load=document_load)
 
 
@@ -93,7 +96,12 @@ class ApproveDocumentFile(BaseMutation):
         document = document_file.document
         document.default_file = document_file
         document.save(update_fields=["default_file", "updated"])
+        cls.post_save_action(info, document)
         return ApproveDocumentFile(document_file=document_file)
+
+    @classmethod
+    def post_save_action(cls, info, instance):
+        event_document_approved(instance.id, info.context.user.id)
 
 
 class RefuseDocumentFile(BaseMutation):
@@ -108,6 +116,10 @@ class RefuseDocumentFile(BaseMutation):
         document_file.status = DocumentFileStatus.REFUSED
         document_file.save(update_fields=["status", "updated"])
         return RefuseDocumentFile(document_file=document_file)
+
+    @classmethod
+    def post_save_action(cls, info, instance):
+        event_document_declined(instance.id, info.context.user.id)
 
 
 class RestoreDocumentFile(BaseMutation):

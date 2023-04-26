@@ -82,4 +82,4 @@ class DocumentCreate(ModelMutation):
 
     @classmethod
     def post_save_action(cls, info, instance, cleaned_input):
-        event_document_created(instance.id, info.context.user)
+        event_document_created(instance.id, info.context.user.id)
