@@ -18,6 +18,7 @@ class DocumentLoadOptions:
     FGTS = "fgts"
     SEFAZ_MG = "sefaz_mg"
     SEFAZ_SP = "sefaz_sp"
+    TCU = "tcu"
 
     CHOICES = [
         (EMPTY, "empty"),
@@ -27,6 +28,7 @@ class DocumentLoadOptions:
         (FGTS, "fgts"),
         (SEFAZ_MG, "sefaz_mg"),
         (SEFAZ_SP, "sefaz_sp"),
+        (TCU, "tcu"),
     ]
 
 

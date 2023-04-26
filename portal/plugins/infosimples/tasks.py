@@ -66,6 +66,20 @@ def load_file_and_convert(expiration_date, file_url, document):
         raise ValidationError("Erro ao processar o arquivo")
 
 
+def tcu(token, document):
+    cnpj = document.entry.document_number
+    cnpj = re.sub("[^0-9]", "", cnpj)
+
+    api = "https://api.infosimples.com/api/v2/consultas/tcu/cnp"
+    data = get_data(api, token, cnpj)
+
+    expiration_date = data.get("data_validade", None)
+    expiration_date = expiration_date.split("/")[::-1]
+    expiration_date = "-".join(expiration_date)
+    file_url = data.get("site_receipt", None)
+    return load_file_and_convert(expiration_date, file_url, document)
+
+
 def cnd(token, document):
     cnpj = document.entry.document_number
     cnpj = re.sub("[^0-9]", "", cnpj)

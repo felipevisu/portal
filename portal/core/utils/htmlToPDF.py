@@ -32,8 +32,8 @@ def htmlToPDF(
     webdriver_prefs = {}
     driver = None
 
-    binary_location = os.environ.get("GOOGLE_CHROME_BIN", "")
-    executable_path = os.environ.get("CHROMEDRIVER_PATH", "")
+    binary_location = os.environ.get("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
+    executable_path = os.environ.get("CHROMEDRIVER_PATH", "chromedriver")
 
     webdriver_options = webdriver.ChromeOptions()
     webdriver_options.binary_location = binary_location
