@@ -1,7 +1,7 @@
 from ...document import DocumentLoadOptions
 from ...document.models import Document
 from ..base_plugin import BasePlugin, ConfigurationTypeField
-from .tasks import cnd, cndt, cnep, fgts, sefaz_mg, sefaz_sp, tcu
+from .tasks import cnd, cndt, cnep, fgts, mei, sefaz_mg, sefaz_sp, tcu
 
 LOAD_MAP = {
     DocumentLoadOptions.CNEP: cnep,
@@ -11,6 +11,7 @@ LOAD_MAP = {
     DocumentLoadOptions.SEFAZ_MG: sefaz_mg,
     DocumentLoadOptions.SEFAZ_SP: sefaz_sp,
     DocumentLoadOptions.TCU: tcu,
+    DocumentLoadOptions.MEI: mei,
 }
 
 
@@ -22,13 +23,35 @@ class InfoSimplesPlugin(BasePlugin):
 
     DEFAULT_CONFIGURATION = [
         {"name": "token", "value": ""},
+        {"name": "gov_br_login", "value": ""},
+        {"name": "gov_br_password", "value": ""},
+        {"name": "jucesp_login", "value": ""},
+        {"name": "jucesp_password", "value": ""},
     ]
 
     CONFIG_STRUCTURE = {
         "token": {
-            "type": ConfigurationTypeField.STRING,
+            "type": ConfigurationTypeField.SECRET,
             "help_text": "Necessário em caso de uso comercial",
             "label": "Token",
+        },
+        "gov_br_login": {
+            "type": ConfigurationTypeField.STRING,
+            "help_text": "Número de cpf",
+            "label": "Login Gov.br",
+        },
+        "gov_br_password": {
+            "type": ConfigurationTypeField.SECRET,
+            "label": "Password Gov.br",
+        },
+        "jucesp_login": {
+            "type": ConfigurationTypeField.STRING,
+            "help_text": "Número de cpf",
+            "label": "Login JUCESP",
+        },
+        "jucesp_password": {
+            "type": ConfigurationTypeField.SECRET,
+            "label": "Password JUCESP",
         },
     }
 
@@ -50,6 +73,5 @@ class InfoSimplesPlugin(BasePlugin):
         if type not in LOAD_MAP:
             return previous_value
 
-        token = self.config.get("token")
         load_task = LOAD_MAP[type]
-        return load_task(token, document)
+        return load_task(self.config, document)

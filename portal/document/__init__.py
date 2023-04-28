@@ -19,6 +19,8 @@ class DocumentLoadOptions:
     SEFAZ_MG = "sefaz_mg"
     SEFAZ_SP = "sefaz_sp"
     TCU = "tcu"
+    MEI = "mei"
+    JUCESP = "jucesp"
 
     CHOICES = [
         (EMPTY, "empty"),
@@ -29,6 +31,8 @@ class DocumentLoadOptions:
         (SEFAZ_MG, "sefaz_mg"),
         (SEFAZ_SP, "sefaz_sp"),
         (TCU, "tcu"),
+        (MEI, "mei"),
+        (JUCESP, "jucesp"),
     ]
 
 
