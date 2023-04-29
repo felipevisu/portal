@@ -35,9 +35,7 @@ class PublishedQuerySet(models.QuerySet):
 
 
 class PublishableModel(models.Model):
-    publication_date = models.DateField(blank=True, null=True)
     is_published = models.BooleanField(default=False)
-
     objects = models.Manager.from_queryset(PublishedQuerySet)()
 
     class Meta:
@@ -45,10 +43,7 @@ class PublishableModel(models.Model):
 
     @property
     def is_visible(self):
-        return self.is_published and (
-            self.publication_date is None
-            or self.publication_date <= datetime.date.today()
-        )
+        return self.is_published
 
 
 class SortableModel(models.Model):
