@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, Union, cast
+from typing import Type, TypeVar, cast
 
 import graphene
 from django.db.models import Model
@@ -12,7 +12,7 @@ from . import ChannelContext
 T = TypeVar("T", bound=Model)
 
 
-class ChannelContextTypeForObjectType(ModelObjectType[T]):
+class ChannelContextTypeForObjectType(ModelObjectType):
     class Meta:
         abstract = True
 
@@ -24,16 +24,16 @@ class ChannelContextTypeForObjectType(ModelObjectType[T]):
         return resolver(attname, default_value, root.node, info, **args)
 
     @staticmethod
-    def resolve_id(root: ChannelContext[T], _info: ResolveInfo):
+    def resolve_id(root: ChannelContext, _info: ResolveInfo):
         return root.node.pk
 
 
-class ChannelContextType(ChannelContextTypeForObjectType[T]):
+class ChannelContextType(ChannelContextTypeForObjectType):
     class Meta:
         abstract = True
 
     @classmethod
-    def is_type_of(cls, root: Union[ChannelContext[T], T], _info: ResolveInfo) -> bool:
+    def is_type_of(cls, root: ChannelContext, _info: ResolveInfo) -> bool:
         # Unwrap node from ChannelContext if it didn't happen already
         if isinstance(root, ChannelContext):
             root = root.node

@@ -2,10 +2,10 @@ import graphene
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 
-from ...channel import models
-from ...core.permissions import ChannelPermissions
-from ..core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
-from .types import Channel
+from ....channel import models
+from ....core.permissions import ChannelPermissions
+from ...core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
+from ..types import Channel
 
 
 class ChannelInput(graphene.InputObjectType):

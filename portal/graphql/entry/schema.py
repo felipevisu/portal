@@ -1,11 +1,13 @@
 import graphene
 
+from portal.graphql.channel import ChannelContext
 from portal.graphql.core.connection import (
     create_connection_slice,
     filter_connection_queryset,
 )
 
-from ..core.fields import FilterConnectionField
+from ..channel.utils import get_default_channel_slug_or_graphql_error
+from ..core.fields import BaseField, FilterConnectionField
 from .filters import CategoryFilterInput, EntryFilterInput
 from .mutations import (
     CategoryBulkDelete,
@@ -14,6 +16,7 @@ from .mutations import (
     CategoryUpdate,
     ConsultDocument,
     EntryBulkDelete,
+    EntryChannelListingUpdate,
     EntryCreate,
     EntryDelete,
     EntryUpdate,
@@ -44,15 +47,17 @@ class Query(graphene.ObjectType):
         sort_by=CategorySortingInput(),
         filter=CategoryFilterInput(),
     )
-    entry = graphene.Field(
+    entry = BaseField(
         Entry,
         id=graphene.Argument(graphene.ID),
         slug=graphene.String(),
+        channel=graphene.String(),
     )
     entries = FilterConnectionField(
         EntryCountableConnection,
         sort_by=EntrySortingInput(),
         filter=EntryFilterInput(),
+        channel=graphene.String(),
     )
 
     def resolve_category(self, info, id=None, slug=None):
@@ -63,11 +68,24 @@ class Query(graphene.ObjectType):
         qs = filter_connection_queryset(qs, kwargs)
         return create_connection_slice(qs, info, kwargs, CategoryCountableConnection)
 
-    def resolve_entry(self, info, id=None, slug=None):
-        return resolve_entry(info, id, slug)
+    def resolve_entry(
+        self,
+        info,
+        *,
+        id=None,
+        slug=None,
+        channel=None,
+    ):
+        if channel is None and not info.context.user:
+            channel = get_default_channel_slug_or_graphql_error()
+        entry = resolve_entry(info, id, slug, channel_slug=channel)
+        return ChannelContext(node=entry, channel_slug=channel) if entry else None
 
-    def resolve_entries(self, info, *args, **kwargs):
-        qs = resolve_entries(info)
+    def resolve_entries(self, info, *, channel=None, **kwargs):
+        if channel is None and not info.context.user:
+            channel = get_default_channel_slug_or_graphql_error()
+        qs = resolve_entries(info, channel_slug=channel)
+        kwargs["channel"] = channel
         qs = filter_connection_queryset(qs, kwargs)
         return create_connection_slice(qs, info, kwargs, EntryCountableConnection)
 
@@ -81,4 +99,5 @@ class Mutation(graphene.ObjectType):
     entry_update = EntryUpdate.Field()
     entry_delete = EntryDelete.Field()
     entry_bulk_delete = EntryBulkDelete.Field()
+    entry_channel_listing_update = EntryChannelListingUpdate.Field()
     consult_document = ConsultDocument.Field()

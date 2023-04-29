@@ -13,6 +13,8 @@ from graphql_relay.connection.arrayconnection import connection_from_list_slice
 from graphql_relay.connection.connectiontypes import Edge, PageInfo
 from graphql_relay.utils import base64, unbase64
 
+from portal.graphql.channel import ChannelContext, ChannelQsContext
+
 from ..core.enums import OrderDirection
 from ..core.types import NonNullList
 from ..utils.sorting import sort_queryset_for_connection
@@ -80,7 +82,6 @@ def _prepare_filter_expression(
     sorting_fields: List[str],
     sorting_direction: str,
 ) -> Tuple[Q, Dict[str, Union[str, bool]]]:
-
     field_expression: Dict[str, Union[str, bool]] = {}
     extra_expression = Q()
     for cursor_id, cursor_value in enumerate(cursor[:index]):
@@ -303,7 +304,7 @@ def connection_from_queryset_slice(
 
 def create_connection_slice(
     iterable,
-    info,
+    info: "ResolveInfo",
     args,
     connection_type,
     edge_type=None,
@@ -321,7 +322,10 @@ def create_connection_slice(
             pageinfo_type,
         )
 
-    queryset = iterable
+    if isinstance(iterable, ChannelQsContext):
+        queryset = iterable.qs
+    else:
+        queryset = iterable
 
     queryset, sort_by = sort_queryset_for_connection(iterable=queryset, args=args)
     args["sort_by"] = sort_by
@@ -333,6 +337,14 @@ def create_connection_slice(
         edge_type or connection_type.Edge,
         pageinfo_type or graphene.relay.PageInfo,
     )
+
+    if isinstance(iterable, ChannelQsContext):
+        edges_with_context = []
+        for edge in slice.edges:
+            node = edge.node
+            edge.node = ChannelContext(node=node, channel_slug=iterable.channel_slug)
+            edges_with_context.append(edge)
+        slice.edges = edges_with_context
 
     return slice
 

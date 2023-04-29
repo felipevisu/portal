@@ -89,3 +89,13 @@ class FilterConnectionField(ConnectionField):
             return wrapped_resolver(obj, info, **kwargs)
 
         return new_resolver
+
+
+class BaseField(graphene.Field):
+    def __init__(self, *args, **kwargs):
+        super(BaseField, self).__init__(*args, **kwargs)
+
+    def get_resolver(self, parent_resolver):
+        resolver = self.resolver or parent_resolver
+
+        return resolver

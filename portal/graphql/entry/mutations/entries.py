@@ -2,25 +2,22 @@ import graphene
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
-from ...attribute import AttributeType
-from ...attribute.models import Attribute
-from ...core.permissions import EntryPermissions
-from ...entry import models
-from ...entry.tasks import consult_document
-from ...plugins.manager import get_plugins_manager
-from ..attribute.types import AttributeValueInput
-from ..attribute.utils import AttributeAssignmentMixin
-from ..core.mutations import (
-    BaseMutation,
+from ....attribute import AttributeType
+from ....attribute.models import Attribute
+from ....core.permissions import EntryPermissions
+from ....entry import models
+from ...attribute.types import AttributeValueInput
+from ...attribute.utils import AttributeAssignmentMixin
+from ...core.mutations import (
     ModelBulkDeleteMutation,
     ModelDeleteMutation,
     ModelMutation,
 )
-from ..core.types import NonNullList
-from ..core.types.common import EntryError
-from ..core.utils import validate_slug_and_generate_if_needed
-from .enums import EntryTypeEnum
-from .types import Category, Entry
+from ...core.types import NonNullList
+from ...core.types.common import EntryError
+from ...core.utils import validate_slug_and_generate_if_needed
+from ..enums import EntryTypeEnum
+from ..types import Entry
 
 
 class EntryInput(graphene.InputObjectType):
@@ -158,83 +155,3 @@ class EntryBulkDelete(ModelBulkDeleteMutation):
         model = models.Entry
         object_type = Entry
         permissions = (EntryPermissions.MANAGE_ENTRIES,)
-
-
-class CategoryInput(graphene.InputObjectType):
-    name = graphene.String()
-    slug = graphene.String()
-    type = EntryTypeEnum()
-
-
-class CategoryCreate(ModelMutation):
-    category = graphene.Field(Category)
-
-    class Arguments:
-        input = CategoryInput(required=True)
-
-    class Meta:
-        model = models.Category
-        permissions = (EntryPermissions.MANAGE_CATEGORIES,)
-        object_type = Category
-
-    @classmethod
-    def clean_input(cls, info, instance, data, input_cls=None):
-        cleaned_input = super().clean_input(info, instance, data, input_cls)
-        try:
-            cleaned_input = validate_slug_and_generate_if_needed(
-                instance, "name", cleaned_input
-            )
-        except ValidationError as error:
-            raise ValidationError({"slug": error})
-        return cleaned_input
-
-
-class CategoryUpdate(ModelMutation):
-    category = graphene.Field(Category)
-
-    class Arguments:
-        id = graphene.ID()
-        input = CategoryInput(required=True)
-
-    class Meta:
-        model = models.Category
-        permissions = (EntryPermissions.MANAGE_CATEGORIES,)
-        object_type = Category
-
-
-class CategoryDelete(ModelDeleteMutation):
-    class Arguments:
-        id = graphene.ID()
-
-    class Meta:
-        model = models.Category
-        permissions = (EntryPermissions.MANAGE_CATEGORIES,)
-        object_type = Category
-
-
-class CategoryBulkDelete(ModelBulkDeleteMutation):
-    class Arguments:
-        ids = NonNullList(
-            graphene.ID, required=True, description="List of category IDs to delete."
-        )
-
-    class Meta:
-        description = "Deletes categories."
-        model = models.Category
-        object_type = Category
-        permissions = (EntryPermissions.MANAGE_CATEGORIES,)
-
-
-class ConsultDocument(BaseMutation):
-    entry = graphene.Field(Entry)
-
-    class Arguments:
-        id = graphene.ID(required=True)
-
-    @classmethod
-    def perform_mutation(cls, _root, info, id):
-        entry = cls.get_node_or_error(info, id, only_type=Entry)
-        manager = get_plugins_manager()
-        user = info.context.user
-        consult_document(entry, manager, user)
-        return ConsultDocument(entry=entry)

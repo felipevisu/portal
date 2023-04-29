@@ -37,6 +37,19 @@ class EntryQueryset(models.QuerySet):
             Q(is_published=False) | Q(is_published__isnull=True)
         )
 
+    def visible_to_user(self, user, channel_slug: str):
+        if user and user.is_staff:
+            if channel_slug:
+                channels = Channel.objects.filter(slug=str(channel_slug)).values("id")
+                channel_listings = EntryChannelListing.objects.filter(
+                    Exists(channels.filter(pk=OuterRef("channel_id")))
+                ).values("id")
+                return self.filter(
+                    Exists(channel_listings.filter(entry_id=OuterRef("pk")))
+                )
+            return self.all()
+        return self.published(channel_slug)
+
 
 EntryManager = models.Manager.from_queryset(EntryQueryset)
 
@@ -63,7 +76,7 @@ class Entry(ModelWithDates, ModelWithSlug):
 
 
 class EntryChannelListing(PublishableModel):
-    product = models.ForeignKey(
+    entry = models.ForeignKey(
         Entry,
         null=False,
         blank=False,
@@ -77,7 +90,7 @@ class EntryChannelListing(PublishableModel):
         related_name="product_listings",
         on_delete=models.CASCADE,
     )
-    active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [["entry", "channel"]]

@@ -87,3 +87,11 @@ class EntryError(Error):
         description="List of attribute values IDs which causes the error.",
         required=False,
     )
+
+
+class EntryChannelListingError(EntryError):
+    channels = NonNullList(
+        graphene.ID,
+        description="List of channels IDs which causes the error.",
+        required=False,
+    )

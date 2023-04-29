@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Union
+from typing import Iterable, Union
 
 import graphene
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
@@ -11,7 +11,7 @@ from graphene_django.registry import get_global_registry
 from graphql import GraphQLError
 
 from ...core.exeptions import PermissionDenied
-from ..utils import get_nodes
+from ..utils import get_nodes, resolve_global_ids_to_primary_keys
 from .types import Error
 from .utils import (
     from_global_id_or_error,
@@ -194,6 +194,23 @@ class BaseMutation(graphene.Mutation):
         if get_node:
             return get_node(info, pk)
         return None
+
+    @classmethod
+    def get_global_ids_or_error(
+        cls,
+        ids: Iterable[str],
+        only_type: Union[ObjectType, str, None] = None,
+        field: str = "ids",
+    ):
+        try:
+            _nodes_type, pks = resolve_global_ids_to_primary_keys(
+                ids, only_type, raise_error=True
+            )
+        except GraphQLError as e:
+            raise ValidationError(
+                {field: ValidationError(str(e), code="graphql_error")}
+            )
+        return pks
 
     @classmethod
     def get_node_or_error(cls, info, node_id, field="id", only_type=None, qs=None):

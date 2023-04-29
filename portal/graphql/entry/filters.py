@@ -39,7 +39,7 @@ class EntryFilter(django_filters.FilterSet):
 
     class Meta:
         model = Entry
-        fields = ["is_published", "active", "category"]
+        fields = ["category"]
 
 
 class CategoryFilterInput(FilterInputObjectType):

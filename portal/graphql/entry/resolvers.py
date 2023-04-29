@@ -1,4 +1,9 @@
+from django.db.models import Exists, OuterRef
+
+from ...channel.models import Channel
+from ...core.db.utils import get_database_connection_name
 from ...entry import models
+from ..channel import ChannelQsContext
 from ..core.utils import from_global_id_or_error
 
 
@@ -15,16 +20,31 @@ def resolve_categories():
     return models.Category.objects.all()
 
 
-def resolve_entry(info, global_entry_id=None, slug=None):
+def resolve_entry(info, global_entry_id=None, slug=None, channel_slug=None):
+    database_connection_name = get_database_connection_name(info.context)
     user = info.context.user
+    qs = models.Entry.objects.using(database_connection_name).visible_to_user(
+        user, channel_slug=channel_slug
+    )
     if global_entry_id:
         _, entry_pk = from_global_id_or_error(global_entry_id)
-        entry = models.Entry.objects.visible_to_user(user).filter(pk=entry_pk).first()
+        return qs.filter(id=entry_pk).first()
     else:
-        entry = models.Entry.objects.visible_to_user(user).filter(slug=slug).first()
-    return entry
+        return qs.filter(slug=slug).first()
 
 
-def resolve_entries(info):
+def resolve_entries(info, channel_slug=None):
+    database_connection_name = get_database_connection_name(info.context)
     user = info.context.user
-    return models.Entry.objects.visible_to_user(user)
+    qs = (
+        models.Entry.objects.all()
+        .using(database_connection_name)
+        .visible_to_user(user, channel_slug)
+    )
+    if channel_slug:
+        channels = Channel.objects.filter(slug=str(channel_slug))
+        entry_channel_listings = models.EntryChannelListing.objects.filter(
+            Exists(channels.filter(pk=OuterRef("channel_id")))
+        )
+        qs = qs.filter(Exists(entry_channel_listings.filter(entry_id=OuterRef("pk"))))
+    return ChannelQsContext(qs=qs, channel_slug=channel_slug)
