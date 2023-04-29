@@ -3,6 +3,7 @@ import django_filters
 from ...entry.models import Category, Entry
 from ..core.filters import EnumFilter, GlobalIDMultipleChoiceFilter, search_filter
 from ..core.types import FilterInputObjectType
+from ..core.types.filter_input import ChannelFilterInputObjectType
 from ..utils import resolve_global_ids_to_primary_keys
 from . import types as entry_types
 from .enums import EntryTypeEnum
@@ -47,6 +48,6 @@ class CategoryFilterInput(FilterInputObjectType):
         filterset_class = CategoryFilter
 
 
-class EntryFilterInput(FilterInputObjectType):
+class EntryFilterInput(ChannelFilterInputObjectType):
     class Meta:
         filterset_class = EntryFilter

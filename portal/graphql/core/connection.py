@@ -13,8 +13,9 @@ from graphql_relay.connection.arrayconnection import connection_from_list_slice
 from graphql_relay.connection.connectiontypes import Edge, PageInfo
 from graphql_relay.utils import base64, unbase64
 
-from portal.graphql.channel import ChannelContext, ChannelQsContext
-
+from ...channel.exceptions import ChannelNotDefined, NoDefaultChannel
+from ..channel import ChannelContext, ChannelQsContext
+from ..channel.utils import get_default_channel_slug_or_graphql_error
 from ..core.enums import OrderDirection
 from ..core.types import NonNullList
 from ..utils.sorting import sort_queryset_for_connection
@@ -433,20 +434,48 @@ def slice_connection_iterable(
 
 
 def filter_connection_queryset(iterable, args, request=None, root=None):
+    update_args_with_channel(args, root)
     filterset_class = args[FILTERSET_CLASS]
     filter_field_name = args[FILTERS_NAME]
     filter_input = args.get(filter_field_name)
+    filter_func = filter_qs
 
     if filter_input:
-        queryset = iterable
-
-        filterset = filterset_class(filter_input, queryset=queryset, request=request)
-        if not filterset.is_valid():
-            raise GraphQLError(json.dumps(filterset.errors.get_json_data()))
-
-        return filterset.qs
+        return filter_func(iterable, args, filterset_class, filter_input, request)
 
     return iterable
+
+
+def filter_qs(iterable, args, filterset_class, filter_input, request):
+    try:
+        filter_channel = str(filter_input["channel"])
+    except (NoDefaultChannel, ChannelNotDefined, GraphQLError, KeyError):
+        filter_channel = None
+    filter_input["channel"] = (
+        args.get("channel")
+        or filter_channel
+        or get_default_channel_slug_or_graphql_error()
+    )
+
+    if isinstance(iterable, ChannelQsContext):
+        queryset = iterable.qs
+    else:
+        queryset = iterable
+
+    filterset = filterset_class(filter_input, queryset=queryset, request=request)
+    if not filterset.is_valid():
+        raise GraphQLError(json.dumps(filterset.errors.get_json_data()))
+
+    if isinstance(iterable, ChannelQsContext):
+        return ChannelQsContext(filterset.qs, iterable.channel_slug)
+
+    return filterset.qs
+
+
+def update_args_with_channel(args, root):
+    # for nested filters get channel from ChannelContext object
+    if "channel" not in args and root and hasattr(root, "channel_slug"):
+        args["channel"] = root.channel_slug
 
 
 class NonNullConnection(Connection):
@@ -499,5 +528,7 @@ class CountableConnection(NonNullConnection):
 
         if callable(total_count):
             return total_count()
+
+        return total_count
 
         return total_count

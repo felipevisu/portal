@@ -2,6 +2,9 @@ import graphene
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
+from portal.graphql.channel import ChannelContext
+from portal.graphql.core import ResolveInfo
+
 from ....attribute import AttributeType
 from ....attribute.models import Attribute
 from ....core.permissions import EntryPermissions
@@ -87,6 +90,18 @@ class EntryCreate(ModelMutation):
             attributes = cleaned_data.get("attributes")
             if attributes:
                 AttributeAssignmentMixin.save(instance, attributes)
+
+    @classmethod
+    def perform_mutation(cls, _root, info: ResolveInfo, /, **data):
+        response = super().perform_mutation(_root, info, **data)
+        entry = getattr(response, cls._meta.return_field_name)
+
+        setattr(
+            response,
+            cls._meta.return_field_name,
+            ChannelContext(node=entry, channel_slug=None),
+        )
+        return response
 
 
 class EntryUpdate(EntryCreate):

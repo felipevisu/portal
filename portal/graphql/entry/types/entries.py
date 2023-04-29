@@ -31,11 +31,11 @@ class Entry(ChannelContextType):
     documents = ConnectionField(DocumentCountableConnection)
     type = EntryTypeEnum()
     attributes = NonNullList(SelectedAttribute, required=True)
+    created = graphene.DateTime()
+    updated = graphene.DateTime()
     consult = PermissionsField(
         NonNullList("portal.graphql.entry.types.consults.Consult")
     )
-    active = graphene.Boolean()
-    is_published = graphene.Boolean()
     channel_listings = PermissionsField(
         NonNullList(EntryChannelListing),
         permissions=[EntryPermissions.MANAGE_ENTRIES],

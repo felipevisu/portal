@@ -2,6 +2,8 @@ import datetime
 
 import graphene
 
+from portal.graphql.channel import ChannelContext
+
 from ...core.permissions import DocumentPermissions, EventPermissions
 from ...document import models
 from ..core.connection import CountableConnection
@@ -70,12 +72,14 @@ class Document(ModelObjectType):
             return self.default_file.expiration_date < today
         return False
 
-    def resolve_entry(self, info):
-        if self.entry_id:
-            entry_id = self.entry_id
+    @staticmethod
+    def resolve_entry(root: models.Entry, info):
+        if root.entry_id:
+            entry_id = root.entry_id
         else:
             return None
-        return EntryByIdLoader(info.context).load(entry_id)
+        entry = EntryByIdLoader(info.context).load(entry_id)
+        return entry.then(lambda entry: ChannelContext(node=entry, channel_slug=None))
 
     def resolve_files(self, info):
         return DocumentFilesByDocumentIdLoader(info.context).load(self.id)

@@ -78,6 +78,13 @@ class FilterInputObjectType(InputObjectType):
         return args
 
 
+class ChannelFilterInputObjectType(FilterInputObjectType):
+    channel = Argument(String)
+
+    class Meta:
+        abstract = True
+
+
 class StringFilterInput(graphene.InputObjectType):
     eq = graphene.String(required=False)
     one_of = NonNullList(graphene.String, required=False)
