@@ -16,7 +16,6 @@ from ...document.models import DocumentFile
 def get_data(api, token, cnpj, extra_params=""):
     parameters = "?token={}&timeout=600&cnpj={}&{}".format(token, cnpj, extra_params)
     url = api + parameters
-    print(url)
     response = requests.get(url)
 
     parsed = response.json()
@@ -33,13 +32,14 @@ def load_file(file_url, document, data={}):
         file_temp.flush()
         file_name = file_url.split("/")[-1]
         document_file = DocumentFile.objects.create(
-            document=document, status=DocumentFileStatus.APPROVED, *data
+            document=document, status=DocumentFileStatus.APPROVED, **data
         )
         document_file.file.save(file_name, File(file_temp))
         document.default_file = document_file
         document.save()
         return document_file
     except Exception as e:
+        print(e)
         logging.warning(str(e))
         raise ValidationError("Erro ao processar o arquivo")
 
