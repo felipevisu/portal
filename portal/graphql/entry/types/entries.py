@@ -13,6 +13,7 @@ from ...core.types.common import NonNullList
 from ...document.dataloaders import DocumentsByEntryIdLoader
 from ...document.types import DocumentCountableConnection
 from ..dataloaders import (
+    CategoriesByEntryIdLoader,
     CategoryByIdLoader,
     ConsultByEntryIdLoader,
     EntryChannelListingByEntryIdLoader,
@@ -26,6 +27,7 @@ class Entry(ChannelContextType):
     name = graphene.String(required=True)
     slug = graphene.String()
     category = graphene.Field("portal.graphql.entry.types.categories.Category")
+    categories = NonNullList("portal.graphql.entry.types.categories.Category")
     document_number = graphene.String()
     email = graphene.String()
     documents = ConnectionField(DocumentCountableConnection)
@@ -57,6 +59,10 @@ class Entry(ChannelContextType):
         if category_id is None:
             return None
         return CategoryByIdLoader(info.context).load(category_id)
+
+    @staticmethod
+    def resolve_categories(root: ChannelContext[models.Entry], info):
+        return CategoriesByEntryIdLoader(info.context).load(root.node.id)
 
     @staticmethod
     def resolve_documents(root: ChannelContext[models.Entry], info, **kwargs):

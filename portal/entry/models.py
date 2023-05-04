@@ -8,19 +8,6 @@ from ..core.permissions import EntryPermissions
 from . import EntryType
 
 
-class Category(ModelWithDates, ModelWithSlug):
-    type = models.CharField(choices=EntryType.CHOICES, max_length=24)
-
-    class Meta:
-        ordering = ["name"]
-        permissions = (
-            (EntryPermissions.MANAGE_CATEGORIES.codename, "Manage categories."),
-        )
-
-    def __str__(self):
-        return self.name
-
-
 class EntryQueryset(models.QuerySet):
     def published(self, channel_slug: str):
         channels = Channel.objects.filter(
@@ -30,7 +17,7 @@ class EntryQueryset(models.QuerySet):
             Exists(channels.filter(pk=OuterRef("channel_id"))),
             is_published=True,
         ).values("id")
-        return self.filter(Exists(channel_listings.filter(product_id=OuterRef("pk"))))
+        return self.filter(Exists(channel_listings.filter(entry_id=OuterRef("pk"))))
 
     def not_published(self, channel_slug: str):
         return self.annotate_publication_info(channel_slug).filter(
@@ -59,7 +46,7 @@ class Entry(ModelWithDates, ModelWithSlug):
     document_number = models.CharField(max_length=256)
     document_file = models.FileField(upload_to="entry", blank=True)
     category = models.ForeignKey(
-        Category, on_delete=models.PROTECT, related_name="entries"
+        "Category", on_delete=models.PROTECT, null=True, blank=True
     )
     email = models.CharField(max_length=258)
     phone = models.CharField(max_length=258, null=True, blank=True)
@@ -87,7 +74,7 @@ class EntryChannelListing(PublishableModel):
         Channel,
         null=False,
         blank=False,
-        related_name="product_listings",
+        related_name="entry_listings",
         on_delete=models.CASCADE,
     )
     is_active = models.BooleanField(default=False)
@@ -97,10 +84,43 @@ class EntryChannelListing(PublishableModel):
         ordering = ("pk",)
 
 
+class Category(ModelWithDates, ModelWithSlug):
+    type = models.CharField(choices=EntryType.CHOICES, max_length=24)
+    entries = models.ManyToManyField(
+        Entry,
+        blank=True,
+        through="CategoryEntry",
+        related_name="categories",
+        through_fields=("category", "entry"),
+    )
+
+    class Meta:
+        ordering = ["name"]
+        permissions = (
+            (EntryPermissions.MANAGE_CATEGORIES.codename, "Manage categories."),
+        )
+
+    def __str__(self):
+        return self.name
+
+
+class CategoryEntry(models.Model):
+    category = models.ForeignKey(
+        Category, related_name="categoryentry", on_delete=models.CASCADE
+    )
+    entry = models.ForeignKey(
+        Entry, related_name="categoryentry", on_delete=models.CASCADE
+    )
+
+    class Meta:
+        unique_together = (("category", "entry"),)
+
+
 class Consult(ModelWithDates):
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="consult")
     plugin = models.CharField(max_length=64)
     response = models.JSONField(blank=True, default=dict, encoder=DjangoJSONEncoder)
 
     class Meta:
+        ordering = ["-created"]
         ordering = ["-created"]

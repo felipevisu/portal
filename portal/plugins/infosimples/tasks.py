@@ -39,7 +39,6 @@ def load_file(file_url, document, data={}):
         document.save()
         return document_file
     except Exception as e:
-        print(e)
         logging.warning(str(e))
         raise ValidationError("Erro ao processar o arquivo")
 

@@ -55,7 +55,7 @@ def sort_queryset(
     sorting_attribute = getattr(sort_by, "attribute_id", None)
     if sorting_field is not None and sorting_attribute is not None:
         raise GraphQLError(
-            "You must provide either `field` or `attributeId` to sort the products."
+            "You must provide either `field` or `attributeId` to sort the entries."
         )
     elif sorting_attribute is not None:  # empty string as sorting_attribute is valid
         return _sort_queryset_by_attribute(

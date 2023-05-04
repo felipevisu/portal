@@ -56,7 +56,7 @@ class AssignedEntryAttributesByEntryIdLoader(DataLoader):
 
 
 class AttributeValuesByAssignedEntryAttributeIdLoader(DataLoader):
-    context_key = "attributevalues_by_assignedproductattribute"
+    context_key = "attributevalues_by_assignedentryattribute"
 
     def batch_load(self, keys):
         attribute_values = list(
@@ -68,12 +68,12 @@ class AttributeValuesByAssignedEntryAttributeIdLoader(DataLoader):
 
         def map_assignment_to_values(values):
             value_map = dict(zip(value_ids, values))
-            assigned_product_map = defaultdict(list)
+            assigned_entry_map = defaultdict(list)
             for attribute_value in attribute_values:
-                assigned_product_map[attribute_value.assignment_id].append(
+                assigned_entry_map[attribute_value.assignment_id].append(
                     value_map.get(attribute_value.value_id)
                 )
-            return [assigned_product_map[key] for key in keys]
+            return [assigned_entry_map[key] for key in keys]
 
         return (
             AttributeValueByIdLoader(self.context)

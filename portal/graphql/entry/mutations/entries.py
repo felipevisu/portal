@@ -29,6 +29,7 @@ class EntryInput(graphene.InputObjectType):
     type = EntryTypeEnum()
     document_number = graphene.String()
     category = graphene.ID()
+    categories = NonNullList(graphene.ID)
     is_published = graphene.Boolean(default=False)
     publication_date = graphene.Date(required=False)
     email = graphene.String()
@@ -86,6 +87,10 @@ class EntryCreate(ModelMutation):
     def _save_m2m(cls, info, instance, cleaned_data):
         with transaction.atomic():
             super()._save_m2m(info, instance, cleaned_data)
+
+            categories = cleaned_data.get("categories", None)
+            if categories is not None:
+                instance.categories.set(categories)
 
             attributes = cleaned_data.get("attributes")
             if attributes:

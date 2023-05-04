@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from ...entry.models import Category, Consult, Entry, EntryChannelListing
+from ...entry.models import Category, CategoryEntry, Consult, Entry, EntryChannelListing
 from ..core.dataloaders import DataLoader
 
 
@@ -10,6 +10,35 @@ class CategoryByIdLoader(DataLoader):
     def batch_load(self, keys):
         categories = Category.objects.in_bulk(keys)
         return [categories.get(category_id) for category_id in keys]
+
+
+class CategoriesByEntryIdLoader(DataLoader):
+    context_key = "categoryes_by_entry"
+
+    def batch_load(self, keys):
+        entry_category_pairs = list(
+            CategoryEntry.objects.using(self.database_connection_name)
+            .using(self.database_connection_name)
+            .filter(entry_id__in=keys)
+            .order_by("id")
+            .values_list("entry_id", "category_id")
+            .iterator()
+        )
+        entry_category_map = defaultdict(list)
+        for pid, cid in entry_category_pairs:
+            entry_category_map[pid].append(cid)
+
+        def map_categories(collections):
+            category_map = {c.id: c for c in collections}
+            return [
+                [category_map[cid] for cid in entry_category_map[pid]] for pid in keys
+            ]
+
+        return (
+            CategoryByIdLoader(self.context)
+            .load_many(set(cid for pid, cid in entry_category_pairs))
+            .then(map_categories)
+        )
 
 
 class EntryByIdLoader(DataLoader):

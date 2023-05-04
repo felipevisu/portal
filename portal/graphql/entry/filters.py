@@ -1,11 +1,11 @@
 import django_filters
+from django.db.models import Exists, OuterRef
 
-from ...entry.models import Category, Entry
+from ...entry.models import Category, CategoryEntry, Entry
 from ..core.filters import EnumFilter, GlobalIDMultipleChoiceFilter, search_filter
 from ..core.types import FilterInputObjectType
 from ..core.types.filter_input import ChannelFilterInputObjectType
 from ..utils import resolve_global_ids_to_primary_keys
-from . import types as entry_types
 from .enums import EntryTypeEnum
 
 
@@ -15,12 +15,17 @@ def filter_entry_type(qs, _, value):
     return qs.filter(type=value)
 
 
+def filter_entries_by_categories(qs, category_pks):
+    category_entries = CategoryEntry.objects.filter(
+        category_id__in=category_pks
+    ).values("entry_id")
+    return qs.filter(Exists(category_entries.filter(entry_id=OuterRef("pk"))))
+
+
 def filter_categories(qs, _, value):
     if value:
-        _, category_pks = resolve_global_ids_to_primary_keys(
-            value, entry_types.Category
-        )
-        return qs.filter(category_id__in=category_pks)
+        _, category_pks = resolve_global_ids_to_primary_keys(value, Category)
+        qs = filter_entries_by_categories(qs, category_pks)
     return qs
 
 
