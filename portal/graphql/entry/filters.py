@@ -24,7 +24,7 @@ def filter_entries_by_categories(qs, category_pks):
 
 def filter_categories(qs, _, value):
     if value:
-        _, category_pks = resolve_global_ids_to_primary_keys(value, Category)
+        _, category_pks = resolve_global_ids_to_primary_keys(value)
         qs = filter_entries_by_categories(qs, category_pks)
     return qs
 
@@ -45,7 +45,7 @@ class EntryFilter(django_filters.FilterSet):
 
     class Meta:
         model = Entry
-        fields = ["category"]
+        fields = []
 
 
 class CategoryFilterInput(FilterInputObjectType):
