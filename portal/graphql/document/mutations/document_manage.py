@@ -4,7 +4,12 @@ from graphene_file_upload.scalars import Upload
 
 from ....core.exeptions import PermissionDenied
 from ....core.permissions import DocumentPermissions
-from ....document import DocumentFileStatus, DocumentLoadOptions, models
+from ....document import (
+    DocumentFileStatus,
+    DocumentLoadOptions,
+    DocumentLoadStatus,
+    models,
+)
 from ....document.events import event_document_approved, event_document_declined
 from ....document.notifications import (
     send_new_document_received,
@@ -47,6 +52,16 @@ class LoadNewDocumentFromAPI(BaseMutation):
         if instance.load_type == DocumentLoadOptions.EMPTY:
             raise ValidationError(
                 {"load_type": "O documento precisa ter um tipo de consulta definido."}
+            )
+        document_load = models.DocumentLoad.objects.filter(
+            document_id=instance.id, status=DocumentLoadStatus.PENDING
+        ).first()
+        if document_load:
+            raise ValidationError(
+                {
+                    "id": "Uma consulta para este documento ainda está em andamento,"
+                    " aguarde a finalização."
+                }
             )
 
     @classmethod

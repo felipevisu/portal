@@ -177,6 +177,7 @@ def _filter_attributes(qs, _, value):
 class CategoryFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
     type = EnumFilter(input_class=EntryTypeEnum, method=filter_entry_type)
+    ids = GlobalIDMultipleChoiceFilter(field_name="id")
 
     class Meta:
         model = Category
