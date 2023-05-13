@@ -23,6 +23,7 @@ class Event(models.Model):
         on_delete=models.SET_NULL,
         related_name="+",
     )
+    user_email = models.CharField(blank=True, null=True, max_length=256)
     document = models.ForeignKey(
         Document,
         blank=True,
@@ -30,6 +31,7 @@ class Event(models.Model):
         on_delete=models.SET_NULL,
         related_name="events",
     )
+    document_name = models.CharField(blank=True, null=True, max_length=512)
     message = models.TextField(blank=True)
 
     class Meta:
