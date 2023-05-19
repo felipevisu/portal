@@ -28,7 +28,6 @@ class EntryInput(graphene.InputObjectType):
     slug = graphene.String()
     type = EntryTypeEnum()
     document_number = graphene.String()
-    category = graphene.ID()
     categories = NonNullList(graphene.ID)
     is_published = graphene.Boolean(default=False)
     publication_date = graphene.Date(required=False)
@@ -125,6 +124,7 @@ class EntryUpdate(EntryCreate):
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data, input_cls)
+        print(cleaned_input)
         try:
             cleaned_input = validate_slug_and_generate_if_needed(
                 instance, "name", cleaned_input

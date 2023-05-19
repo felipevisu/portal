@@ -26,7 +26,6 @@ class Entry(ChannelContextType):
     id = graphene.GlobalID(required=True)
     name = graphene.String(required=True)
     slug = graphene.String()
-    category = graphene.Field("portal.graphql.entry.types.categories.Category")
     categories = NonNullList("portal.graphql.entry.types.categories.Category")
     document_number = graphene.String()
     email = graphene.String()
@@ -52,13 +51,6 @@ class Entry(ChannelContextType):
     @staticmethod
     def resolve_channel(root: ChannelContext[models.Entry], _info):
         return root.channel_slug
-
-    @staticmethod
-    def resolve_category(root: ChannelContext[models.Entry], info):
-        category_id = root.node.category_id
-        if category_id is None:
-            return None
-        return CategoryByIdLoader(info.context).load(category_id)
 
     @staticmethod
     def resolve_categories(root: ChannelContext[models.Entry], info):
@@ -88,5 +80,4 @@ class Entry(ChannelContextType):
 
 class EntryCountableConnection(CountableConnection):
     class Meta:
-        node = Entry
         node = Entry

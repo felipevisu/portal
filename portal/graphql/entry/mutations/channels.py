@@ -41,23 +41,6 @@ class EntryChannelListingUpdate(BaseChannelListingMutation):
         error_type_field = "entry_channel_listing_errors"
 
     @classmethod
-    def validate_entry_without_category(cls, cleaned_input, errors):
-        channels_with_published_entry_without_category = []
-        for update_channel in cleaned_input.get("update_channels", []):
-            is_published = update_channel.get("is_published") is True
-            if is_published:
-                channels_with_published_entry_without_category.append(
-                    update_channel["channel_id"]
-                )
-        if channels_with_published_entry_without_category:
-            errors["is_published"].append(
-                ValidationError(
-                    "You must select a category to be able to publish.",
-                    params={"channels": channels_with_published_entry_without_category},
-                )
-            )
-
-    @classmethod
     def update_channels(cls, entry: "EntryModel", update_channels: List[Dict]):
         for update_channel in update_channels:
             channel = update_channel["channel"]
@@ -94,8 +77,6 @@ class EntryChannelListingUpdate(BaseChannelListingMutation):
             errors,
             input_source="update_channels",
         )
-        if not entry.category:
-            cls.validate_entry_without_category(cleaned_input, errors)
         if errors:
             raise ValidationError(errors)
 

@@ -45,12 +45,7 @@ class Entry(ModelWithDates, ModelWithSlug):
     type = models.CharField(choices=EntryType.CHOICES, max_length=24)
     document_number = models.CharField(max_length=256)
     document_file = models.FileField(upload_to="entry", blank=True)
-    category = models.ForeignKey(
-        "Category", on_delete=models.PROTECT, null=True, blank=True
-    )
     email = models.CharField(max_length=258)
-    phone = models.CharField(max_length=258, null=True, blank=True)
-    address = models.CharField(max_length=258, null=True, blank=True)
 
     objects = EntryManager()
 
@@ -122,5 +117,4 @@ class Consult(ModelWithDates):
     response = models.JSONField(blank=True, default=dict, encoder=DjangoJSONEncoder)
 
     class Meta:
-        ordering = ["-created"]
         ordering = ["-created"]

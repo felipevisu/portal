@@ -6,7 +6,7 @@ from ..event.models import Event
 
 def build_params(document_id, user_id):
     document = Document.objects.filter(id=document_id).first()
-    user = User.objects.filter(id=None).first()
+    user = User.objects.filter(id=user_id).first()
     params = {"document_id": document_id, "user_id": user_id}
     if document:
         params["document_name"] = document.entry.name + " / " + document.name
