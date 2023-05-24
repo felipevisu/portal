@@ -1,7 +1,7 @@
 from ...document import DocumentLoadOptions
 from ...document.models import Document
 from ..base_plugin import BasePlugin, ConfigurationTypeField
-from .tasks import cnd, cndt, cnep, fgts, mei, sefaz_mg, sefaz_sp, tcu
+from .tasks import cnd, cndt, cnep, fgts, jucesp, mei, sefaz_mg, sefaz_sp, tcu
 
 LOAD_MAP = {
     DocumentLoadOptions.CNEP: cnep,
@@ -12,6 +12,7 @@ LOAD_MAP = {
     DocumentLoadOptions.SEFAZ_SP: sefaz_sp,
     DocumentLoadOptions.TCU: tcu,
     DocumentLoadOptions.MEI: mei,
+    DocumentLoadOptions.JUCESP: jucesp,
 }
 
 
