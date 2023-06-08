@@ -14,7 +14,6 @@ from ...document.dataloaders import DocumentsByEntryIdLoader
 from ...document.types import DocumentCountableConnection
 from ..dataloaders import (
     CategoriesByEntryIdLoader,
-    CategoryByIdLoader,
     ConsultByEntryIdLoader,
     EntryChannelListingByEntryIdLoader,
 )
@@ -25,7 +24,7 @@ from .channels import EntryChannelListing
 class Entry(ChannelContextType):
     id = graphene.GlobalID(required=True)
     name = graphene.String(required=True)
-    slug = graphene.String()
+    slug = graphene.String(required=True)
     categories = NonNullList("portal.graphql.entry.types.categories.Category")
     document_number = graphene.String()
     email = graphene.String()
