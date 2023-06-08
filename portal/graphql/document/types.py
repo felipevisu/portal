@@ -48,7 +48,6 @@ class Document(ModelObjectType):
     default_file = graphene.Field(lambda: DocumentFile)
     created = graphene.DateTime()
     updated = graphene.DateTime()
-    publication_date = graphene.Date()
     is_published = graphene.Boolean()
     expires = graphene.Boolean()
     expired = graphene.Boolean()

@@ -17,7 +17,6 @@ class DocumentInput(graphene.InputObjectType):
     provider = graphene.ID(required=False)
     entry = graphene.ID(required=False)
     is_published = graphene.Boolean(default=False)
-    publication_date = graphene.Date(required=False)
     expires = graphene.Boolean(default=False)
     begin_date = graphene.Date(required=False)
     expiration_date = graphene.Date(required=False)

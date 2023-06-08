@@ -30,7 +30,6 @@ class EntryInput(graphene.InputObjectType):
     document_number = graphene.String()
     categories = NonNullList(graphene.ID)
     is_published = graphene.Boolean(default=False)
-    publication_date = graphene.Date(required=False)
     email = graphene.String()
     phone = graphene.String(required=False)
     address = graphene.String(required=False)

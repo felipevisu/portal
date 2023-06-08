@@ -1,7 +1,5 @@
-import datetime
-
 from django.db import models, transaction
-from django.db.models import F, Max, Q
+from django.db.models import F, Max
 
 
 class ModelWithDates(models.Model):
@@ -22,11 +20,7 @@ class ModelWithSlug(models.Model):
 
 class PublishedQuerySet(models.QuerySet):
     def published(self):
-        today = datetime.date.today()
-        return self.filter(
-            Q(publication_date__lte=today) | Q(publication_date__isnull=True),
-            is_published=True,
-        )
+        return self.filter(is_published=True)
 
     def visible_to_user(self, user):
         if user.is_authenticated and user.is_staff:
