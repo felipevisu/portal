@@ -16,7 +16,3 @@ class PortalContext(HttpRequest):
     dataloaders: Dict[str, "DataLoader"]
     user: Optional[User]  # type: ignore[assignment]
     request_time: datetime.datetime
-    user: Optional[User]  # type: ignore[assignment]
-    request_time: datetime.datetime
-    user: Optional[User]  # type: ignore[assignment]
-    request_time: datetime.datetime

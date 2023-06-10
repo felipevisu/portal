@@ -4,6 +4,8 @@ import graphene
 from django.db.models import Model
 from graphene.types.resolver import get_default_resolver
 
+from portal.entry.models import EntryChannelListing
+
 from ...channel import models
 from ..core import ResolveInfo
 from ..core.types import ModelObjectType
@@ -56,7 +58,16 @@ class Channel(ModelObjectType):
         required=True,
     )
     is_active = graphene.Boolean(required=True)
+    total_entries = graphene.Int()
 
     class Meta:
         model = models.Channel
         interfaces = [graphene.relay.Node]
+
+    @staticmethod
+    def resolve_total_entries(root: models.Channel, info):
+        return (
+            EntryChannelListing.objects.filter(channel_id=root.id)
+            .visible_to_user(info.context.user)
+            .count()
+        )
