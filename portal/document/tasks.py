@@ -33,7 +33,9 @@ def load_new_document_from_api_task(document_id, document_load_id, user_id):
         document_load.status = DocumentLoadStatus.ERROR
         document_load.error_message = error_message
         document_load.save()
-        event_document_loaded_fail(document_id, error_message, user_id=user_id)
+        event_document_loaded_fail(
+            document_id, error_message=error_message, user_id=user_id
+        )
 
 
 def load_new_document_from_api(document_id, user_id=None):

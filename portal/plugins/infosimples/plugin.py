@@ -1,19 +1,7 @@
 from ...document import DocumentLoadOptions
 from ...document.models import Document
 from ..base_plugin import BasePlugin, ConfigurationTypeField
-from .tasks import cnd, cndt, cnep, fgts, jucesp, mei, sefaz_mg, sefaz_sp, tcu
-
-LOAD_MAP = {
-    DocumentLoadOptions.CNEP: cnep,
-    DocumentLoadOptions.CNDT: cndt,
-    DocumentLoadOptions.CND: cnd,
-    DocumentLoadOptions.FGTS: fgts,
-    DocumentLoadOptions.SEFAZ_MG: sefaz_mg,
-    DocumentLoadOptions.SEFAZ_SP: sefaz_sp,
-    DocumentLoadOptions.TCU: tcu,
-    DocumentLoadOptions.MEI: mei,
-    DocumentLoadOptions.JUCESP: jucesp,
-}
+from .loader import loader_factory
 
 
 class InfoSimplesPlugin(BasePlugin):
@@ -71,8 +59,10 @@ class InfoSimplesPlugin(BasePlugin):
         if not type_in_load_options:
             return previous_value
 
-        if type not in LOAD_MAP:
+        Loader = loader_factory(type=type)
+
+        if not Loader:
             return previous_value
 
-        load_task = LOAD_MAP[type]
-        return load_task(self.config, document)
+        loader = Loader(config=self.config, document=document)
+        return loader.load()
