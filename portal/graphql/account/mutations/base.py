@@ -22,7 +22,7 @@ class RequestPasswordReset(BaseMutation):
             raise ValidationError(
                 {
                     "email": ValidationError(
-                        "User with this email doesn't exist",
+                        "Não foi encontrado nenhum usuário com este email.",
                     )
                 }
             )
@@ -51,7 +51,7 @@ class SetPassword(BaseMutation):
             raise ValidationError(
                 {
                     "email": ValidationError(
-                        "User with this email doesn't exist",
+                        "Não foi encontrado nenhum usuário com este email.",
                     )
                 }
             )

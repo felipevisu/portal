@@ -68,7 +68,8 @@ class Document(ModelObjectType):
     def resolve_expired(self, info):
         if self.expires and self.default_file:
             today = datetime.date.today()
-            return self.default_file.expiration_date < today
+            if self.default_file.expiration_date:
+                return self.default_file.expiration_date < today
         return False
 
     @staticmethod
