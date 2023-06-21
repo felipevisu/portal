@@ -10,7 +10,6 @@ from .models import PluginConfiguration
 
 if TYPE_CHECKING:
     from ..account.models import User
-    from ..document.models import Document
     from ..entry.models import Category, Entry
     from .base_plugin import BasePlugin
 

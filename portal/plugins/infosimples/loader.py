@@ -23,11 +23,11 @@ class AbstractLoader(ABC):
 
     @abstractmethod
     def get_extra_params(self) -> str:
-        return ""
+        pass
 
     @abstractmethod
     def get_expiration_date(self, data: dict):
-        return {}
+        pass
 
     def get_data(self) -> dict or None:
         extra_params = self.get_extra_params()
@@ -52,10 +52,9 @@ class AbstractLoader(ABC):
     def load(self):
         data = self.get_data()
         file_url = data.get("site_receipt", None)
+        expiraction_date = self.get_expiration_date(data)
         if file_url:
-            file = self.load_file(
-                file_url=file_url, data=self.get_expiration_date(data)
-            )
+            file = self.load_file(file_url=file_url, data=expiraction_date)
             return file
         return None
 
@@ -235,7 +234,7 @@ class CNEP(LoadFileMixin):
         return ""
 
     def get_expiration_date(self, data: dict):
-        expiration_date = data.get("validade_data", None)
+        expiration_date = data.get("data_validade", None)
         expiration_date = expiration_date.split("/")[::-1]
         expiration_date = "-".join(expiration_date)
         return {"expiration_date": expiration_date}
