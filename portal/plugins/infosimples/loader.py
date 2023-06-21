@@ -14,7 +14,53 @@ from ...core.utils.htmlToPDF import htmlToPDF
 from ...document.models import Document, DocumentFile
 
 
-class LoadFileMixin:
+class AbstractLoader(ABC):
+    @abstractmethod
+    def __init__(self, api: str, config: dict, document: Document):
+        self.api = api
+        self.config = config
+        self.document = document
+
+    @abstractmethod
+    def get_extra_params(self) -> str:
+        return ""
+
+    @abstractmethod
+    def get_expiration_date(self, data: dict):
+        return {}
+
+    def get_data(self) -> dict or None:
+        extra_params = self.get_extra_params()
+        cnpj = re.sub("[^0-9]", "", self.document.entry.document_number)
+        parameters = "?token={}&timeout=600&cnpj={}&{}".format(
+            self.config.get("token"), cnpj, extra_params
+        )
+        url = self.api + parameters
+        response = requests.get(url)
+
+        parsed = response.json()
+        if parsed["code"] in range(600, 799):
+            raise ValidationError(message=parsed["code_message"])
+
+        data = parsed["data"][0]
+        return data
+
+    @abstractmethod
+    def load_file(self, file_url: str, data: dict = {}) -> DocumentFile:
+        pass
+
+    def load(self):
+        data = self.get_data()
+        file_url = data.get("site_receipt", None)
+        if file_url:
+            file = self.load_file(
+                file_url=file_url, data=self.get_expiration_date(data)
+            )
+            return file
+        return None
+
+
+class LoadFileMixin(AbstractLoader):
     def load_file(self, file_url: str, data: dict = {}) -> DocumentFile:
         try:
             document = self.document
@@ -34,7 +80,7 @@ class LoadFileMixin:
             raise ValidationError("Erro ao processar o arquivo")
 
 
-class LoadAndConvertFileMixin:
+class LoadAndConvertFileMixin(AbstractLoader):
     def load_file(self, file_url: str, data: dict = {}) -> DocumentFile:
         try:
             document = self.document
@@ -55,46 +101,7 @@ class LoadAndConvertFileMixin:
             raise ValidationError("Erro ao processar o arquivo")
 
 
-class AbstractLoader(ABC):
-    @abstractmethod
-    def __init__(self, api: str, config: dict, document: Document):
-        self.api = api
-        self.config = config
-        self.document = document
-
-    def get_extra_params(self) -> str:
-        return ""
-
-    def get_expiration_date(self, data: dict):
-        pass
-
-    def get_data(self) -> dict or None:
-        extra_params = self.get_extra_params()
-        cnpj = re.sub("[^0-9]", "", self.document.entry.document_number)
-        parameters = "?token={}&timeout=600&cnpj={}&{}".format(
-            self.config.get("token"), cnpj, extra_params
-        )
-        url = self.api + parameters
-        response = requests.get(url)
-
-        parsed = response.json()
-        if parsed["code"] in range(600, 799):
-            raise ValidationError(message=parsed["code_message"])
-
-        data = parsed["data"][0]
-        return data
-
-    def load_file(file_url: str, data: dict = {}) -> DocumentFile:
-        pass
-
-    def load(self):
-        data = self.get_data()
-        file_url = data.get("site_receipt", None)
-        file = self.load_file(file_url=file_url, data=self.get_expiration_date(data))
-        return file
-
-
-class JUCESP(AbstractLoader, LoadFileMixin):
+class JUCESP(LoadFileMixin):
     def __init__(
         self,
         document: Document,
@@ -109,8 +116,11 @@ class JUCESP(AbstractLoader, LoadFileMixin):
         extra_params = f"login_cpf={login}&login_senha={password}"
         return extra_params
 
+    def get_expiration_date(self, data: dict) -> dict:
+        return {}
 
-class MEI(AbstractLoader, LoadFileMixin):
+
+class MEI(LoadFileMixin):
     def __init__(
         self,
         document: Document,
@@ -125,8 +135,11 @@ class MEI(AbstractLoader, LoadFileMixin):
         extra_params = f"login_cpf={login}&login_senha={password}"
         return extra_params
 
+    def get_expiration_date(self, data: dict) -> dict:
+        return {}
 
-class TCU(AbstractLoader, LoadAndConvertFileMixin):
+
+class TCU(LoadAndConvertFileMixin):
     def __init__(
         self,
         document: Document,
@@ -135,6 +148,9 @@ class TCU(AbstractLoader, LoadAndConvertFileMixin):
     ):
         super().__init__(api, config, document)
 
+    def get_extra_params(self) -> str:
+        return ""
+
     def get_expiration_date(self, data: dict):
         expiration_date = data.get("data_validade", None)
         expiration_date = expiration_date.split("/")[::-1]
@@ -142,7 +158,7 @@ class TCU(AbstractLoader, LoadAndConvertFileMixin):
         return {"expiration_date": expiration_date}
 
 
-class CND(AbstractLoader, LoadFileMixin):
+class CND(LoadFileMixin):
     def __init__(
         self,
         document: Document,
@@ -151,6 +167,9 @@ class CND(AbstractLoader, LoadFileMixin):
     ):
         super().__init__(api, config, document)
 
+    def get_extra_params(self) -> str:
+        return ""
+
     def get_expiration_date(self, data: dict):
         expiration_date = data.get("validade_data", None)
         expiration_date = expiration_date.split("/")[::-1]
@@ -158,7 +177,7 @@ class CND(AbstractLoader, LoadFileMixin):
         return {"expiration_date": expiration_date}
 
 
-class SEFAZMG(AbstractLoader, LoadAndConvertFileMixin):
+class SEFAZMG(LoadAndConvertFileMixin):
     def __init__(
         self,
         document: Document,
@@ -184,7 +203,7 @@ class SEFAZMG(AbstractLoader, LoadAndConvertFileMixin):
         return {"expiration_date": expiration_date}
 
 
-class SEFAZSP(AbstractLoader, LoadFileMixin):
+class SEFAZSP(LoadFileMixin):
     def __init__(
         self,
         document: Document,
@@ -193,6 +212,9 @@ class SEFAZSP(AbstractLoader, LoadFileMixin):
     ):
         super().__init__(api, config, document)
 
+    def get_extra_params(self) -> str:
+        return ""
+
     def get_expiration_date(self, data: dict):
         expiration_date = data.get("validade_data", None)
         expiration_date = expiration_date.split("/")[::-1]
@@ -200,7 +222,7 @@ class SEFAZSP(AbstractLoader, LoadFileMixin):
         return {"expiration_date": expiration_date}
 
 
-class CNEP(AbstractLoader, LoadFileMixin):
+class CNEP(LoadFileMixin):
     def __init__(
         self,
         document: Document,
@@ -209,6 +231,9 @@ class CNEP(AbstractLoader, LoadFileMixin):
     ):
         super().__init__(api, config, document)
 
+    def get_extra_params(self) -> str:
+        return ""
+
     def get_expiration_date(self, data: dict):
         expiration_date = data.get("validade_data", None)
         expiration_date = expiration_date.split("/")[::-1]
@@ -216,7 +241,7 @@ class CNEP(AbstractLoader, LoadFileMixin):
         return {"expiration_date": expiration_date}
 
 
-class CNDT(AbstractLoader, LoadFileMixin):
+class CNDT(LoadFileMixin):
     def __init__(
         self,
         document: Document,
@@ -225,6 +250,9 @@ class CNDT(AbstractLoader, LoadFileMixin):
     ):
         super().__init__(api, config, document)
 
+    def get_extra_params(self) -> str:
+        return ""
+
     def get_expiration_date(self, data: dict):
         expiration_date = data.get("validade_data", None)
         expiration_date = expiration_date.split("/")[::-1]
@@ -232,7 +260,7 @@ class CNDT(AbstractLoader, LoadFileMixin):
         return {"expiration_date": expiration_date}
 
 
-class FGTS(AbstractLoader, LoadAndConvertFileMixin):
+class FGTS(LoadAndConvertFileMixin):
     def __init__(
         self,
         document: Document,
@@ -240,6 +268,9 @@ class FGTS(AbstractLoader, LoadAndConvertFileMixin):
         api: str = "https://api.infosimples.com/api/v2/consultas/caixa/regularidade",
     ):
         super().__init__(api, config, document)
+
+    def get_extra_params(self) -> str:
+        return ""
 
     def get_expiration_date(self, data: dict):
         expiration_date = data.get("validade_fim_data", None)

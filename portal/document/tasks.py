@@ -29,7 +29,7 @@ def load_new_document_from_api_task(document_id, document_load_id, user_id):
             document_id=document.id, document_file_id=document_file.id, user_id=user_id
         )
     except Exception as e:
-        error_message = str(e.message)
+        error_message = str(e or e.message)
         document_load.status = DocumentLoadStatus.ERROR
         document_load.error_message = error_message
         document_load.save()
