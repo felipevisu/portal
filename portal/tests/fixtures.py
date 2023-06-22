@@ -163,8 +163,6 @@ def vehicle(category):
         slug="vehicle",
         type=EntryType.VEHICLE,
         document_number="123456789",
-        category=category,
-        is_published=True,
         email="vehicle@email.com",
     )
     return vehicle
@@ -179,8 +177,6 @@ def vehicle_list(category):
                 slug="vehicle-1",
                 type=EntryType.VEHICLE,
                 document_number="123456789a",
-                category=category,
-                is_published=True,
                 email="vehicle@email.com",
             ),
             Entry(
@@ -188,8 +184,6 @@ def vehicle_list(category):
                 slug="vehicle-2",
                 type=EntryType.VEHICLE,
                 document_number="123456789b",
-                category=category,
-                is_published=True,
                 email="vehicle@email.com",
             ),
             Entry(
@@ -197,8 +191,6 @@ def vehicle_list(category):
                 slug="vehicle-3",
                 type=EntryType.VEHICLE,
                 document_number="123456789c",
-                category=category,
-                is_published=False,
                 email="vehicle@email.com",
             ),
         ]
@@ -215,8 +207,6 @@ def provider(category, color_attribute):
         slug="provider",
         type=EntryType.PROVIDER,
         document_number="123456789",
-        category=category,
-        is_published=True,
         email="provider@email.com",
     )
     attribute_value = color_attribute.values.first()
@@ -235,8 +225,6 @@ def provider_list(category):
                 slug="provider-1",
                 type=EntryType.PROVIDER,
                 document_number="123456789a",
-                category=category,
-                is_published=True,
                 email="provider@email.com",
             ),
             Entry(
@@ -244,8 +232,6 @@ def provider_list(category):
                 slug="provider-2",
                 type=EntryType.PROVIDER,
                 document_number="123456789b",
-                category=category,
-                is_published=True,
                 email="provider@email.com",
             ),
             Entry(
@@ -253,8 +239,6 @@ def provider_list(category):
                 slug="provider-3",
                 type=EntryType.PROVIDER,
                 document_number="123456789c",
-                category=category,
-                is_published=False,
                 email="provider@email.com",
             ),
         ]
