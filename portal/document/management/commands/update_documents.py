@@ -23,6 +23,7 @@ class Command(BaseCommand):
                 default_file__expiration_date__lte=expiration,
             )
             .exclude(load_type=DocumentLoadOptions.EMPTY)
+            .distinct()
         )
 
         for document in documents:
