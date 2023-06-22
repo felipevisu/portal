@@ -38,7 +38,10 @@ def load_new_document_from_api_task(document_id, document_load_id, user_id):
         )
 
 
-def load_new_document_from_api(document_id, user_id=None):
+def load_new_document_from_api(document_id, user_id=None, delay=True) -> DocumentLoad:
     document_load = DocumentLoad.objects.create(document_id=document_id)
-    load_new_document_from_api_task.delay(document_id, document_load.id, user_id)
+    if delay:
+        load_new_document_from_api_task.delay(document_id, document_load.id, user_id)
+    else:
+        load_new_document_from_api_task(document_id, document_load.id, user_id)
     return document_load
