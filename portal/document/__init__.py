@@ -21,6 +21,7 @@ class DocumentLoadOptions:
     TCU = "tcu"
     MEI = "mei"
     JUCESP = "jucesp"
+    CNPJ = "cnpj"
 
     CHOICES = [
         (EMPTY, "empty"),
@@ -33,6 +34,7 @@ class DocumentLoadOptions:
         (TCU, "tcu"),
         (MEI, "mei"),
         (JUCESP, "jucesp"),
+        (CNPJ, "cnpj"),
     ]
 
 

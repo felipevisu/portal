@@ -1,9 +1,13 @@
-import re
+from tempfile import NamedTemporaryFile
 
-import requests
-from django.core.exceptions import ValidationError
+import pdfkit
+from django.core.files import File
+from django.template.loader import render_to_string
 
+from ...document import DocumentFileStatus, DocumentLoadOptions
+from ...document.models import Document, DocumentFile
 from ..base_plugin import BasePlugin, ConfigurationTypeField
+from .lib import fetch_document
 
 
 class CNPJWSPlugin(BasePlugin):
@@ -36,24 +40,30 @@ class CNPJWSPlugin(BasePlugin):
         configuration = {item["name"]: item["value"] for item in self.configuration}
         self.config = configuration
 
+    def consult(self, document: Document, previous_value):
+        if not self.active:
+            return previous_value
+
+        if not document.load_type == DocumentLoadOptions.CNPJ:
+            return previous_value
+
+        response = fetch_document(document.entry.document_number)
+        html = render_to_string("documents/cnpj.html", response)
+        pdf = pdfkit.from_string(html, False)
+        file_temp = NamedTemporaryFile(delete=True)
+        file_temp.write(pdf)
+        file_name = "cnpj.pdf"
+        document_file = DocumentFile.objects.create(
+            document=document, status=DocumentFileStatus.APPROVED
+        )
+        document_file.file.save(file_name, File(file_temp))
+        document.default_file = document_file
+        document.save()
+        return document_file
+
     def consult_document(self, entry, previous_value):
         if not self.active:
             return previous_value
 
-        cnpj = entry.document_number
-        cnpj = re.sub("[^0-9]", "", cnpj)
-        url = "https://publica.cnpj.ws/cnpj/{}".format(cnpj)
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            return response.json(), self.PLUGIN_NAME
-
-        if response.status_code == 429:
-            raise ValidationError("Límite de três consultas por minuto")
-
-        if response.status_code == 400:
-            parsed = response.json()
-            message = parsed.get("detalhes", None)
-            raise ValidationError(message)
-
-        return None, None
+        document = fetch_document(entry.document_number)
+        return document

@@ -11,7 +11,7 @@ from .models import Document, DocumentLoad
 
 
 @app.task
-def load_new_document_from_api_task(document_id, document_load_id, user_id):
+def load_new_document_task(document_id, document_load_id, user_id):
     try:
         document = Document.objects.get(id=document_id)
         document_load = DocumentLoad.objects.get(id=document_load_id)
@@ -22,12 +22,18 @@ def load_new_document_from_api_task(document_id, document_load_id, user_id):
 
     try:
         document_file = manager.consult(document)
-        document_load.status = DocumentLoadStatus.SUCCESS
-        document_load.document_file = document_file
-        document_load.save()
-        event_document_loaded_from_api(
-            document_id=document.id, document_file_id=document_file.id, user_id=user_id
-        )
+        if document_file:
+            document_load.status = DocumentLoadStatus.SUCCESS
+            document_load.document_file = document_file
+            event_document_loaded_from_api(
+                document_id=document.id,
+                document_file_id=document_file.id,
+                user_id=user_id,
+            )
+            document_load.save()
+        else:
+            raise Exception("A consulta não retornou nenhum documento.")
+
     except Exception as e:
         error_message = str(e or e.message)
         document_load.status = DocumentLoadStatus.ERROR
@@ -40,9 +46,7 @@ def load_new_document_from_api_task(document_id, document_load_id, user_id):
 
 def load_new_document_from_api(document_id, user_id=None, delay=True) -> DocumentLoad:
     document_load = DocumentLoad.objects.create(document_id=document_id)
-    if delay:
-        load_new_document_from_api_task.delay(document_id, document_load.id, user_id)
-    else:
-        load_new_document_from_api_task(document_id, document_load.id, user_id)
+    loader = load_new_document_task.delay if delay else load_new_document_task
+    loader(document_id, document_load.id, user_id)
     document_load.refresh_from_db()
     return document_load
