@@ -1,6 +1,6 @@
 from tempfile import NamedTemporaryFile
 
-import pdfkit
+import weasyprint
 from django.core.files import File
 from django.template.loader import render_to_string
 
@@ -49,7 +49,7 @@ class CNPJWSPlugin(BasePlugin):
 
         response = fetch_document(document.entry.document_number)
         html = render_to_string("documents/cnpj.html", response)
-        pdf = pdfkit.from_string(html, False)
+        pdf = weasyprint.HTML(string=html).write_pdf()
         file_temp = NamedTemporaryFile(delete=True)
         file_temp.write(pdf)
         file_name = "cnpj.pdf"
