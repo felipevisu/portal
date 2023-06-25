@@ -1,3 +1,5 @@
+import time
+
 from django.core.management.base import BaseCommand
 
 from portal.document import DocumentLoadOptions
@@ -17,11 +19,18 @@ class Command(BaseCommand):
                 load_type=DocumentLoadOptions.CNPJ
             ).first()
             if not document:
-                print(f"Creating document for entry: {entry.name}")
                 document = Document.objects.create(
                     entry=entry,
                     expires=False,
                     name="CNPJ",
                     load_type=DocumentLoadOptions.CNPJ,
                 )
-                load_new_document_from_api(document_id=document.id)
+            if document and not document.default_file:
+                print(f"Updating document for entry: {entry.name}")
+                load_new_document_from_api(
+                    document_id=document.id, user_id=None, delay=False
+                )
+                document.refresh_from_db()
+                document.is_published = True
+                document.save()
+                time.sleep(20)
