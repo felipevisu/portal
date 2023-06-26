@@ -19,7 +19,7 @@ class DocumentDelete(ModelDeleteMutation):
 
     @classmethod
     def post_save_action(cls, info, instance, cleaned_input):
-        event_document_deleted(instance.id, info.context.user.id)
+        event_document_deleted(instance, info.context.user)
 
 
 class DocumentBulkDelete(ModelBulkDeleteMutation):

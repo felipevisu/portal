@@ -1,6 +1,7 @@
 import os
 
 from django.db import models
+from django.dispatch import receiver
 
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import DocumentPermissions
@@ -85,3 +86,8 @@ class DocumentLoad(ModelWithDates):
         default=DocumentLoadStatus.PENDING,
     )
     error_message = models.TextField(blank=True)
+
+
+@receiver(models.signals.post_delete, sender=DocumentFile)
+def remove_file_from_media_storage(sender, instance, using, **kwargs):
+    instance.file.delete(save=False)

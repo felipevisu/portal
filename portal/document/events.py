@@ -21,10 +21,12 @@ def event_document_created(document_id, user_id=None):
     )
 
 
-def event_document_deleted(document_id, user_id=None):
+def event_document_deleted(document, user):
     Event.objects.create(
         type=EventTypes.DOCUMENT_DELETED,
-        **build_params(document_id, user_id),
+        user_id=user.id,
+        user_email=user.email if user else None,
+        document_name=document.name,
     )
 
 
