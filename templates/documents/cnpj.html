@@ -79,50 +79,50 @@
             <div class="item col-6">
                 <div class="formated">
                     <h6>Número de inscrição</h6>
-                    {{estabelecimento.cnpj}}
+                    {{estabelecimento.cnpj|default:""}}
                 </div>
             </div>
             <div class="item col-6">
                 <div class="formated">
                     <h6>Data de abertura</h6>
-                    {{estabelecimento.data_inicio_atividade}}
+                    {{estabelecimento.data_inicio_atividade|default:""}}
                 </div>
             </div>
             <div class="item col-12">
                 <div class="formated">
                     <h6>Nome empresarial</h6>
-                    {{razao_social}}
+                    {{razao_social|default:""}}
                 </div>
             </div>
             <div class="item col-8">
                 <div class="formated">
                     <h6>Nome fantasia</h6>
-                    {{estabelecimento.nome_fantasia}}
+                    {{estabelecimento.nome_fantasia|default:""}}
                 </div>
             </div>
             <div class="item col-4">
                 <div class="formated">
-                    <h6>Porte</h6>{{porte.descricao}}
+                    <h6>Porte</h6>{{porte.descricao|default:""}}
                 </div>
             </div>
             <div class="item col-12">
                 <div class="formated">
                     <h6>Atividade principal</h6>
-                    {{estabelecimento.atividade_principal.id}} - {{estabelecimento.atividade_principal.descricao}}
+                    {{estabelecimento.atividade_principal.id|default:""}} - {{estabelecimento.atividade_principal.descricao|default:""}}
                 </div>
             </div>
             <div class="item col-12">
                 <div class="formated">
                     <h6>Atividades secundárias</h6>
                     {% for atividade in estabelecimento.atividades_secundarias %}
-                    <div>{{atividade.id}} - {{atividade.descricao}}</div>
+                    <div>{{atividade.id|default:""}} - {{atividade.descricao|default:""}}</div>
                     {% endfor %}
                 </div>
             </div>
             <div class="item col-12">
                 <div class="formated">
                     <h6>Natureza jurídica</h6>
-                    {{natureza_juridica.id}} - {{natureza_juridica.descricao}}
+                    {{natureza_juridica.id|default:""}} - {{natureza_juridica.descricao|default:""}}
                 </div>
             </div>
             <div class="item col-12">
@@ -131,7 +131,7 @@
                     {% for socio in socios %}
                     <div>
                         <p>
-                            {{socio.qualificacao_socio.id}} - {{socio.qualificacao_socio.descricao}}
+                            {{socio.qualificacao_socio.id|default:""}} - {{socio.qualificacao_socio.descricao|default:""}}
                         </p>
                     </div>
                     {% endfor %}
@@ -140,97 +140,97 @@
             <div class="item col-12">
                 <div class="formated">
                     <h6>Capital social</h6>
-                    {{capital_social}}
+                    {{capital_social|default:""}}
                 </div>
             </div>
             <div class="item col-6">
                 <div class="formated">
                     <h6>Logradouro</h6>
-                    {{estabelecimento.logradouro}}
+                    {{estabelecimento.logradouro|default:""}}
                 </div>
             </div>
             <div class="item col-2">
                 <div class="formated">
                     <h6>Número</h6>
-                    {{estabelecimento.numero}}
+                    {{estabelecimento.numero|default:""}}
                 </div>
             </div>
             <div class="item col-4">
                 <div class="formated">
                     <h5>Complemento</h5>
-                    {{estabelecimento.complemento}}
+                    {{estabelecimento.complemento|default:""}}
                 </div>
             </div>
             <div class="item col-3">
                 <div class="formated">
                     <h6>Cep</h6>
-                    {{estabelecimento.cep}}
+                    {{estabelecimento.cep|default:""}}
                 </div>
             </div>
             <div class="item col-4">
                 <div class="formated">
                     <h6>Bairro/Distrito</h6>
-                    {{estabelecimento.bairro}}
+                    {{estabelecimento.bairro|default:""}}
                 </div>
             </div>
             <div class="item col-4">
                 <div class="formated">
                     <h6>Município</h6>
-                    {{estabelecimento.cidade.nome}}
+                    {{estabelecimento.cidade.nome|default:""}}
                 </div>
             </div>
             <div class="item col-1">
                 <div class="formated">
                     <h6>UF</h6>
-                    {{estabelecimento.estado.sigla}}
+                    {{estabelecimento.estado.sigla|default:""}}
                 </div>
             </div>
             <div class="item col-6">
                 <div class="formated">
                     <h6>Endereço eletrônico</h6>
-                    {{estabelecimento.email}}
+                    {{estabelecimento.email|default:""}}
                 </div>
             </div>
             <div class="item col-6">
                 <div class="formated">
                     <h6>Telefone</h6>
-                    ({{estabelecimento.ddd1}}){{estabelecimento.telefone1}}
+                    ({{estabelecimento.ddd1|default:""}}){{estabelecimento.telefone1|default:""}}
                 </div>
             </div>
             <div class="item col-12">
                 <div class="formated">
                     <h6>Ente federativo responsável</h6>
-                    {{responsavel_federativo}}
+                    {{responsavel_federativo|default:""}}
                 </div>
             </div>
             <div class="item col-6">
                 <div class="formated">
                     <h6>Situação cadastral</h6>
-                    {{estabelecimento.situacao_cadastral}}
+                    {{estabelecimento.situacao_cadastral|default:""}}
                 </div>
             </div>
             <div class="item col-6">
                 <div class="formated">
                     <h6>Data da situação cadastral</h6>
-                    {{estabelecimento.data_situacao_cadastral}}
+                    {{estabelecimento.data_situacao_cadastral|default:""}}
                 </div>
             </div>
             <div class="item col-12">
                 <div class="formated">
                     <h6>Motivo de situação cadastral</h6>
-                    {{estabelecimento.motivo_situacao_cadastral}}
+                    {{estabelecimento.motivo_situacao_cadastral|default:""}}
                 </div>
             </div>
             <div class="item col-6">
                 <div class="formated">
                     <h6>Situação especial</h6>
-                    {{estabelecimento.situacao_especial}}
+                    {{estabelecimento.situacao_especial|default:""}}
                 </div>
             </div>
             <div class="item col-6">
                 <div class="formated">
                     <h6>Data da situação especial</h6>
-                    {{estabelecimento.data_situacao_especial}}
+                    {{estabelecimento.data_situacao_especial|default:""}}
                 </div>
             </div>
         </div>
