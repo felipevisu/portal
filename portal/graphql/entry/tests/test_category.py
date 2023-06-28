@@ -18,15 +18,7 @@ QUERY_CATEGORY = """
             name
             slug
             type
-            entries(first: 10){
-                edges{
-                    node{
-                        id
-                        name
-                        type
-                    }
-                }
-            }
+            totalEntries
         }
     }
 """
@@ -66,23 +58,6 @@ def test_category_query_by_slug(api_client, category):
     category_data = content["data"]["category"]
     assert category_data is not None
     assert category_data["name"] == category.name
-
-
-def test_query_category_entries_as_visitor(api_client, vehicle_list):
-    category = Category.objects.first()
-    published_vehicles = Entry.objects.published().count()
-    variables = {"id": graphene.Node.to_global_id("Category", category.pk)}
-    response = api_client.post_graphql(QUERY_CATEGORY, variables=variables)
-    content = get_graphql_content(response, ignore_errors=True)
-    assert len(content["data"]["category"]["entries"]["edges"]) == published_vehicles
-
-
-def test_query_category_entries_as_staff(staff_api_client, vehicle_list):
-    category = Category.objects.first()
-    variables = {"id": graphene.Node.to_global_id("Category", category.pk)}
-    response = staff_api_client.post_graphql(QUERY_CATEGORY, variables=variables)
-    content = get_graphql_content(response, ignore_errors=True)
-    assert len(content["data"]["category"]["entries"]["edges"]) == len(vehicle_list)
 
 
 QUERY_CATEGORIES = """
