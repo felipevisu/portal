@@ -1,12 +1,12 @@
 import ast
 import os.path
 from datetime import timedelta
-from pathlib import Path
 
 import dj_database_url
 import dj_email_url
 import pkg_resources
 import sentry_sdk
+from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -29,6 +29,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = get_bool_from_env("DEBUG", True)
+
+if not SECRET_KEY and DEBUG:
+    SECRET_KEY = get_random_secret_key()
 
 PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
