@@ -1,11 +1,11 @@
 import graphene
 from django.core.exceptions import ValidationError
-from graphene_file_upload.scalars import Upload
 
 from ....core.permissions import DocumentPermissions
 from ....document import DocumentFileStatus, models
 from ....document.events import event_document_created
 from ...core.mutations import ModelMutation
+from ...core.types.upload import Upload
 from ..enums import DocumentLoadOptionsEnum
 from ..types import Document
 

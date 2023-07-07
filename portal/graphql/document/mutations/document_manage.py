@@ -1,6 +1,5 @@
 import graphene
 from django.core.exceptions import ValidationError
-from graphene_file_upload.scalars import Upload
 
 from ....core.exceptions import PermissionDenied
 from ....core.permissions import DocumentPermissions
@@ -19,6 +18,7 @@ from ....document.tasks import load_new_document_from_api
 from ....event.models import OneTimeToken
 from ....plugins.manager import get_plugins_manager
 from ...core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
+from ...core.types.upload import Upload
 from ..types import Document, DocumentFile, DocumentLoad
 
 
