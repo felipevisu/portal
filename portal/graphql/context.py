@@ -1,6 +1,7 @@
 from typing import Optional, cast
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.functional import SimpleLazyObject
@@ -40,11 +41,7 @@ def get_user(request: PortalContext) -> Optional[User]:
 
 
 def set_auth_on_context(request: PortalContext):
-    if hasattr(request, "app") and request.app:
-        request.user = SimpleLazyObject(lambda: None)  # type: ignore
-        return request
-
     def user():
-        return get_user(request) or None
+        return get_user(request) or AnonymousUser()
 
     request.user = SimpleLazyObject(user)  # type: ignore
