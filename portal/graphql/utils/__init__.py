@@ -1,9 +1,17 @@
-from typing import Union
+import logging
+import traceback
+from typing import Any, Dict, Union
 from uuid import UUID
 
 import graphene
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from graphql.error import GraphQLError
+from graphql.error import format_error as format_graphql_error
+from jwt import InvalidTokenError
+
+from portal.core.exceptions import PermissionDenied, ReadOnlyException
 
 from ..core.utils import from_global_id_or_error
 
@@ -14,6 +22,17 @@ REVERSED_DIRECTION = {
     "-": "",
     "": "-",
 }
+
+unhandled_errors_logger = logging.getLogger("saleor.graphql.errors.unhandled")
+handled_errors_logger = logging.getLogger("saleor.graphql.errors.handled")
+
+ALLOWED_ERRORS = [
+    GraphQLError,
+    InvalidTokenError,
+    PermissionDenied,
+    ReadOnlyException,
+    ValidationError,
+]
 
 
 def resolve_global_ids_to_primary_keys(
@@ -125,3 +144,43 @@ def _get_node_for_types_with_double_id(qs, pks, graphene_type):
             str(e.pk) if e.pk in uuid_pks else str(getattr(e, old_id_field))
         ),
     )  # preserve order in pks
+
+
+def format_error(error, handled_exceptions):
+    result: Dict[str, Any]
+    if isinstance(error, GraphQLError):
+        result = format_graphql_error(error)
+    else:
+        result = {"message": str(error)}
+
+    if "extensions" not in result:
+        result["extensions"] = {}
+
+    exc = error
+    while isinstance(exc, GraphQLError) and hasattr(exc, "original_error"):
+        exc = exc.original_error
+    if isinstance(exc, AssertionError):
+        exc = GraphQLError(str(exc))
+    if isinstance(exc, handled_exceptions):
+        handled_errors_logger.info("A query had an error", exc_info=exc)
+    else:
+        unhandled_errors_logger.error("A query failed unexpectedly", exc_info=exc)
+
+    # If DEBUG mode is disabled we allow only certain error messages to be returned in
+    # the API. This prevents from leaking internals that might be included in Python
+    # exceptions' error messages.
+    is_allowed_err = type(exc) in ALLOWED_ERRORS or any(
+        [isinstance(exc, allowed_err) for allowed_err in ALLOWED_ERRORS]
+    )
+    if not is_allowed_err and not settings.DEBUG:
+        result["message"] = "Internal Server Error"
+
+    result["extensions"]["exception"] = {"code": type(exc).__name__}
+    if settings.DEBUG:
+        lines = []
+
+        if isinstance(exc, BaseException):
+            for line in traceback.format_exception(type(exc), exc, exc.__traceback__):
+                lines.extend(line.rstrip().splitlines())
+        result["extensions"]["exception"]["stacktrace"] = lines
+    return result

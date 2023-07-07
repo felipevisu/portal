@@ -1,6 +1,7 @@
 import ast
 import os.path
 from datetime import timedelta
+from typing import List
 
 import dj_database_url
 import dj_email_url
@@ -70,7 +71,6 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "django_filters",
-    "graphene_django",
 ]
 
 MIDDLEWARE = [
@@ -169,6 +169,8 @@ GRAPHENE = {
         "portal.graphql.middleware.JWTMiddleware",
     ],
 }
+GRAPHQL_MIDDLEWARE: List[str] = []
+PLAYGROUND_ENABLED = DEBUG
 
 SENTRY_DNS = os.environ.get("SENTRY_DNS", None)
 if SENTRY_DNS and not DEBUG:

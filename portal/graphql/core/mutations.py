@@ -10,7 +10,7 @@ from graphene.types.mutation import MutationOptions
 from graphene_django.registry import get_global_registry
 from graphql import GraphQLError
 
-from ...core.exeptions import PermissionDenied
+from ...core.exceptions import PermissionDenied
 from ..utils import get_nodes, resolve_global_ids_to_primary_keys
 from .types import Error
 from .utils import (

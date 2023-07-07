@@ -3,7 +3,7 @@ from typing import Iterable
 
 from graphene import ResolveInfo
 
-from ..core.exeptions import PermissionDenied
+from ..core.exceptions import PermissionDenied
 from ..core.permissions import (
     BasePermissionEnum,
     one_of_permissions_or_auth_filter_required,

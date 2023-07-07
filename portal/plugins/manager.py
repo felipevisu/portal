@@ -1,7 +1,6 @@
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Callable, DefaultDict, Dict, List, Optional, Type
 
-import opentracing
 from django.conf import settings
 from django.utils.module_loading import import_string
 
@@ -48,55 +47,50 @@ class PluginsManager:
         )
 
     def __init__(self, plugins: List[str], requestor_getter=None):
-        with opentracing.global_tracer().start_active_span("PluginsManager.__init__"):
-            self.all_plugins = []
-            self.global_plugins = []
-            self.plugins_per_channel = defaultdict(list)
+        self.all_plugins = []
+        self.global_plugins = []
+        self.plugins_per_channel = defaultdict(list)
 
-            global_db_configs, channel_db_configs = self._get_db_plugin_configs()
-            channels = Channel.objects.all()
+        global_db_configs, channel_db_configs = self._get_db_plugin_configs()
+        channels = Channel.objects.all()
 
-            for plugin_path in plugins:
-                with opentracing.global_tracer().start_active_span(f"{plugin_path}"):
-                    PluginClass = import_string(plugin_path)
-                    if not getattr(PluginClass, "CONFIGURATION_PER_CHANNEL", False):
-                        plugin = self._load_plugin(
-                            PluginClass,
-                            global_db_configs,
-                            requestor_getter=requestor_getter,
-                        )
-                        self.global_plugins.append(plugin)
-                        self.all_plugins.append(plugin)
-                    else:
-                        for channel in channels:
-                            channel_configs = channel_db_configs.get(channel, {})
-                            plugin = self._load_plugin(
-                                PluginClass, channel_configs, channel, requestor_getter
-                            )
-                            self.plugins_per_channel[channel.slug].append(plugin)
-                            self.all_plugins.append(plugin)
+        for plugin_path in plugins:
+            PluginClass = import_string(plugin_path)
+            if not getattr(PluginClass, "CONFIGURATION_PER_CHANNEL", False):
+                plugin = self._load_plugin(
+                    PluginClass,
+                    global_db_configs,
+                    requestor_getter=requestor_getter,
+                )
+                self.global_plugins.append(plugin)
+                self.all_plugins.append(plugin)
+            else:
+                for channel in channels:
+                    channel_configs = channel_db_configs.get(channel, {})
+                    plugin = self._load_plugin(
+                        PluginClass, channel_configs, channel, requestor_getter
+                    )
+                    self.plugins_per_channel[channel.slug].append(plugin)
+                    self.all_plugins.append(plugin)
 
-            for channel in channels:
-                self.plugins_per_channel[channel.slug].extend(self.global_plugins)
+        for channel in channels:
+            self.plugins_per_channel[channel.slug].extend(self.global_plugins)
 
     def _get_db_plugin_configs(self):
-        with opentracing.global_tracer().start_active_span("_get_db_plugin_configs"):
-            qs = (
-                PluginConfiguration.objects.all()
-                .using(settings.DATABASE_CONNECTION_REPLICA_NAME)
-                .prefetch_related("channel")
-            )
-            channel_configs: DefaultDict[Channel, Dict] = defaultdict(dict)
-            global_configs = {}
-            for db_plugin_config in qs:
-                channel = db_plugin_config.channel
-                if channel is None:
-                    global_configs[db_plugin_config.identifier] = db_plugin_config
-                else:
-                    channel_configs[channel][
-                        db_plugin_config.identifier
-                    ] = db_plugin_config
-            return global_configs, channel_configs
+        qs = (
+            PluginConfiguration.objects.all()
+            .using(settings.DATABASE_CONNECTION_REPLICA_NAME)
+            .prefetch_related("channel")
+        )
+        channel_configs: DefaultDict[Channel, Dict] = defaultdict(dict)
+        global_configs = {}
+        for db_plugin_config in qs:
+            channel = db_plugin_config.channel
+            if channel is None:
+                global_configs[db_plugin_config.identifier] = db_plugin_config
+            else:
+                channel_configs[channel][db_plugin_config.identifier] = db_plugin_config
+        return global_configs, channel_configs
 
     def __run_method_on_plugins(
         self,
@@ -225,22 +219,21 @@ class PluginsManager:
         )
 
     def _get_all_plugin_configs(self):
-        with opentracing.global_tracer().start_active_span("_get_all_plugin_configs"):
-            if not hasattr(self, "_plugin_configs"):
-                plugin_configurations = PluginConfiguration.objects.prefetch_related(
-                    "channel"
-                ).all()
-                self._plugin_configs_per_channel: DefaultDict[
-                    Channel, Dict
-                ] = defaultdict(dict)
-                self._global_plugin_configs = {}
-                for pc in plugin_configurations:
-                    channel = pc.channel
-                    if channel is None:
-                        self._global_plugin_configs[pc.identifier] = pc
-                    else:
-                        self._plugin_configs_per_channel[channel][pc.identifier] = pc
-            return self._global_plugin_configs, self._plugin_configs_per_channel
+        if not hasattr(self, "_plugin_configs"):
+            plugin_configurations = PluginConfiguration.objects.prefetch_related(
+                "channel"
+            ).all()
+            self._plugin_configs_per_channel: DefaultDict[Channel, Dict] = defaultdict(
+                dict
+            )
+            self._global_plugin_configs = {}
+            for pc in plugin_configurations:
+                channel = pc.channel
+                if channel is None:
+                    self._global_plugin_configs[pc.identifier] = pc
+                else:
+                    self._plugin_configs_per_channel[channel][pc.identifier] = pc
+        return self._global_plugin_configs, self._plugin_configs_per_channel
 
     def save_plugin_configuration(
         self, plugin_id, channel_slug: Optional[str], cleaned_data: dict
@@ -293,5 +286,4 @@ class PluginsManager:
 def get_plugins_manager(
     requestor_getter: Optional[Callable[[], "User"]] = None
 ) -> PluginsManager:
-    with opentracing.global_tracer().start_active_span("get_plugins_manager"):
-        return PluginsManager(settings.PLUGINS, requestor_getter)
+    return PluginsManager(settings.PLUGINS, requestor_getter)

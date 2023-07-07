@@ -1,9 +1,7 @@
 import graphene
 
-from ...core.permissions import PluginsPermissions
 from ..core.connection import create_connection_slice
 from ..core.fields import ConnectionField
-from ..core.tracing import traced_resolver
 from .dataloaders import plugin_manager_promise_callback
 from .filters import PluginFilterInput
 from .mutations import PluginUpdate
@@ -21,13 +19,11 @@ class Query(graphene.ObjectType):
     )
 
     @staticmethod
-    @traced_resolver
     @plugin_manager_promise_callback
     def resolve_plugin(_root, _info, manager, **data):
         return resolve_plugin(data.get("id"), manager)
 
     @staticmethod
-    @traced_resolver
     @plugin_manager_promise_callback
     def resolve_plugins(_root, info, manager, **kwargs):
         qs = resolve_plugins(manager, **kwargs)
