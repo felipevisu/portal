@@ -1,9 +1,7 @@
 from collections import defaultdict
 
 import graphene
-from django.forms import ValidationError
-
-from portal import investment
+from django.core.exceptions import ValidationError
 
 from ...core.permissions import InvestmentPermissions
 from ...investment import models

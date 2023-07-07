@@ -2,9 +2,12 @@ from itertools import chain
 from typing import Iterable, Union
 
 import graphene
-from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
+from django.core.exceptions import (
+    NON_FIELD_ERRORS,
+    ImproperlyConfigured,
+    ValidationError,
+)
 from django.db.models.fields.files import FileField
-from django.forms import ValidationError
 from graphene import ObjectType
 from graphene.types.mutation import MutationOptions
 from graphene_django.registry import get_global_registry
