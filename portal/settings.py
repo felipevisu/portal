@@ -86,10 +86,6 @@ MIDDLEWARE = [
     "portal.core.middleware.jwt_refresh_token_middleware",
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar", "graphiql_debug_toolbar"]
-    MIDDLEWARE += ["graphiql_debug_toolbar.middleware.DebugToolbarMiddleware"]
-
 ROOT_URLCONF = "portal.urls"
 
 TEMPLATES_DIR = os.path.join(PROJECT_ROOT, "templates")
@@ -203,17 +199,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 
-STATIC_URL = os.environ.get("STATIC_URL", "/static/")
+STATIC_ROOT: str = os.path.join(PROJECT_ROOT, "static")
+STATIC_URL: str = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
-    ("images", os.path.join(PROJECT_ROOT, "portal", "static", "images"))
+    ("images", os.path.join(PROJECT_ROOT, "saleor", "static", "images"))
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-
 STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -257,3 +252,18 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", None)
+
+
+ENABLE_DEBUG_TOOLBAR = DEBUG
+if ENABLE_DEBUG_TOOLBAR:
+    INSTALLED_APPS += ["debug_toolbar", "graphiql_debug_toolbar"]
+    MIDDLEWARE.append("portal.graphql.middleware.DebugToolbarMiddleware")
+
+    DEBUG_TOOLBAR_PANELS = [
+        "debug_toolbar.panels.timer.TimerPanel",
+        "debug_toolbar.panels.headers.HeadersPanel",
+        "debug_toolbar.panels.request.RequestPanel",
+        "debug_toolbar.panels.sql.SQLPanel",
+        "debug_toolbar.panels.profiling.ProfilingPanel",
+    ]
+    DEBUG_TOOLBAR_CONFIG = {"RESULTS_CACHE_SIZE": 100}
