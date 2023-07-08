@@ -202,7 +202,7 @@ MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 STATIC_ROOT: str = os.path.join(PROJECT_ROOT, "static")
 STATIC_URL: str = os.environ.get("STATIC_URL", "/static/")
 STATICFILES_DIRS = [
-    ("images", os.path.join(PROJECT_ROOT, "saleor", "static", "images"))
+    ("images", os.path.join(PROJECT_ROOT, "portal", "static", "images"))
 ]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",

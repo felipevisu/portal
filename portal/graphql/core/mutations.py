@@ -10,7 +10,6 @@ from django.core.exceptions import (
 from django.db.models.fields.files import FileField
 from graphene import ObjectType
 from graphene.types.mutation import MutationOptions
-from graphene_django.registry import get_global_registry
 from graphql import GraphQLError
 
 from ...core.exceptions import PermissionDenied
@@ -21,8 +20,6 @@ from .utils import (
     get_error_code_from_error,
     snake_to_camel_case,
 )
-
-registry = get_global_registry()
 
 
 def get_model_name(model):

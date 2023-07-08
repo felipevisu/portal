@@ -5,7 +5,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import reverse
 from django.test.client import MULTIPART_CONTENT, Client
-from graphene_django.utils.testing import graphql_query
 
 from portal.core.jwt import create_access_token
 
