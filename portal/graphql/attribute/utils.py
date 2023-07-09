@@ -1,7 +1,7 @@
 import datetime
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, Iterable, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Dict, Iterable, List, Optional, Tuple, Union
 
 import graphene
 from django.core.exceptions import ValidationError
@@ -17,7 +17,7 @@ from portal.graphql.utils import get_nodes
 
 from ...attribute import AttributeInputType
 from ...attribute import models as attribute_models
-from ...core.utils import generate_unique_slug, prepare_unique_slug
+from ...core.utils import prepare_unique_slug
 from ...document import models as document_models
 from ...entry import models as entry_models
 from ..core.utils import from_global_id_or_error
@@ -312,7 +312,7 @@ class AttributeAssignmentMixin:
         reference_list = []
         attr_value_field = "reference"
         for ref in attr_values.references:
-            name = getattr(ref, name)
+            name = getattr(ref, "name")
             reference_list.append(
                 get_or_create(
                     attribute=attribute,
