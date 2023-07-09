@@ -1,5 +1,8 @@
-from ...account.models import User
+from django.contrib.auth import get_user_model
+
 from ..core.dataloaders import DataLoader
+
+User = get_user_model()
 
 
 class UserByIdLoader(DataLoader):

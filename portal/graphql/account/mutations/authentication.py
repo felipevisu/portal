@@ -2,6 +2,7 @@ from typing import Optional
 
 import graphene
 import jwt
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.middleware.csrf import _compare_masked_tokens  # type: ignore
 from django.middleware.csrf import _get_new_csrf_token
@@ -9,7 +10,6 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from graphene.types.generic import GenericScalar
 
-from ....account import models
 from ....core.jwt import (
     JWT_REFRESH_TOKEN_COOKIE_NAME,
     JWT_REFRESH_TYPE,
@@ -22,6 +22,8 @@ from ....core.jwt import (
 from ....core.permissions import get_permissions_from_names
 from ...core.mutations import BaseMutation
 from ..types import User
+
+UserModel = get_user_model()
 
 
 def get_payload(token):
@@ -73,8 +75,8 @@ class CreateToken(BaseMutation):
     user = graphene.Field(User, description="A user instance.")
 
     @classmethod
-    def _retrieve_user_from_credentials(cls, email, password) -> Optional[models.User]:
-        user = models.User.objects.filter(email=email, is_active=True).first()
+    def _retrieve_user_from_credentials(cls, email, password) -> Optional[UserModel]:
+        user = UserModel.objects.filter(email=email, is_active=True).first()
         if user and user.check_password(password):
             return user
         return None
