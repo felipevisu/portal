@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.9
-      - run: pip install -r requirements.txt # install all our dependencies for the project
+      - run: pip install -r requirements-dev.txt # install all our dependencies for the project
       
       - name: Test with pytest
         env:
