@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Optional, Union
 from urllib.parse import urljoin
 
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.utils.encoding import iri_to_uri
 from django.utils.text import slugify
