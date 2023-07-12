@@ -221,6 +221,7 @@ JWT_TTL_ACCESS = timedelta(seconds=10)
 JWT_TTL_APP_ACCESS = timedelta(seconds=10)
 JWT_TTL_REFRESH = timedelta(days=30)
 JWT_TTL_REQUEST_EMAIL_CHANGE = timedelta(seconds=3600)
+JWT_MANAGER_PATH = "portal.core.jwt_manager.JWTManager"
 
 EMAIL_URL = os.environ.get("EMAIL_URL", None)
 SENDGRID_USERNAME = os.environ.get("SENDGRID_USERNAME")
