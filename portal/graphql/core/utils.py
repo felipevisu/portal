@@ -34,6 +34,13 @@ def from_global_id_or_none(
     return from_global_id_or_error(global_id, only_type, raise_error)[1]
 
 
+def to_global_id_or_none(instance):
+    class_name = instance.__class__.__name__
+    if instance is None or instance.pk is None:
+        return None
+    return graphene.Node.to_global_id(class_name, instance.pk)
+
+
 def snake_to_camel_case(name):
     if isinstance(name, str):
         split_name = name.split("_")

@@ -60,6 +60,7 @@ def staff_user():
         first_name="Leslie",
         last_name="Wade",
         is_staff=True,
+        is_active=True,
     )
     user._password = "password"
     return user

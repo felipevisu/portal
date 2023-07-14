@@ -1,8 +1,9 @@
-from typing import Optional
 from urllib.parse import urlencode
 
-import graphene
+
 from django.contrib.auth.tokens import default_token_generator
+
+from ..graphql.core.utils import to_global_id_or_none
 
 from ..core.notify_events import NotifyEventType
 from ..core.url import prepare_url
@@ -12,16 +13,13 @@ from .models import User
 
 def get_default_user_payload(user: User):
     payload = {
-        "id": graphene.Node.to_global_id("User", user.pk),
+        "id": to_global_id_or_none(user),
         "email": user.email,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "is_staff": user.is_staff,
         "is_active": user.is_active,
     }
-    # Deprecated: override private_metadata with empty dict as it shouldn't be returned
-    # in the payload (see PORTAL-7046). Should be removed in Saleor 4.0.
-    payload["private_metadata"] = {}
     return payload
 
 
