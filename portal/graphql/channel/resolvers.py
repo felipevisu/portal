@@ -22,5 +22,7 @@ def resolve_channel(info, id: Optional[str], slug: Optional[str]):
     return None
 
 
-def resolve_channels():
-    return models.Channel.objects.all()
+def resolve_channels(info):
+    if info.context.user.is_staff:
+        return models.Channel.objects.all()
+    return models.Channel.objects.filter(is_active=True)

@@ -32,8 +32,8 @@ class Query(graphene.ObjectType):
         return resolve_channel(info, id, slug)
 
     @staticmethod
-    def resolve_channels(_root, _info, **kwargs):
-        return resolve_channels()
+    def resolve_channels(_root, info, **kwargs):
+        return resolve_channels(info)
 
 
 class Mutation(graphene.ObjectType):

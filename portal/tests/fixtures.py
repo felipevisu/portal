@@ -38,6 +38,11 @@ def permission_manage_categories():
 
 
 @pytest.fixture
+def permission_manage_channels():
+    return Permission.objects.get(codename="manage_channels")
+
+
+@pytest.fixture
 def permission_manage_entries():
     return Permission.objects.get(codename="manage_entries")
 
@@ -139,9 +144,43 @@ def size_attribute():
 
 
 @pytest.fixture
+def channel_city_1():
+    channel = Channel.objects.create(
+        name="Channel city 1",
+        slug="c-city-1",
+        is_active=True,
+    )
+    return channel
+
+
+@pytest.fixture
+def channel_city_2():
+    channel = Channel.objects.create(
+        name="Channel city 2",
+        slug="c-city-2",
+        is_active=True,
+    )
+    return channel
+
+
+@pytest.fixture
 def category():
     return Category.objects.create(
         name="Category", slug="category", type=EntryType.VEHICLE
+    )
+
+
+@pytest.fixture
+def vehicle_category():
+    return Category.objects.create(
+        name="Category", slug="vehicle-category", type=EntryType.VEHICLE
+    )
+
+
+@pytest.fixture
+def provider_category():
+    return Category.objects.create(
+        name="Category", slug="provider-category", type=EntryType.PROVIDER
     )
 
 
@@ -158,7 +197,7 @@ def category_list():
 
 
 @pytest.fixture
-def vehicle(category):
+def vehicle(vehicle_category):
     vehicle = Entry.objects.create(
         name="Vehicle",
         slug="vehicle",
@@ -166,11 +205,12 @@ def vehicle(category):
         document_number="123456789",
         email="vehicle@email.com",
     )
+    vehicle.categories.add(vehicle_category)
     return vehicle
 
 
 @pytest.fixture
-def vehicle_list(category):
+def vehicle_list(vehicle_category):
     vehicles = Entry.objects.bulk_create(
         [
             Entry(
@@ -196,13 +236,13 @@ def vehicle_list(category):
             ),
         ]
     )
+    for vehicle in vehicles:
+        vehicle.categories.add(vehicle_category)
     return vehicles
 
 
 @pytest.fixture
-def provider(category, color_attribute):
-    category.type = EntryType.PROVIDER
-    category.save()
+def provider(provider_category, color_attribute):
     provider = Entry.objects.create(
         name="Provider",
         slug="provider",
@@ -210,15 +250,14 @@ def provider(category, color_attribute):
         document_number="123456789",
         email="provider@email.com",
     )
+    provider.categories.add(provider_category)
     attribute_value = color_attribute.values.first()
     associate_attribute_values_to_instance(provider, color_attribute, attribute_value)
     return provider
 
 
 @pytest.fixture
-def provider_list(category):
-    category.type = EntryType.PROVIDER
-    category.save()
+def provider_list(provider_category):
     providers = Entry.objects.bulk_create(
         [
             Entry(
@@ -244,6 +283,8 @@ def provider_list(category):
             ),
         ]
     )
+    for provider in providers:
+        provider.categories.add(provider_category)
     return providers
 
 
@@ -306,23 +347,3 @@ def investment_with_items():
         name="Internet", slug="internet", value=200, investment=investment
     )
     return investment
-
-
-@pytest.fixture
-def channel_city_1():
-    channel = Channel.objects.create(
-        name="Channel city 1",
-        slug="c-city-1",
-        is_active=True,
-    )
-    return channel
-
-
-@pytest.fixture
-def channel_city_2():
-    channel = Channel.objects.create(
-        name="Channel city 2",
-        slug="c-city-2",
-        is_active=True,
-    )
-    return channel
