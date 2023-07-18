@@ -16,10 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10.12
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.10.12
       - run: pip install -r requirements-dev.txt # install all our dependencies for the project
       
       - name: Test with pytest
