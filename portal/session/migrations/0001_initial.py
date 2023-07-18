@@ -9,26 +9,40 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Session',
+            name="Session",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=256)),
-                ('slug', models.SlugField(max_length=256, unique=True)),
-                ('publication_date', models.DateField(blank=True, null=True)),
-                ('is_published', models.BooleanField(default=False)),
-                ('content', portal.core.db.fields.SanitizedJSONField(blank=True, null=True, sanitizer=portal.core.utils.editorjs.clean_editor_js)),
-                ('date', models.DateTimeField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=256)),
+                ("slug", models.SlugField(max_length=256, unique=True)),
+                ("publication_date", models.DateField(blank=True, null=True)),
+                ("is_published", models.BooleanField(default=False)),
+                (
+                    "content",
+                    portal.core.db.fields.SanitizedJSONField(
+                        blank=True,
+                        null=True,
+                        sanitizer=portal.core.utils.editorjs.clean_editor_js,
+                    ),
+                ),
+                ("date", models.DateTimeField()),
             ],
             options={
-                'ordering': ['-created'],
-                'permissions': (('manage_sessions', 'Manage sessions.'),),
+                "ordering": ["-created"],
+                "permissions": (("manage_sessions", "Manage sessions."),),
             },
         ),
     ]

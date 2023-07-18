@@ -6,18 +6,34 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('event', '0009_alter_event_type'),
+        ("event", "0009_alter_event_type"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='message',
+            model_name="event",
+            name="message",
             field=models.TextField(blank=True),
         ),
         migrations.AlterField(
-            model_name='event',
-            name='type',
-            field=models.CharField(choices=[('DOCUMENT_CREATED', 'document_created'), ('DOCUMENT_UPDATED', 'document_updated'), ('DOCUMENT_DELETED', 'document_deleted'), ('DOCUMENT_RECEIVED', 'document_received'), ('DOCUMENT_APPROVED', 'document_approved'), ('DOCUMENT_DECLINED', 'document_declined'), ('DOCUMENT_REQUESTED', 'document_requested'), ('DOCUMENT_LOADED_FROM_API', 'document_loaded_from_api'), ('DOCUMENT_LOADED_FAIL', 'document_loaded_fail'), ('ENTRY_CREATED', 'entry_created'), ('ENTRY_UPDATED', 'entry_updated'), ('ENTRY_DELETED', 'entry_deleted')], max_length=255),
+            model_name="event",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("DOCUMENT_CREATED", "document_created"),
+                    ("DOCUMENT_UPDATED", "document_updated"),
+                    ("DOCUMENT_DELETED", "document_deleted"),
+                    ("DOCUMENT_RECEIVED", "document_received"),
+                    ("DOCUMENT_APPROVED", "document_approved"),
+                    ("DOCUMENT_DECLINED", "document_declined"),
+                    ("DOCUMENT_REQUESTED", "document_requested"),
+                    ("DOCUMENT_LOADED_FROM_API", "document_loaded_from_api"),
+                    ("DOCUMENT_LOADED_FAIL", "document_loaded_fail"),
+                    ("ENTRY_CREATED", "entry_created"),
+                    ("ENTRY_UPDATED", "entry_updated"),
+                    ("ENTRY_DELETED", "entry_deleted"),
+                ],
+                max_length=255,
+            ),
         ),
     ]

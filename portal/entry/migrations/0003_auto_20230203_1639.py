@@ -6,17 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entry', '0002_auto_20220922_2134'),
+        ("entry", "0002_auto_20220922_2134"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='category',
-            name='type',
+            model_name="category",
+            name="type",
         ),
         migrations.AlterField(
-            model_name='entry',
-            name='type',
-            field=models.CharField(choices=[('vehicle', 'A communitation vehicle'), ('provider', 'A service provider')], max_length=24),
+            model_name="entry",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("vehicle", "A communitation vehicle"),
+                    ("provider", "A service provider"),
+                ],
+                max_length=24,
+            ),
         ),
     ]

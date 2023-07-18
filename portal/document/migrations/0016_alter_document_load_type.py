@@ -6,13 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0015_alter_document_load_type'),
+        ("document", "0015_alter_document_load_type"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='document',
-            name='load_type',
-            field=models.CharField(choices=[('empty', 'empty'), ('cnep', 'cnep'), ('cnd', 'cnd'), ('cndt', 'cndt'), ('fgts', 'fgts')], default='empty', max_length=256),
+            model_name="document",
+            name="load_type",
+            field=models.CharField(
+                choices=[
+                    ("empty", "empty"),
+                    ("cnep", "cnep"),
+                    ("cnd", "cnd"),
+                    ("cndt", "cndt"),
+                    ("fgts", "fgts"),
+                ],
+                default="empty",
+                max_length=256,
+            ),
         ),
     ]

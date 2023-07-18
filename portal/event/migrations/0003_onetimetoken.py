@@ -8,18 +8,32 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0004_alter_documentfile_file'),
-        ('event', '0002_remove_event_entry'),
+        ("document", "0004_alter_documentfile_file"),
+        ("event", "0002_remove_event_entry"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OneTimeToken',
+            name="OneTimeToken",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.UUIDField(default=uuid.uuid4, editable=False)),
-                ('created', models.DateTimeField(auto_now=True)),
-                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='document.document')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.UUIDField(default=uuid.uuid4, editable=False)),
+                ("created", models.DateTimeField(auto_now=True)),
+                (
+                    "document",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="document.document",
+                    ),
+                ),
             ],
         ),
     ]

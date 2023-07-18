@@ -6,17 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('attribute', '0003_auto_20230319_2152'),
+        ("attribute", "0003_auto_20230319_2152"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='attribute',
-            name='entry_type',
+            model_name="attribute",
+            name="entry_type",
         ),
         migrations.AlterField(
-            model_name='attribute',
-            name='type',
-            field=models.CharField(choices=[('document', 'document'), ('vehicle', 'vehicle'), ('provider', 'provider'), ('vehicle_and_provider', 'vehicle and provider')], max_length=50),
+            model_name="attribute",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("document", "document"),
+                    ("vehicle", "vehicle"),
+                    ("provider", "provider"),
+                    ("vehicle_and_provider", "vehicle and provider"),
+                ],
+                max_length=50,
+            ),
         ),
     ]

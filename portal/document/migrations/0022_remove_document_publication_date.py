@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0021_alter_document_load_type'),
+        ("document", "0021_alter_document_load_type"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='document',
-            name='publication_date',
+            model_name="document",
+            name="publication_date",
         ),
     ]

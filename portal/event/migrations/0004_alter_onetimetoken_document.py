@@ -7,14 +7,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0004_alter_documentfile_file'),
-        ('event', '0003_onetimetoken'),
+        ("document", "0004_alter_documentfile_file"),
+        ("event", "0003_onetimetoken"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='onetimetoken',
-            name='document',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tokens', to='document.document'),
+            model_name="onetimetoken",
+            name="document",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="tokens",
+                to="document.document",
+            ),
         ),
     ]

@@ -7,14 +7,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('channel', '0001_initial'),
-        ('entry', '0014_alter_entry_category'),
+        ("channel", "0001_initial"),
+        ("entry", "0014_alter_entry_category"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='entrychannellisting',
-            name='channel',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entry_listings', to='channel.channel'),
+            model_name="entrychannellisting",
+            name="channel",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="entry_listings",
+                to="channel.channel",
+            ),
         ),
     ]

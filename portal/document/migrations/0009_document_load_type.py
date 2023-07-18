@@ -6,13 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0008_auto_20230310_1627'),
+        ("document", "0008_auto_20230310_1627"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='document',
-            name='load_type',
-            field=models.CharField(blank=True, choices=[('consult_correctional_negative_certificate', 'Certidão Negativa Correcionalo')], max_length=256),
+            model_name="document",
+            name="load_type",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    (
+                        "consult_correctional_negative_certificate",
+                        "Certidão Negativa Correcionalo",
+                    )
+                ],
+                max_length=256,
+            ),
         ),
     ]

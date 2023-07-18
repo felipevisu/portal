@@ -8,46 +8,86 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=256)),
-                ('slug', models.SlugField(max_length=256, unique=True)),
-                ('entry_type', models.CharField(choices=[('entry', 'A communitation entry'), ('provider', 'A service provider')], max_length=24)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=256)),
+                ("slug", models.SlugField(max_length=256, unique=True)),
+                (
+                    "entry_type",
+                    models.CharField(
+                        choices=[
+                            ("entry", "A communitation entry"),
+                            ("provider", "A service provider"),
+                        ],
+                        max_length=24,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['name'],
-                'permissions': (('manage_categories', 'Manage categories.'),),
+                "ordering": ["name"],
+                "permissions": (("manage_categories", "Manage categories."),),
             },
         ),
         migrations.CreateModel(
-            name='Entry',
+            name="Entry",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=256)),
-                ('slug', models.SlugField(max_length=256, unique=True)),
-                ('publication_date', models.DateField(blank=True, null=True)),
-                ('is_published', models.BooleanField(default=False)),
-                ('email', models.CharField(blank=True, max_length=258, null=True)),
-                ('phone', models.CharField(blank=True, max_length=258, null=True)),
-                ('address', models.CharField(blank=True, max_length=258, null=True)),
-                ('entry_type', models.CharField(choices=[('entry', 'A communitation entry'), ('provider', 'A service provider')], max_length=24)),
-                ('document_number', models.CharField(max_length=256)),
-                ('document_file', models.FileField(blank=True, upload_to='entry')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='entries', to='entry.category')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=256)),
+                ("slug", models.SlugField(max_length=256, unique=True)),
+                ("publication_date", models.DateField(blank=True, null=True)),
+                ("is_published", models.BooleanField(default=False)),
+                ("email", models.CharField(blank=True, max_length=258, null=True)),
+                ("phone", models.CharField(blank=True, max_length=258, null=True)),
+                ("address", models.CharField(blank=True, max_length=258, null=True)),
+                (
+                    "entry_type",
+                    models.CharField(
+                        choices=[
+                            ("entry", "A communitation entry"),
+                            ("provider", "A service provider"),
+                        ],
+                        max_length=24,
+                    ),
+                ),
+                ("document_number", models.CharField(max_length=256)),
+                ("document_file", models.FileField(blank=True, upload_to="entry")),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="entries",
+                        to="entry.category",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['name'],
-                'permissions': (('manage_entries', 'Manage entries.'),),
+                "ordering": ["name"],
+                "permissions": (("manage_entries", "Manage entries."),),
             },
         ),
     ]

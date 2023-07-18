@@ -9,29 +9,46 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('entry', '0001_initial'),
+        ("entry", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Document',
+            name="Document",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('publication_date', models.DateField(blank=True, null=True)),
-                ('is_published', models.BooleanField(default=False)),
-                ('name', models.CharField(max_length=256)),
-                ('description', models.TextField(blank=True)),
-                ('file', models.FileField(upload_to='documents')),
-                ('expires', models.BooleanField(default=False)),
-                ('begin_date', models.DateField(blank=True, null=True)),
-                ('expiration_date', models.DateField(blank=True, null=True)),
-                ('entry', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='documents', to='entry.entry')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("publication_date", models.DateField(blank=True, null=True)),
+                ("is_published", models.BooleanField(default=False)),
+                ("name", models.CharField(max_length=256)),
+                ("description", models.TextField(blank=True)),
+                ("file", models.FileField(upload_to="documents")),
+                ("expires", models.BooleanField(default=False)),
+                ("begin_date", models.DateField(blank=True, null=True)),
+                ("expiration_date", models.DateField(blank=True, null=True)),
+                (
+                    "entry",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="documents",
+                        to="entry.entry",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created'],
-                'permissions': (('manage_documents', 'Manage documents.'),),
+                "ordering": ["-created"],
+                "permissions": (("manage_documents", "Manage documents."),),
             },
         ),
     ]

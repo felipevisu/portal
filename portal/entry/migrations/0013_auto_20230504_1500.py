@@ -7,28 +7,55 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entry', '0012_auto_20230504_1445'),
+        ("entry", "0012_auto_20230504_1445"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='entry',
-            name='categories',
+            model_name="entry",
+            name="categories",
         ),
         migrations.CreateModel(
-            name='CategoryEntry',
+            name="CategoryEntry",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categoryentry', to='entry.category')),
-                ('entry', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categoryentry', to='entry.entry')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="categoryentry",
+                        to="entry.category",
+                    ),
+                ),
+                (
+                    "entry",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="categoryentry",
+                        to="entry.entry",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('category', 'entry')},
+                "unique_together": {("category", "entry")},
             },
         ),
         migrations.AddField(
-            model_name='category',
-            name='entries',
-            field=models.ManyToManyField(blank=True, related_name='categories', through='entry.CategoryEntry', to='entry.Entry'),
+            model_name="category",
+            name="entries",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="categories",
+                through="entry.CategoryEntry",
+                to="entry.Entry",
+            ),
         ),
     ]

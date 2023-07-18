@@ -7,23 +7,59 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0011_alter_document_load_type'),
+        ("document", "0011_alter_document_load_type"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DocumentLoad',
+            name="DocumentLoad",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('status', models.CharField(choices=[('pending', 'Pendendte'), ('success', 'Bem sucedido'), ('error', 'Erro')], default='pending', max_length=256)),
-                ('error_message', models.CharField(blank=True, max_length=256, null=True)),
-                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='document.document')),
-                ('document_file', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='document.documentfile')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pendendte"),
+                            ("success", "Bem sucedido"),
+                            ("error", "Erro"),
+                        ],
+                        default="pending",
+                        max_length=256,
+                    ),
+                ),
+                (
+                    "error_message",
+                    models.CharField(blank=True, max_length=256, null=True),
+                ),
+                (
+                    "document",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="document.document",
+                    ),
+                ),
+                (
+                    "document_file",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="document.documentfile",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

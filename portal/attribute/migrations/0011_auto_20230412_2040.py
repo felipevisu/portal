@@ -6,22 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('attribute', '0010_attribute_entity_type'),
+        ("attribute", "0010_attribute_entity_type"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='attributevalue',
-            name='date',
+            model_name="attributevalue",
+            name="date",
         ),
         migrations.AddField(
-            model_name='attributevalue',
-            name='date_time',
+            model_name="attributevalue",
+            name="date_time",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='attribute',
-            name='entity_type',
-            field=models.CharField(blank=True, choices=[('vehicle', 'Veiculo'), ('provider', 'Fornecedor')], max_length=50, null=True),
+            model_name="attribute",
+            name="entity_type",
+            field=models.CharField(
+                blank=True,
+                choices=[("vehicle", "Veiculo"), ("provider", "Fornecedor")],
+                max_length=50,
+                null=True,
+            ),
         ),
     ]

@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0017_alter_document_load_type'),
+        ("document", "0017_alter_document_load_type"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='documentload',
-            name='error_message',
-            field=models.TextField(blank=True, default=''),
+            model_name="documentload",
+            name="error_message",
+            field=models.TextField(blank=True, default=""),
             preserve_default=False,
         ),
     ]

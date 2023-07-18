@@ -7,18 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entry', '0011_rename_active_entrychannellisting_is_active'),
+        ("entry", "0011_rename_active_entrychannellisting_is_active"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='entry',
-            name='categories',
-            field=models.ManyToManyField(blank=True, related_name='entries', to='entry.Category'),
+            model_name="entry",
+            name="categories",
+            field=models.ManyToManyField(
+                blank=True, related_name="entries", to="entry.Category"
+            ),
         ),
         migrations.AlterField(
-            model_name='entry',
-            name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='entry.category'),
+            model_name="entry",
+            name="category",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, to="entry.category"
+            ),
         ),
     ]

@@ -7,13 +7,13 @@ import portal.document.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0003_alter_documentfile_document'),
+        ("document", "0003_alter_documentfile_document"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='documentfile',
-            name='file',
+            model_name="documentfile",
+            name="file",
             field=models.FileField(upload_to=portal.document.models.get_upload_path),
         ),
     ]

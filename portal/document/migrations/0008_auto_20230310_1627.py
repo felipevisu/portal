@@ -7,18 +7,28 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0007_alter_documentfile_document'),
+        ("document", "0007_alter_documentfile_document"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='document',
-            name='default_file',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='document.documentfile'),
+            model_name="document",
+            name="default_file",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="+",
+                to="document.documentfile",
+            ),
         ),
         migrations.AlterField(
-            model_name='documentfile',
-            name='document',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='document.document'),
+            model_name="documentfile",
+            name="document",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="files",
+                to="document.document",
+            ),
         ),
     ]

@@ -6,13 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0022_remove_document_publication_date'),
+        ("document", "0022_remove_document_publication_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='document',
-            name='load_type',
-            field=models.CharField(choices=[('empty', 'empty'), ('cnep', 'cnep'), ('cnd', 'cnd'), ('cndt', 'cndt'), ('fgts', 'fgts'), ('sefaz_mg', 'sefaz_mg'), ('sefaz_sp', 'sefaz_sp'), ('tcu', 'tcu'), ('mei', 'mei'), ('jucesp', 'jucesp'), ('cnpj', 'cnpj')], default='empty', max_length=256),
+            model_name="document",
+            name="load_type",
+            field=models.CharField(
+                choices=[
+                    ("empty", "empty"),
+                    ("cnep", "cnep"),
+                    ("cnd", "cnd"),
+                    ("cndt", "cndt"),
+                    ("fgts", "fgts"),
+                    ("sefaz_mg", "sefaz_mg"),
+                    ("sefaz_sp", "sefaz_sp"),
+                    ("tcu", "tcu"),
+                    ("mei", "mei"),
+                    ("jucesp", "jucesp"),
+                    ("cnpj", "cnpj"),
+                ],
+                default="empty",
+                max_length=256,
+            ),
         ),
     ]

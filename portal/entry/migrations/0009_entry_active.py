@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entry', '0008_alter_consult_options'),
+        ("entry", "0008_alter_consult_options"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='entry',
-            name='active',
+            model_name="entry",
+            name="active",
             field=models.BooleanField(default=False),
         ),
     ]

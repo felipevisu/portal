@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('channel', '0001_initial'),
-        ('plugins', '0002_pluginconfiguration_channel'),
+        ("channel", "0001_initial"),
+        ("plugins", "0002_pluginconfiguration_channel"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pluginconfiguration',
-            name='identifier',
+            model_name="pluginconfiguration",
+            name="identifier",
             field=models.CharField(max_length=128),
         ),
         migrations.AlterUniqueTogether(
-            name='pluginconfiguration',
-            unique_together={('identifier', 'channel')},
+            name="pluginconfiguration",
+            unique_together={("identifier", "channel")},
         ),
     ]

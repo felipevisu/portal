@@ -9,38 +9,65 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Investment',
+            name="Investment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('publication_date', models.DateField(blank=True, null=True)),
-                ('is_published', models.BooleanField(default=False)),
-                ('month', models.PositiveIntegerField(validators=[portal.investment.models.validate_month])),
-                ('year', models.PositiveIntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("publication_date", models.DateField(blank=True, null=True)),
+                ("is_published", models.BooleanField(default=False)),
+                (
+                    "month",
+                    models.PositiveIntegerField(
+                        validators=[portal.investment.models.validate_month]
+                    ),
+                ),
+                ("year", models.PositiveIntegerField()),
             ],
             options={
-                'ordering': ['-year', '-month'],
-                'permissions': (('manage_investments', 'Manage investments.'),),
-                'unique_together': {('year', 'month')},
+                "ordering": ["-year", "-month"],
+                "permissions": (("manage_investments", "Manage investments."),),
+                "unique_together": {("year", "month")},
             },
         ),
         migrations.CreateModel(
-            name='Item',
+            name="Item",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256)),
-                ('value', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('investment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='investment.investment')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=256)),
+                ("value", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "investment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="items",
+                        to="investment.investment",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['investment', 'name'],
-                'permissions': (('manage_items', 'Manage items.'),),
+                "ordering": ["investment", "name"],
+                "permissions": (("manage_items", "Manage items."),),
             },
         ),
     ]

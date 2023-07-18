@@ -6,13 +6,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0012_documentload'),
+        ("document", "0012_documentload"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='document',
-            name='load_type',
-            field=models.CharField(choices=[('empty', 'Nenhum'), ('consult_correctional_negative_certificate', 'Certidão Negativa Correcionalo'), ('consult_labor_debit_clearance_certifiacate', 'Certidão negativa de débitos trabalhistas'), ('consult_employer_regularity_fgts', 'Regularidade do empregador (FGTS)')], default='empty', max_length=256),
+            model_name="document",
+            name="load_type",
+            field=models.CharField(
+                choices=[
+                    ("empty", "Nenhum"),
+                    (
+                        "consult_correctional_negative_certificate",
+                        "Certidão Negativa Correcionalo",
+                    ),
+                    (
+                        "consult_labor_debit_clearance_certifiacate",
+                        "Certidão negativa de débitos trabalhistas",
+                    ),
+                    (
+                        "consult_employer_regularity_fgts",
+                        "Regularidade do empregador (FGTS)",
+                    ),
+                ],
+                default="empty",
+                max_length=256,
+            ),
         ),
     ]

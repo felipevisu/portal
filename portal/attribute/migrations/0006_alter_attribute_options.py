@@ -6,12 +6,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('attribute', '0005_auto_20230321_1630'),
+        ("attribute", "0005_auto_20230321_1630"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='attribute',
-            options={'ordering': ('name',), 'permissions': (('manage_attributes', 'Manage attributes.'),)},
+            name="attribute",
+            options={
+                "ordering": ("name",),
+                "permissions": (("manage_attributes", "Manage attributes."),),
+            },
         ),
     ]

@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('attribute', '0009_rename_reference_product_attributevalue_reference'),
+        ("attribute", "0009_rename_reference_product_attributevalue_reference"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='attribute',
-            name='entity_type',
-            field=models.CharField(blank=True, choices=[('vehicle', 'Veículo'), ('provider', 'Fornecedor')], max_length=50, null=True),
+            model_name="attribute",
+            name="entity_type",
+            field=models.CharField(
+                blank=True,
+                choices=[("vehicle", "Veículo"), ("provider", "Fornecedor")],
+                max_length=50,
+                null=True,
+            ),
         ),
     ]

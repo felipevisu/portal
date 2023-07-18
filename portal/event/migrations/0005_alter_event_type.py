@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('event', '0004_alter_onetimetoken_document'),
+        ("event", "0004_alter_onetimetoken_document"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='event',
-            name='type',
-            field=models.CharField(choices=[('DOCUMENT_RECEIVED', 'document_received'), ('DOCUMENT_APPROVED', 'document_approved'), ('DOCUMENT_DECLINED', 'document_declined'), ('DOCUMENT_REQUESTED', 'document_requested')], max_length=255),
+            model_name="event",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("DOCUMENT_RECEIVED", "document_received"),
+                    ("DOCUMENT_APPROVED", "document_approved"),
+                    ("DOCUMENT_DECLINED", "document_declined"),
+                    ("DOCUMENT_REQUESTED", "document_requested"),
+                ],
+                max_length=255,
+            ),
         ),
     ]

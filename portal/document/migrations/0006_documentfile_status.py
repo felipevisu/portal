@@ -6,14 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('document', '0005_alter_documentfile_document'),
+        ("document", "0005_alter_documentfile_document"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='documentfile',
-            name='status',
-            field=models.CharField(choices=[('waiting', 'Aguardando'), ('approved', 'Aprovado'), ('refused', 'Recusado')], default='approved', max_length=100),
+            model_name="documentfile",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("waiting", "Aguardando"),
+                    ("approved", "Aprovado"),
+                    ("refused", "Recusado"),
+                ],
+                default="approved",
+                max_length=100,
+            ),
             preserve_default=False,
         ),
     ]

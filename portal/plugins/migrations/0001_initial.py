@@ -9,31 +9,61 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='PluginConfiguration',
+            name="PluginConfiguration",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('identifier', models.CharField(max_length=128, unique=True)),
-                ('name', models.CharField(max_length=128)),
-                ('description', models.TextField(blank=True)),
-                ('active', models.BooleanField(default=False)),
-                ('configuration', models.JSONField(blank=True, default=dict, encoder=django.core.serializers.json.DjangoJSONEncoder, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("identifier", models.CharField(max_length=128, unique=True)),
+                ("name", models.CharField(max_length=128)),
+                ("description", models.TextField(blank=True)),
+                ("active", models.BooleanField(default=False)),
+                (
+                    "configuration",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        encoder=django.core.serializers.json.DjangoJSONEncoder,
+                        null=True,
+                    ),
+                ),
             ],
             options={
-                'permissions': (('manage_plugins', 'Manage plugins.'),),
+                "permissions": (("manage_plugins", "Manage plugins."),),
             },
         ),
         migrations.CreateModel(
-            name='EmailTemplate',
+            name="EmailTemplate",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('value', models.TextField()),
-                ('plugin_configuration', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='email_templates', to='plugins.pluginconfiguration')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("value", models.TextField()),
+                (
+                    "plugin_configuration",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="email_templates",
+                        to="plugins.pluginconfiguration",
+                    ),
+                ),
             ],
         ),
     ]

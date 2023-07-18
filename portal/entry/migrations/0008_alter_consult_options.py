@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entry', '0007_remove_consult_success'),
+        ("entry", "0007_remove_consult_success"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='consult',
-            options={'ordering': ['-created']},
+            name="consult",
+            options={"ordering": ["-created"]},
         ),
     ]
