@@ -2,7 +2,6 @@ from typing import Optional
 
 import graphene
 from django.core.exceptions import ValidationError
-from django.middleware.csrf import _compare_masked_tokens  # type: ignore
 
 from portal.core.jwt import (
     JWT_REFRESH_TOKEN_COOKIE_NAME,

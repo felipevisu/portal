@@ -34,7 +34,6 @@ class AttributeMixin:
         is_swatch_attr = attribute_input_type == AttributeInputType.SWATCH
         for value_data in values_input:
             cls._validate_value(attribute, value_data, is_swatch_attr)
-
         cls.check_values_are_unique(values_input, attribute)
 
     @classmethod
@@ -99,16 +98,15 @@ class AttributeMixin:
 
     @classmethod
     def check_values_are_unique(cls, values_input: dict, attribute: models.Attribute):
-        existing_values = attribute.values.values_list("slug", flat=True)
-        for value_data in values_input:
-            slug = slugify(unidecode(value_data["name"]))
-            if slug in existing_values:
-                msg = (
-                    f'Value {value_data["name"]} already exists within this attribute.'
-                )
-                raise ValidationError(
-                    {cls.ATTRIBUTE_VALUES_FIELD: ValidationError(msg)}
-                )
+        if attribute.id:
+            existing_values = attribute.values.values_list("slug", flat=True)
+            for value_data in values_input:
+                slug = slugify(unidecode(value_data["name"]))
+                if slug in existing_values:
+                    msg = f'Value {value_data["name"]} already exists within this attribute.'
+                    raise ValidationError(
+                        {cls.ATTRIBUTE_VALUES_FIELD: ValidationError(msg)}
+                    )
 
         new_slugs = [
             slugify(unidecode(value_data["name"])) for value_data in values_input

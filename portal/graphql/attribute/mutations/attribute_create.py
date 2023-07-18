@@ -62,7 +62,7 @@ class AttributeCreate(AttributeMixin, ModelMutation):
         return cleaned_input
 
     @classmethod
-    def perform_mutation(cls, _root, info, /, *, input):
+    def perform_mutation(cls, _root, info, /, *, input):  # type: ignore[override]
         instance = models.Attribute()
 
         # Do cleaning and uniqueness checks
@@ -77,5 +77,6 @@ class AttributeCreate(AttributeMixin, ModelMutation):
         # Commit it
         instance.save()
         cls._save_m2m(info, instance, cleaned_input)
+        cls.post_save_action(info, instance, cleaned_input)
         # Return the attribute that was created
         return AttributeCreate(attribute=instance)

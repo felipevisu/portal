@@ -47,8 +47,6 @@ def test_create_attribute_and_attribute_values(
     staff_api_client, permission_manage_attributes
 ):
     # given
-    query = CREATE_ATTRIBUTE_MUTATION
-
     attribute_name = "Example name"
     name = "Value name"
     variables = {
@@ -61,7 +59,7 @@ def test_create_attribute_and_attribute_values(
 
     # when
     response = staff_api_client.post_graphql(
-        query,
+        CREATE_ATTRIBUTE_MUTATION,
         variables,
         permissions=[permission_manage_attributes],
     )
