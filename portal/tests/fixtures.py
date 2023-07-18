@@ -8,7 +8,7 @@ from portal.attribute.utils import associate_attribute_values_to_instance
 from portal.channel.models import Channel
 from portal.document.models import Document, DocumentFile
 from portal.entry import EntryType
-from portal.entry.models import Category, Entry
+from portal.entry.models import Category, Entry, EntryChannelListing
 from portal.investment.models import Investment, Item
 
 
@@ -239,6 +239,27 @@ def vehicle_list(vehicle_category):
     for vehicle in vehicles:
         vehicle.categories.add(vehicle_category)
     return vehicles
+
+
+@pytest.fixture
+def entries_channel_listings(vehicle, provider, channel_city_1):
+    listings = EntryChannelListing.objects.bulk_create(
+        [
+            EntryChannelListing(
+                entry=vehicle,
+                channel=channel_city_1,
+                is_published=False,
+                is_active=False,
+            ),
+            EntryChannelListing(
+                entry=provider,
+                channel=channel_city_1,
+                is_published=True,
+                is_active=True,
+            ),
+        ]
+    )
+    return listings
 
 
 @pytest.fixture

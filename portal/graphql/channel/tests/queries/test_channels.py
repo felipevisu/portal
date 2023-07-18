@@ -45,27 +45,11 @@ def test_query_channel_by_invalid_id(api_client, channel_city_1):
 
 
 def test_query_channel_with_entries_as_anonymous(
-    api_client, channel_city_1, vehicle, provider
+    api_client, channel_city_1, entries_channel_listings
 ):
     # given
     channel_id = graphene.Node.to_global_id("Channel", channel_city_1.id)
     variables = {"id": channel_id}
-    EntryChannelListing.objects.bulk_create(
-        [
-            EntryChannelListing(
-                entry=vehicle,
-                channel=channel_city_1,
-                is_published=False,
-                is_active=False,
-            ),
-            EntryChannelListing(
-                entry=provider,
-                channel=channel_city_1,
-                is_published=True,
-                is_active=True,
-            ),
-        ]
-    )
 
     # when
     response = api_client.post_graphql(QUERY_CHANNEL, variables=variables)
@@ -77,27 +61,11 @@ def test_query_channel_with_entries_as_anonymous(
 
 
 def test_query_channel_with_entries_as_staff(
-    staff_api_client, channel_city_1, vehicle, provider
+    staff_api_client, channel_city_1, entries_channel_listings
 ):
     # given
     channel_id = graphene.Node.to_global_id("Channel", channel_city_1.id)
     variables = {"id": channel_id}
-    EntryChannelListing.objects.bulk_create(
-        [
-            EntryChannelListing(
-                entry=vehicle,
-                channel=channel_city_1,
-                is_published=False,
-                is_active=False,
-            ),
-            EntryChannelListing(
-                entry=provider,
-                channel=channel_city_1,
-                is_published=True,
-                is_active=True,
-            ),
-        ]
-    )
 
     # when
     response = staff_api_client.post_graphql(QUERY_CHANNEL, variables=variables)
