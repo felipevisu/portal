@@ -94,14 +94,18 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [TEMPLATES_DIR],
-        "APP_DIRS": True,
         "OPTIONS": {
+            "debug": DEBUG,
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "portal.site.context_processors.site",
+            ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
             ],
         },
     },
@@ -157,16 +161,8 @@ for entry_point in installed_plugins:
 
 PLUGINS = BUILTIN_PLUGINS + EXTERNAL_PLUGINS
 
-GRAPHENE = {
-    "SCHEMA": "portal.graphql.schema.schema",
-    "SCHEMA_OUTPUT": "schema.graphql",
-    "SCHEMA_INDENT": 2,
-    "MIDDLEWARE": [
-        "portal.graphql.middleware.JWTMiddleware",
-        "graphene_django.debug.DjangoDebugMiddleware",
-    ],
-}
 GRAPHQL_MIDDLEWARE: List[str] = []
+GRAPHQL_PAGINATION_LIMIT = 100
 PLAYGROUND_ENABLED = DEBUG
 
 SENTRY_DNS = os.environ.get("SENTRY_DNS", None)
@@ -259,4 +255,4 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", None)
 ENABLE_DEBUG_TOOLBAR = DEBUG
 if ENABLE_DEBUG_TOOLBAR:
     INSTALLED_APPS += ["debug_toolbar", "graphiql_debug_toolbar"]
-    MIDDLEWARE.append("graphiql_debug_toolbar.middleware.DebugToolbarMiddleware")
+    MIDDLEWARE.append("portal.graphql.middleware.DebugToolbarMiddleware")

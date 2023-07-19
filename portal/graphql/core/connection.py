@@ -367,7 +367,7 @@ def _validate_slice_args(
         )
 
     if max_limit is None:
-        max_limit = cast(int, settings.GRAPHENE.get("RELAY_CONNECTION_MAX_LIMIT", 0))
+        max_limit = cast(int, settings.GRAPHQL_PAGINATION_LIMIT or 0)
 
     if max_limit:
         if first:
