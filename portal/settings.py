@@ -256,3 +256,10 @@ ENABLE_DEBUG_TOOLBAR = DEBUG
 if ENABLE_DEBUG_TOOLBAR:
     INSTALLED_APPS += ["debug_toolbar", "graphiql_debug_toolbar"]
     MIDDLEWARE.append("portal.graphql.middleware.DebugToolbarMiddleware")
+    DEBUG_TOOLBAR_PANELS = [
+        "debug_toolbar.panels.timer.TimerPanel",
+        "debug_toolbar.panels.headers.HeadersPanel",
+        "debug_toolbar.panels.request.RequestPanel",
+        "debug_toolbar.panels.sql.SQLPanel",
+        "debug_toolbar.panels.profiling.ProfilingPanel",
+    ]

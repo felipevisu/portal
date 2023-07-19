@@ -1,7 +1,4 @@
 from django.conf import settings
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import AnonymousUser
-from django.utils.functional import SimpleLazyObject
 
 from .views import GraphQLView
 
@@ -10,7 +7,7 @@ def process_view(self, request, view_func, *args):
     if hasattr(view_func, "view_class") and issubclass(
         view_func.view_class, GraphQLView
     ):
-        request._graphql_view = True
+        request._graphiql = True
 
 
 if settings.ENABLE_DEBUG_TOOLBAR:
