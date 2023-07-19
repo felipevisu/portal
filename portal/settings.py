@@ -163,6 +163,7 @@ GRAPHENE = {
     "SCHEMA_INDENT": 2,
     "MIDDLEWARE": [
         "portal.graphql.middleware.JWTMiddleware",
+        "graphene_django.debug.DjangoDebugMiddleware",
     ],
 }
 GRAPHQL_MIDDLEWARE: List[str] = []
@@ -208,8 +209,8 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
+if not DEBUG:
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -258,13 +259,4 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", None)
 ENABLE_DEBUG_TOOLBAR = DEBUG
 if ENABLE_DEBUG_TOOLBAR:
     INSTALLED_APPS += ["debug_toolbar", "graphiql_debug_toolbar"]
-    MIDDLEWARE.append("portal.graphql.middleware.DebugToolbarMiddleware")
-
-    DEBUG_TOOLBAR_PANELS = [
-        "debug_toolbar.panels.timer.TimerPanel",
-        "debug_toolbar.panels.headers.HeadersPanel",
-        "debug_toolbar.panels.request.RequestPanel",
-        "debug_toolbar.panels.sql.SQLPanel",
-        "debug_toolbar.panels.profiling.ProfilingPanel",
-    ]
-    DEBUG_TOOLBAR_CONFIG = {"RESULTS_CACHE_SIZE": 100}
+    MIDDLEWARE.append("graphiql_debug_toolbar.middleware.DebugToolbarMiddleware")

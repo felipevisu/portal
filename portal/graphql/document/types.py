@@ -13,7 +13,7 @@ from ..core.types.common import NonNullList
 from ..entry.dataloaders import EntryByIdLoader
 from ..event.dataloaders import EventsByDocumentIdLoader
 from ..event.types import Event
-from .dataloaders import DocumentFilesByDocumentIdLoader
+from .dataloaders import DefaultFileByDocumentIdLoader, DocumentFilesByDocumentIdLoader
 from .enums import (
     DocumentFileStatusEnum,
     DocumentLoadOptionsEnum,
@@ -72,10 +72,9 @@ class Document(ModelObjectType):
                 return self.default_file.expiration_date < today
         return False
 
-    @staticmethod
-    def resolve_entry(root: models.Entry, info):
-        if root.entry_id:
-            entry_id = root.entry_id
+    def resolve_entry(self, info):
+        if self.entry_id:
+            entry_id = self.entry_id
         else:
             return None
         entry = EntryByIdLoader(info.context).load(entry_id)
@@ -86,6 +85,12 @@ class Document(ModelObjectType):
 
     def resolve_events(self, info, **kwargs):
         return EventsByDocumentIdLoader(info.context).load(self.id)
+
+    def resolve_default_file(self, info, **kwargs):
+        if self.default_file_id:
+            return DefaultFileByDocumentIdLoader(info.context).load(
+                self.default_file_id
+            )
 
 
 class DocumentCountableConnection(CountableConnection):
