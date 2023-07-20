@@ -13,7 +13,7 @@ from ..core.types.common import NonNullList
 from ..entry.dataloaders import EntryByIdLoader
 from ..event.dataloaders import EventsByDocumentIdLoader
 from ..event.types import Event
-from .dataloaders import DefaultFileByDocumentIdLoader, DocumentFilesByDocumentIdLoader
+from .dataloaders import DocumentFileByIdLoader, DocumentFilesByDocumentIdLoader
 from .enums import (
     DocumentFileStatusEnum,
     DocumentLoadOptionsEnum,
@@ -88,9 +88,7 @@ class Document(ModelObjectType):
 
     def resolve_default_file(self, info, **kwargs):
         if self.default_file_id:
-            return DefaultFileByDocumentIdLoader(info.context).load(
-                self.default_file_id
-            )
+            return DocumentFileByIdLoader(info.context).load(self.default_file_id)
 
 
 class DocumentCountableConnection(CountableConnection):

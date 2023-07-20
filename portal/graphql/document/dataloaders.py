@@ -26,6 +26,16 @@ class DocumentsByEntryIdLoader(DataLoader):
         return [documents_by_entry_ids.get(key, []) for key in keys]
 
 
+class DocumentFileByIdLoader(DataLoader):
+    context_key = "document_file_by_id"
+
+    def batch_load(self, keys):
+        document_files_by_ids = defaultdict(list)
+        for document_file in DocumentFile.objects.filter(id__in=keys).iterator():
+            document_files_by_ids[document_file.document_id].append(document_file)
+        return [document_files_by_ids.get(key, []) for key in keys]
+
+
 class DocumentFilesByDocumentIdLoader(DataLoader):
     context_key = "document_files_by_document_id"
 
@@ -38,15 +48,3 @@ class DocumentFilesByDocumentIdLoader(DataLoader):
                 document_file
             )
         return [documents_files_by_document_id.get(key, []) for key in keys]
-
-
-class DefaultFileByDocumentIdLoader(DataLoader):
-    context_key = "document_file_by_document_id"
-
-    def batch_load(self, keys):
-        document_files_by_document_ids = defaultdict(list)
-        for document_file in DocumentFile.objects.filter(id__in=keys).iterator():
-            document_files_by_document_ids[document_file.document_id].append(
-                document_file
-            )
-        return [document_files_by_document_ids.get(key, []) for key in keys]
