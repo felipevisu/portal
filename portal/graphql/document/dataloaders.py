@@ -30,10 +30,8 @@ class DocumentFileByIdLoader(DataLoader):
     context_key = "document_file_by_id"
 
     def batch_load(self, keys):
-        document_files_by_ids = defaultdict(list)
-        for document_file in DocumentFile.objects.filter(id__in=keys).iterator():
-            document_files_by_ids[document_file.document_id].append(document_file)
-        return [document_files_by_ids.get(key, []) for key in keys]
+        document_files = DocumentFile.objects.in_bulk(keys)
+        return [document_files.get(document_file_id) for document_file_id in keys]
 
 
 class DocumentFilesByDocumentIdLoader(DataLoader):
