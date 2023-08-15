@@ -1,6 +1,8 @@
 import graphene
 
 from ...investment import models
+from ..channel.dataloaders import ChannelByIdLoader
+from ..channel.types import Channel
 from ..core.connection import CountableConnection
 from ..core.types import ModelObjectType, NonNullList
 from .dataloaders import ItemsByInvestmentIdLoader
@@ -28,13 +30,20 @@ class Investment(ModelObjectType):
     month = graphene.Int(required=True)
     is_published = graphene.Boolean()
     items = NonNullList(Item)
+    channel = graphene.Field(Channel, required=False)
 
     class Meta:
         model = models.Investment
         interfaces = [graphene.relay.Node]
 
-    def resolve_items(self, info):
-        return ItemsByInvestmentIdLoader(info.context).load(self.id)
+    @staticmethod
+    def resolve_items(root, info):
+        return ItemsByInvestmentIdLoader(info.context).load(root.id)
+
+    @staticmethod
+    def resolve_channel(root, info):
+        if root.channel_id:
+            return ChannelByIdLoader(info.context).load(root.channel_id)
 
 
 class InvestmentCountableConnection(CountableConnection):

@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from ..channel.models import Channel
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import InvestmentPermissions
 
@@ -13,9 +14,12 @@ def validate_month(value):
 class Investment(ModelWithDates, PublishableModel):
     month = models.PositiveIntegerField(validators=[validate_month])
     year = models.PositiveIntegerField()
+    channel = models.ForeignKey(
+        Channel, null=True, blank=True, on_delete=models.CASCADE
+    )
 
     class Meta:
-        ordering = ["-year", "-month"]
+        ordering = ["-created"]
         unique_together = ("year", "month")
         permissions = (
             (InvestmentPermissions.MANAGE_INVESTMENTS.codename, "Manage investments."),

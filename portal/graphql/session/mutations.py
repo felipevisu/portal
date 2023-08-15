@@ -14,6 +14,7 @@ class SessionInput(graphene.InputObjectType):
     slug = graphene.String()
     content = graphene.JSONString()
     date = graphene.DateTime(required=False)
+    channel = graphene.ID()
     is_published = graphene.Boolean(default=False)
 
 

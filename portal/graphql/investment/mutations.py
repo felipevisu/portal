@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 
 from ...core.permissions import InvestmentPermissions
 from ...investment import models
+from ..channel.types import Channel
 from ..core.mutations import (
     BaseMutation,
     ModelBulkDeleteMutation,
@@ -24,6 +25,7 @@ class InvestmentInput(graphene.InputObjectType):
     month = graphene.Int()
     year = graphene.Int()
     is_published = graphene.Boolean()
+    channel = graphene.ID()
     items = NonNullList(ItemCreateInput)
 
 
