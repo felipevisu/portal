@@ -7,7 +7,7 @@ from ..core.types import FilterInputObjectType
 class InvestmentFilter(django_filters.FilterSet):
     class Meta:
         model = Investment
-        fields = ["year", "month", "is_published", "channel"]
+        fields = ["year", "month", "is_published"]
 
 
 class InvestmentFilterInput(FilterInputObjectType):

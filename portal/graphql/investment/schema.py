@@ -29,11 +29,13 @@ class Query(graphene.ObjectType):
         InvestmentCountableConnection,
         sort_by=InvestmentSortingInput(),
         filter=InvestmentFilterInput(),
+        channel=graphene.String(),
     )
 
-    def resolve_investments(self, info, **kwargs):
-        qs = resolve_investments(info)
+    def resolve_investments(self, info, *, channel=None, **kwargs):
+        qs = resolve_investments(info, channel_slug=channel)
         qs = filter_connection_queryset(qs, kwargs)
+        kwargs["channel"] = channel
         return create_connection_slice(qs, info, kwargs, InvestmentCountableConnection)
 
     def resolve_investment(self, info, id=None, month=None, year=None):

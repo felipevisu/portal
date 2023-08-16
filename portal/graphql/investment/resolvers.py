@@ -1,3 +1,4 @@
+from ...channel.models import Channel
 from ...investment import models
 from ..core.utils import from_global_id_or_error
 
@@ -20,6 +21,10 @@ def resolve_investment(info, global_investment_id, month, year):
     return investment
 
 
-def resolve_investments(info):
+def resolve_investments(info, channel_slug):
     user = info.context.user
-    return models.Investment.objects.visible_to_user(user)
+    qs = models.Investment.objects.visible_to_user(user)
+    if channel_slug:
+        channel = Channel.objects.filter(slug=str(channel_slug)).first()
+        qs = qs.filter(channel=channel)
+    return qs

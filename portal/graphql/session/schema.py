@@ -19,14 +19,16 @@ class Query(graphene.ObjectType):
         SessionCountableConnection,
         sort_by=SessionSortingInput(),
         filter=SessionFilterInput(),
+        channel=graphene.String(),
     )
 
     def resolve_session(self, info, id=None):
         return resolve_session(info, id)
 
-    def resolve_sessions(self, info, **kwargs):
-        qs = resolve_sessions(info)
+    def resolve_sessions(self, info, *, channel=None, **kwargs):
+        qs = resolve_sessions(info, channel_slug=channel)
         qs = filter_connection_queryset(qs, kwargs)
+        kwargs["channel"] = channel
         return create_connection_slice(qs, info, kwargs, SessionCountableConnection)
 
 
