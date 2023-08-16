@@ -40,7 +40,7 @@ class AbstractLoader(ABC):
 
         parsed = response.json()
         if parsed["code"] in range(600, 799):
-            raise ValidationError(message=parsed["code_message"])
+            raise Exception(parsed["code_message"])
 
         data = parsed["data"][0]
         return data
