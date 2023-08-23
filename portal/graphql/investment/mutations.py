@@ -33,6 +33,7 @@ class InvestmentUpdateInput(graphene.InputObjectType):
     month = graphene.Int()
     year = graphene.Int()
     is_published = graphene.Boolean()
+    channel = graphene.ID()
     add_items = NonNullList(ItemCreateInput)
     remove_items = NonNullList(graphene.ID)
 

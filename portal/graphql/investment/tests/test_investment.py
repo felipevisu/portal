@@ -217,9 +217,10 @@ def test_investment_create_mutation_missing_params(
 
 
 def test_investment_create_mutation_duplicated(
-    staff_api_client, permission_manage_investments
+    staff_api_client, permission_manage_investments, channel_city_1
 ):
-    input = {"month": 6, "year": 2022}
+    channel_id = graphene.Node.to_global_id("Channel", channel_city_1.id)
+    input = {"month": 6, "year": 2022, "channel": channel_id}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_INVESTMENT_MUTATION,
