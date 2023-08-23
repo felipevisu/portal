@@ -84,7 +84,10 @@ class Document(ModelObjectType):
         return DocumentFilesByDocumentIdLoader(info.context).load(self.id)
 
     def resolve_events(self, info, **kwargs):
-        return EventsByDocumentIdLoader(info.context).load(self.id)
+        def _resolve(events):
+            return events[:5]
+
+        return EventsByDocumentIdLoader(info.context).load(self.id).then(_resolve)
 
     def resolve_default_file(self, info, **kwargs):
         if self.default_file_id:
