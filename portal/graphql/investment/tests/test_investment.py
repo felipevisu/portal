@@ -12,6 +12,10 @@ QUERY_INVESTMENT = """
             month
             year
             isPublished
+            channel{
+                id
+                name
+            }
             items{
                 id
                 name
@@ -22,13 +26,17 @@ QUERY_INVESTMENT = """
 """
 
 QUERY_INVESTMENTS = """
-    query Investments($first: Int, $filter: InvestmentFilterInput){
-        investments(first: $first, filter: $filter){
+    query Investments($first: Int, $channel: String, $filter: InvestmentFilterInput){
+        investments(first: $first, channel: $channel, filter: $filter){
             edges{
                 node{
                     id
                     month
                     year
+                    channel{
+                        id
+                        name
+                    }
                     items{
                         id
                         name
@@ -132,6 +140,17 @@ def test_investments_staff_query_with_filter(
     assert data["edges"][0]["node"]["id"] == global_id
 
 
+def test_investments_by_channel(api_client, published_investment, channel_city_1):
+    variables = {"first": 10, "channel": channel_city_1.slug}
+    response = api_client.post_graphql(QUERY_INVESTMENTS, variables=variables)
+    content = get_graphql_content(response)
+    data = content["data"]["investments"]
+    global_id = graphene.Node.to_global_id("Investment", published_investment.pk)
+
+    assert len(data["edges"]) == 1
+    assert data["edges"][0]["node"]["id"] == global_id
+
+
 CREATE_INVESTMENT_MUTATION = """
     mutation InvestmentCreate($input: InvestmentInput!){
         investmentCreate(input: $input){
@@ -139,6 +158,10 @@ CREATE_INVESTMENT_MUTATION = """
                 id
                 month
                 year
+                channel{
+                    id
+                    name
+                }
                 items{
                     id
                     name
@@ -155,8 +178,11 @@ CREATE_INVESTMENT_MUTATION = """
 """
 
 
-def test_investment_create_mutation(staff_api_client, permission_manage_investments):
-    input = {"month": 6, "year": 2022}
+def test_investment_create_mutation(
+    staff_api_client, permission_manage_investments, channel_city_1
+):
+    channel_id = graphene.Node.to_global_id("Channel", channel_city_1.pk)
+    input = {"month": 6, "year": 2022, "channel": channel_id}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_INVESTMENT_MUTATION,

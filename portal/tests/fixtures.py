@@ -350,13 +350,17 @@ def document_list(vehicle):
 
 
 @pytest.fixture
-def investment():
-    return Investment.objects.create(year=2022, month=3, is_published=False)
+def investment(channel_city_1):
+    return Investment.objects.create(
+        year=2022, month=3, is_published=False, channel=channel_city_1
+    )
 
 
 @pytest.fixture
-def published_investment():
-    return Investment.objects.create(year=2022, month=2, is_published=True)
+def published_investment(channel_city_1):
+    return Investment.objects.create(
+        year=2022, month=2, is_published=True, channel=channel_city_1
+    )
 
 
 @pytest.fixture

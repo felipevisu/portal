@@ -20,7 +20,7 @@ class Investment(ModelWithDates, PublishableModel):
 
     class Meta:
         ordering = ["-created"]
-        unique_together = ("year", "month")
+        unique_together = ("year", "month", "channel")
         permissions = (
             (InvestmentPermissions.MANAGE_INVESTMENTS.codename, "Manage investments."),
         )
