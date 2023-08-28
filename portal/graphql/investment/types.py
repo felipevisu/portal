@@ -31,6 +31,7 @@ class Investment(ModelObjectType):
     is_published = graphene.Boolean()
     items = NonNullList(Item)
     channel = graphene.Field(Channel, required=False)
+    total = graphene.Decimal()
 
     class Meta:
         model = models.Investment
@@ -39,6 +40,13 @@ class Investment(ModelObjectType):
     @staticmethod
     def resolve_items(root, info):
         return ItemsByInvestmentIdLoader(info.context).load(root.id)
+
+    @staticmethod
+    def resolve_total(root, info):
+        def _resolve(items):
+            return sum([item.value for item in items])
+
+        return ItemsByInvestmentIdLoader(info.context).load(root.id).then(_resolve)
 
     @staticmethod
     def resolve_channel(root, info):
