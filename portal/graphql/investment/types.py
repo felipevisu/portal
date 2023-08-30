@@ -30,7 +30,7 @@ class Investment(ModelObjectType):
     month = graphene.Int(required=True)
     is_published = graphene.Boolean()
     items = NonNullList(Item)
-    channel = graphene.Field(Channel, required=False)
+    channel = graphene.Field(Channel)
     total = graphene.Decimal()
 
     class Meta:

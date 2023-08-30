@@ -14,9 +14,7 @@ def validate_month(value):
 class Investment(ModelWithDates, PublishableModel):
     month = models.PositiveIntegerField(validators=[validate_month])
     year = models.PositiveIntegerField()
-    channel = models.ForeignKey(
-        Channel, null=True, blank=True, on_delete=models.CASCADE
-    )
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["-created"]
