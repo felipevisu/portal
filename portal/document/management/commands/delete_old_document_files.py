@@ -7,7 +7,8 @@ class Command(BaseCommand):
     help = "Delete old document files"
 
     def handle(self, *args, **kwargs):
-        not_delete = Document.objects.filter(default_file_id__isnull=False).values_list(
-            "default_file_id", flat=True
-        )
-        DocumentFile.objects.exclude(id__in=not_delete).delete()
+        documents = Document.objects.all()
+        for document in documents:
+            files = document.files.exclude(id=document.default_file_id).all()[3:]
+            for file in files:
+                file.delete()
