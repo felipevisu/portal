@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = "Displays current time"
 
     def handle(self, *args, **kwargs):
-        expiration = datetime.today() + timedelta(days=5)
+        expiration = datetime.today() + timedelta(days=2)
         documents = (
             Document.objects.select_related("entry")
             .prefetch_related("entry__channel_listings")
