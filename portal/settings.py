@@ -44,15 +44,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 INTERNAL_IPS = ["127.0.0.1"]
 
-LIB_APPS = [
+SHARED_APPS = [
     "storages",
     "corsheaders",
-    "django_celery_beat",
-    "django_celery_results",
     "django_filters",
-]
-
-SHARED_APPS = [
     "django_tenants",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -60,6 +55,8 @@ SHARED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    "django_celery_beat",
+    "django_celery_results",
     "portal.customer",
 ]
 
@@ -78,7 +75,7 @@ TENANT_APPS = [
     "portal.session",
 ]
 
-INSTALLED_APPS = LIB_APPS + SHARED_APPS + TENANT_APPS
+INSTALLED_APPS = SHARED_APPS + TENANT_APPS
 
 TENANT_MODEL = "customer.Client"
 
