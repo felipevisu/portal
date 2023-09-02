@@ -43,7 +43,10 @@ def default_jwt():
     return get_random_string(length=12)
 
 
-class User(PermissionsMixin, AbstractBaseUser):
+class User(
+    PermissionsMixin,
+    AbstractBaseUser,
+):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=256, blank=True)
     last_name = models.CharField(max_length=256, blank=True)

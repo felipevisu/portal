@@ -44,18 +44,28 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 INTERNAL_IPS = ["127.0.0.1"]
 
-INSTALLED_APPS = [
+LIB_APPS = [
     "storages",
-    # django modules
-    "django.contrib.admin",
-    "django.contrib.auth",
+    "corsheaders",
+    "django_celery_beat",
+    "django_celery_results",
+    "django_filters",
+]
+
+SHARED_APPS = [
+    "django_tenants",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
-    # apps
+    "portal.customer",
+]
+
+TENANT_APPS = [
+    "django.contrib.auth",
+    "django.contrib.admin",
     "portal.account",
     "portal.attribute",
     "portal.channel",
@@ -66,14 +76,19 @@ INSTALLED_APPS = [
     "portal.investment",
     "portal.plugins",
     "portal.session",
-    # libs
-    "corsheaders",
-    "django_celery_beat",
-    "django_celery_results",
-    "django_filters",
 ]
 
+INSTALLED_APPS = LIB_APPS + SHARED_APPS + TENANT_APPS
+
+TENANT_MODEL = "customer.Client"
+
+TENANT_DOMAIN_MODEL = "customer.Domain"
+
+AUTH_USER_MODEL = "account.User"
+
+
 MIDDLEWARE = [
+    "django_tenants.middleware.TenantMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -120,11 +135,13 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 DATABASES = {
     DATABASE_CONNECTION_DEFAULT_NAME: dj_database_url.config(
-        default=DATABASE_URL, conn_max_age=600
+        default=DATABASE_URL,
+        conn_max_age=600,
+        engine="django_tenants.postgresql_backend",
     ),
 }
 
-AUTH_USER_MODEL = "account.User"
+DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
