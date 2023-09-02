@@ -2,6 +2,7 @@ import os
 
 from django.db import models
 from django.dispatch import receiver
+from django_tenants.utils import parse_tenant_config_path
 
 from ..core.models import ModelWithDates, PublishableModel
 from ..core.permissions import DocumentPermissions
@@ -10,7 +11,9 @@ from . import DocumentFileStatus, DocumentLoadOptions, DocumentLoadStatus
 
 
 def get_upload_path(instance, filename):
+    prefix = parse_tenant_config_path("media") + "/"
     return os.path.join(
+        prefix,
         "entry_%d" % instance.document.entry.id,
         "document_%d" % instance.document.id,
         filename,
