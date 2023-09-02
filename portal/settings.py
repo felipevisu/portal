@@ -55,8 +55,6 @@ SHARED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
-    "django_celery_beat",
-    "django_celery_results",
     "portal.customer",
 ]
 
@@ -73,9 +71,12 @@ TENANT_APPS = [
     "portal.investment",
     "portal.plugins",
     "portal.session",
+    "django_celery_results",
 ]
 
-INSTALLED_APPS = SHARED_APPS + TENANT_APPS
+INSTALLED_APPS = list(SHARED_APPS) + [
+    app for app in TENANT_APPS if app not in SHARED_APPS
+]
 
 TENANT_MODEL = "customer.Client"
 
