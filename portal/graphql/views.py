@@ -16,6 +16,7 @@ from graphql.error import GraphQLError, GraphQLSyntaxError
 from graphql.execution import ExecutionResult
 from jwt.exceptions import PyJWTError
 
+from portal.customer.models import Client
 from portal.graphql.utils.files import place_files_in_operations
 
 from .. import __version__ as portal_version
@@ -41,6 +42,11 @@ class GraphQLView(View):
     root_value = None
 
     HANDLED_EXCEPTIONS = (GraphQLError, PyJWTError, ReadOnlyException, PermissionDenied)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tenants_list"] = Client.objects.all()
+        return context
 
     def __init__(
         self,

@@ -86,9 +86,10 @@ TENANT_DOMAIN_MODEL = "customer.Domain"
 
 AUTH_USER_MODEL = "account.User"
 
+TENANT_SUBFOLDER_PREFIX = "clientes"
 
 MIDDLEWARE = [
-    "django_tenants.middleware.TenantMiddleware",
+    "django_tenants.middleware.TenantSubfolderMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -102,6 +103,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "portal.urls"
+
+ROOT_URLCONF = "portal.urls_tenants"
+PUBLIC_SCHEMA_URLCONF = "portal.urls_public"
 
 TEMPLATES_DIR = os.path.join(PROJECT_ROOT, "templates")
 
