@@ -1,5 +1,7 @@
 import graphene
 
+from portal.graphql.channel.dataloaders import ChannelByIdLoader
+
 from ....entry import models
 from ...channel.types import Channel
 from ...core.types.model import ModelObjectType
@@ -14,3 +16,7 @@ class EntryChannelListing(ModelObjectType):
     class Meta:
         model = models.EntryChannelListing
         interfaces = [graphene.relay.Node]
+
+    @staticmethod
+    def resolve_channel(root, info, **kwargs):
+        return ChannelByIdLoader(info.context).load(root.channel_id)

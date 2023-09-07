@@ -42,7 +42,7 @@ class ChannelPermissions(BasePermissionEnum):
 
 
 class EventPermissions(BasePermissionEnum):
-    MANAGE_EVENTS = "channel.manage_events"
+    MANAGE_EVENTS = "event.manage_events"
 
 
 class AttributePermissions(BasePermissionEnum):

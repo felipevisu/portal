@@ -1,4 +1,5 @@
 import jwt
+from django.db import connection
 
 from ..account.models import User
 from ..graphql.plugins.dataloaders import AnonymousPluginManagerLoader

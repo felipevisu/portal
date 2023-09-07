@@ -101,4 +101,5 @@ class User(
         # Active superusers have all permissions.
         if self.is_active and self.is_superuser and not self._effective_permissions:
             return True
+
         return _user_has_perm(self, perm, obj)

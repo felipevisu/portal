@@ -5,6 +5,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils.timezone import now
 
+from portal.core.permissions import EventPermissions
+
 from ..document.models import Document
 from . import EventTypes
 
@@ -36,6 +38,7 @@ class Event(models.Model):
 
     class Meta:
         ordering = ["-date"]
+        permissions = ((EventPermissions.MANAGE_EVENTS.codename, "Manage events."),)
 
     def __repr__(self):
         return f"{self.__class__.__name__}(type={self.type!r}, user={self.user!r})"
