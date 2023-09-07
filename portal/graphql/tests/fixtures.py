@@ -17,17 +17,17 @@ API_PATH = reverse("api")
 class ApiClient(Client):
     """GraphQL API client."""
 
-    def __init__(self, client, user=AnonymousUser(), *args, **kwargs):
+    def __init__(self, client, user=None, *args, **kwargs):
         self._user = None
         self.token = None
         self.user = user
-        if not user.is_anonymous:
+        if user:
             self.token = create_access_token(user)
         super().__init__(*args, **kwargs)
 
     def _base_environ(self, **request):
         environ = super()._base_environ(**request)
-        if not self.user.is_anonymous:
+        if self.user:
             environ["HTTP_AUTHORIZATION"] = f"JWT {self.token}"
         return environ
 
@@ -38,7 +38,7 @@ class ApiClient(Client):
     @user.setter
     def user(self, user):
         self._user = user
-        if not user.is_anonymous:
+        if user:
             self.token = create_access_token(user)
 
     def post(self, data=None, **kwargs):

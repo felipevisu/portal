@@ -142,8 +142,5 @@ def load_user_from_request(request):
         token_permissions = get_permissions_from_names(permissions)
         token_codenames = [perm.codename for perm in token_permissions]
         user.effective_permissions = get_permissions_from_codenames(token_codenames)
-        user.is_staff = True if user.effective_permissions else False
 
-    if payload.get("is_staff"):
-        user.is_staff = True
     return user

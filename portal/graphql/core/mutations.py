@@ -100,7 +100,7 @@ class BaseMutation(graphene.Mutation):
         permissions = permissions or cls._meta.permissions
         if not permissions:
             return True
-        if context.user.has_perms(permissions):
+        if context.user and context.user.has_perms(permissions):
             return True
         return False
 

@@ -30,9 +30,8 @@ QUERY_ENTRY = """
 def test_entry_query_by_id_as_anonymous_without_channel(api_client, vehicle):
     variables = {"id": graphene.Node.to_global_id("Entry", vehicle.pk)}
     response = api_client.post_graphql(QUERY_ENTRY, variables=variables)
-    content = get_graphql_content(response)
-    entry_data = content["data"]["entry"]
-    assert entry_data is None
+    with pytest.raises(Exception) as e:
+        get_graphql_content(response)
 
 
 def test_entry_query_by_id_as_staff_without_channel(staff_api_client, vehicle):

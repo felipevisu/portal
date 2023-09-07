@@ -16,13 +16,13 @@ def resolve_channel(info, id: Optional[str], slug: Optional[str]):
 
     if channel and channel.is_active:
         return channel
-    if info.context.user.is_staff:
+    if info.context.user:
         return channel
 
     return None
 
 
 def resolve_channels(info):
-    if info.context.user.is_staff:
+    if info.context.user:
         return models.Channel.objects.all()
     return models.Channel.objects.filter(is_active=True)

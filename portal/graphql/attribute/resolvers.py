@@ -8,7 +8,7 @@ def resolve_attributes(info, qs=None):
 
 
 def resolve_attribute(info, global_attribute_id=None, slug=None):
-    if info.context.user.is_staff:
+    if info.context.user:
         attributes = models.Attribute.objects.all()
     else:
         attributes = models.Attribute.objects.get_public_attributes()

@@ -63,8 +63,7 @@ def account_passes_test_for_attribute(test_func):
 
 def check_attribute_required_permissions():
     def check_perms(context, instance):
-        user = context.user
-        if not user or not user.is_staff:
+        if not context.user:
             raise PermissionDenied()
 
     return account_passes_test_for_attribute(check_perms)

@@ -25,7 +25,7 @@ class EntryQueryset(models.QuerySet):
         )
 
     def visible_to_user(self, user, channel_slug: str):
-        if user and user.is_staff:
+        if user:
             if channel_slug:
                 channels = Channel.objects.filter(slug=str(channel_slug)).values("id")
                 channel_listings = EntryChannelListing.objects.filter(

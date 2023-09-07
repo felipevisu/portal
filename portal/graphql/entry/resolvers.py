@@ -26,6 +26,7 @@ def resolve_entry(info, global_entry_id=None, slug=None, channel_slug=None):
     qs = models.Entry.objects.using(database_connection_name).visible_to_user(
         user, channel_slug=channel_slug
     )
+    print(user)
     if global_entry_id:
         _, entry_pk = from_global_id_or_error(global_entry_id)
         return qs.filter(id=entry_pk).first()

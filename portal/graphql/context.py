@@ -42,6 +42,6 @@ def get_user(request: PortalContext) -> Optional[User]:
 
 def set_auth_on_context(request: PortalContext):
     def user():
-        return get_user(request) or AnonymousUser()
+        return get_user(request)
 
     request.user = SimpleLazyObject(user)  # type: ignore

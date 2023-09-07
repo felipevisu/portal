@@ -13,7 +13,7 @@ class BaseAttributeQuerySet(models.QuerySet):
         raise NotImplementedError
 
     def get_visible_to_user(self, user):
-        if user.is_staff:
+        if user:
             return self.all()
         return self.get_public_attributes()
 

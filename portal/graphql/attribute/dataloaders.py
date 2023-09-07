@@ -38,7 +38,7 @@ class AssignedEntryAttributesByEntryIdLoader(DataLoader):
 
     def batch_load(self, keys):
         user = self.context.user
-        if user and user.is_staff:
+        if user:
             qs = AssignedEntryAttribute.objects.using(
                 self.database_connection_name
             ).all()

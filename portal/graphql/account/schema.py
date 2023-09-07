@@ -15,7 +15,7 @@ class Query(graphene.ObjectType):
 
     def resolve_me(self, info):
         user = info.context.user
-        return user if user.is_authenticated else None
+        return user
 
 
 class Mutation(graphene.ObjectType):

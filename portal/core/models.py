@@ -23,7 +23,7 @@ class PublishedQuerySet(models.QuerySet):
         return self.filter(is_published=True)
 
     def visible_to_user(self, user):
-        if user.is_authenticated and user.is_staff:
+        if user:
             return self.all()
         return self.published()
 
