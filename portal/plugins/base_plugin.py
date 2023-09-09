@@ -8,7 +8,6 @@ from .models import PluginConfiguration
 
 if TYPE_CHECKING:
     from ..account.models import User
-    from ..channel.models import Channel
     from ..document.models import Document
     from ..entry.models import Category, Entry
     from ..session.models import Session
@@ -41,7 +40,6 @@ class BasePlugin:
     PLUGIN_ID = ""
     PLUGIN_DESCRIPTION = ""
     CONFIG_STRUCTURE = None
-    CONFIGURATION_PER_CHANNEL = True
     DEFAULT_CONFIGURATION = []
     DEFAULT_ACTIVE = False
     HIDDEN = False
@@ -56,13 +54,11 @@ class BasePlugin:
         *,
         configuration: PluginConfigurationType,
         active: bool,
-        channel: Optional["Channel"] = None,
         requestor_getter: Optional[Callable[[], "User"]] = None,
         db_config: Optional["PluginConfiguration"] = None
     ):
         self.configuration = self.get_plugin_configuration(configuration)
         self.active = active
-        self.channel = channel
         self.requestor: Optional[RequestorOrLazyObject] = (
             SimpleLazyObject(requestor_getter) if requestor_getter else requestor_getter
         )
@@ -250,5 +246,5 @@ class BasePlugin:
         # Override this function to customize resolving plugin configuration in API.
         return self.configuration
 
-    def is_event_active(self, event: str, channel=Optional[str]):
+    def is_event_active(self, event: str):
         return hasattr(self, event)

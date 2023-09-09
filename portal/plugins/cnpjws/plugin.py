@@ -14,7 +14,6 @@ class CNPJWSPlugin(BasePlugin):
     PLUGIN_ID = "portal.consult.cnpj_ws"
     PLUGIN_NAME = "CNPJWS"
     DEFAULT_ACTIVE = True
-    CONFIGURATION_PER_CHANNEL = False
 
     DEFAULT_CONFIGURATION = [
         {"name": "public_api", "value": True},

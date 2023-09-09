@@ -55,13 +55,14 @@ SHARED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
-    "portal.customer",
-]
-
-TENANT_APPS = [
     "django.contrib.auth",
     "django.contrib.admin",
     "portal.account",
+    "portal.customer",
+    "portal.plugins",
+]
+
+TENANT_APPS = [
     "portal.attribute",
     "portal.channel",
     "portal.core",
@@ -69,7 +70,6 @@ TENANT_APPS = [
     "portal.entry",
     "portal.event",
     "portal.investment",
-    "portal.plugins",
     "portal.session",
     "django_celery_results",
 ]

@@ -1,10 +1,8 @@
-from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Callable, DefaultDict, Dict, List, Optional, Type
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Type
 
 from django.conf import settings
 from django.utils.module_loading import import_string
 
-from ..channel.models import Channel
 from .models import PluginConfiguration
 
 if TYPE_CHECKING:
@@ -16,16 +14,13 @@ if TYPE_CHECKING:
 class PluginsManager:
     """Base manager for handling plugins logic."""
 
-    plugins_per_channel: Dict[str, List["BasePlugin"]] = {}
     global_plugins: List["BasePlugin"] = []
-    channel: Optional["Channel"] = (None,)
     all_plugins: List["BasePlugin"] = []
 
     def _load_plugin(
         self,
         PluginClass: Type["BasePlugin"],
         db_configs_map: dict,
-        channel: Optional["Channel"] = None,
         requestor_getter=None,
     ) -> "BasePlugin":
         db_config = None
@@ -33,7 +28,6 @@ class PluginsManager:
             db_config = db_configs_map[PluginClass.PLUGIN_ID]
             plugin_config = db_config.configuration
             active = db_config.active
-            channel = db_config.channel
         else:
             plugin_config = PluginClass.DEFAULT_CONFIGURATION
             active = PluginClass.get_default_active()
@@ -41,7 +35,6 @@ class PluginsManager:
         return PluginClass(
             configuration=plugin_config,
             active=active,
-            channel=channel,
             requestor_getter=requestor_getter,
             db_config=db_config,
         )
@@ -49,60 +42,38 @@ class PluginsManager:
     def __init__(self, plugins: List[str], requestor_getter=None):
         self.all_plugins = []
         self.global_plugins = []
-        self.plugins_per_channel = defaultdict(list)
 
-        global_db_configs, channel_db_configs = self._get_db_plugin_configs()
-        channels = Channel.objects.all()
+        global_db_configs = self._get_db_plugin_configs()
 
         for plugin_path in plugins:
             PluginClass = import_string(plugin_path)
-            if not getattr(PluginClass, "CONFIGURATION_PER_CHANNEL", False):
-                plugin = self._load_plugin(
-                    PluginClass,
-                    global_db_configs,
-                    requestor_getter=requestor_getter,
-                )
-                self.global_plugins.append(plugin)
-                self.all_plugins.append(plugin)
-            else:
-                for channel in channels:
-                    channel_configs = channel_db_configs.get(channel, {})
-                    plugin = self._load_plugin(
-                        PluginClass, channel_configs, channel, requestor_getter
-                    )
-                    self.plugins_per_channel[channel.slug].append(plugin)
-                    self.all_plugins.append(plugin)
-
-        for channel in channels:
-            self.plugins_per_channel[channel.slug].extend(self.global_plugins)
+            plugin = self._load_plugin(
+                PluginClass,
+                global_db_configs,
+                requestor_getter=requestor_getter,
+            )
+            self.global_plugins.append(plugin)
+            self.all_plugins.append(plugin)
 
     def _get_db_plugin_configs(self):
-        qs = (
-            PluginConfiguration.objects.all()
-            .using(settings.DATABASE_CONNECTION_REPLICA_NAME)
-            .prefetch_related("channel")
+        qs = PluginConfiguration.objects.all().using(
+            settings.DATABASE_CONNECTION_REPLICA_NAME
         )
-        channel_configs: DefaultDict[Channel, Dict] = defaultdict(dict)
         global_configs = {}
         for db_plugin_config in qs:
-            channel = db_plugin_config.channel
-            if channel is None:
-                global_configs[db_plugin_config.identifier] = db_plugin_config
-            else:
-                channel_configs[channel][db_plugin_config.identifier] = db_plugin_config
-        return global_configs, channel_configs
+            global_configs[db_plugin_config.identifier] = db_plugin_config
+        return global_configs
 
     def __run_method_on_plugins(
         self,
         method_name: str,
         default_value: Any,
         *args,
-        channel_slug: Optional[str] = None,
         **kwargs,
     ):
         """Try to run a method with the given name on each declared active plugin."""
         value = default_value
-        plugins = self.get_plugins(channel_slug=channel_slug, active_only=True)
+        plugins = self.get_plugins(active_only=True)
         for plugin in plugins:
             value = self.__run_method_on_single_plugin(
                 plugin, method_name, value, *args, **kwargs
@@ -166,14 +137,8 @@ class PluginsManager:
             "consult_document", default_value, entry
         )
 
-    def get_plugins(
-        self, channel_slug: Optional[str] = None, active_only=False
-    ) -> List["BasePlugin"]:
-        """Return list of plugins for a given channel."""
-        if channel_slug:
-            plugins = self.plugins_per_channel[channel_slug]
-        else:
-            plugins = self.all_plugins
+    def get_plugins(self, active_only=False) -> List["BasePlugin"]:
+        plugins = self.all_plugins
 
         if active_only:
             plugins = [plugin for plugin in plugins if plugin.active]
@@ -183,12 +148,11 @@ class PluginsManager:
         self,
         event: str,
         payload: dict,
-        channel_slug: Optional[str] = None,
         plugin_id: Optional[str] = None,
     ):
         default_value = None
         if plugin_id:
-            plugin = self.get_plugin(plugin_id, channel_slug=channel_slug)
+            plugin = self.get_plugin(plugin_id)
             return self.__run_method_on_single_plugin(
                 plugin=plugin,
                 method_name="notify",
@@ -196,9 +160,7 @@ class PluginsManager:
                 event=event,
                 payload=payload,
             )
-        return self.__run_method_on_plugins(
-            "notify", default_value, event, payload, channel_slug=channel_slug
-        )
+        return self.__run_method_on_plugins("notify", default_value, event, payload)
 
     def consult(
         self,
@@ -220,38 +182,19 @@ class PluginsManager:
 
     def _get_all_plugin_configs(self):
         if not hasattr(self, "_plugin_configs"):
-            plugin_configurations = PluginConfiguration.objects.prefetch_related(
-                "channel"
-            ).all()
-            self._plugin_configs_per_channel: DefaultDict[Channel, Dict] = defaultdict(
-                dict
-            )
+            plugin_configurations = PluginConfiguration.objects.all()
             self._global_plugin_configs = {}
             for pc in plugin_configurations:
-                channel = pc.channel
-                if channel is None:
-                    self._global_plugin_configs[pc.identifier] = pc
-                else:
-                    self._plugin_configs_per_channel[channel][pc.identifier] = pc
-        return self._global_plugin_configs, self._plugin_configs_per_channel
+                self._global_plugin_configs[pc.identifier] = pc
+        return self._global_plugin_configs
 
-    def save_plugin_configuration(
-        self, plugin_id, channel_slug: Optional[str], cleaned_data: dict
-    ):
-        if channel_slug:
-            plugins = self.get_plugins(channel_slug=channel_slug)
-            channel = Channel.objects.filter(slug=channel_slug).first()
-            if not channel:
-                return None
-        else:
-            channel = None
-            plugins = self.global_plugins
+    def save_plugin_configuration(self, plugin_id, cleaned_data: dict):
+        plugins = self.global_plugins
 
         for plugin in plugins:
             if plugin.PLUGIN_ID == plugin_id:
                 plugin_configuration, _ = PluginConfiguration.objects.get_or_create(
                     identifier=plugin_id,
-                    channel=channel,
                     defaults={"configuration": plugin.configuration},
                 )
                 configuration = plugin.save_plugin_configuration(
@@ -263,22 +206,16 @@ class PluginsManager:
                 plugin.configuration = configuration.configuration
                 return configuration
 
-    def get_plugin(
-        self, plugin_id: str, channel_slug: Optional[str] = None
-    ) -> Optional["BasePlugin"]:
-        plugins = self.get_plugins(channel_slug=channel_slug)
+    def get_plugin(self, plugin_id: str) -> Optional["BasePlugin"]:
+        plugins = self.get_plugins()
         for plugin in plugins:
             if plugin.check_plugin_id(plugin_id):
                 return plugin
         return None
 
-    def is_event_active_for_any_plugin(
-        self, event: str, channel_slug: Optional[str] = None
-    ) -> bool:
+    def is_event_active_for_any_plugin(self, event: str) -> bool:
         """Check if any plugin supports defined event."""
-        plugins = (
-            self.plugins_per_channel[channel_slug] if channel_slug else self.all_plugins
-        )
+        plugins = self.all_plugins
         only_active_plugins = [plugin for plugin in plugins if plugin.active]
         return any([plugin.is_event_active(event) for plugin in only_active_plugins])
 

@@ -37,7 +37,6 @@ class AdminEmailPlugin(BasePlugin):
     PLUGIN_NAME = "Admin emails"
     PLUGIN_DESCRIPTION = "Plugin responsible for sending the staff emails."
     DEFAULT_ACTIVE = True
-    CONFIGURATION_PER_CHANNEL = False
 
     DEFAULT_CONFIGURATION = [
         {
@@ -127,7 +126,6 @@ class AdminEmailPlugin(BasePlugin):
         def map_templates_to_configuration(
             email_templates: List["EmailTemplate"],
         ) -> PluginConfigurationType:
-
             email_template_by_name = {
                 email_template.name: email_template
                 for email_template in email_templates

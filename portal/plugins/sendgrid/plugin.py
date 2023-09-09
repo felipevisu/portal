@@ -45,7 +45,6 @@ class SendgridEmailPlugin(BasePlugin):
     PLUGIN_ID = "portal.notifications.sendgrid_email"
     PLUGIN_NAME = "Sendgrid"
     DEFAULT_ACTIVE = True
-    CONFIGURATION_PER_CHANNEL = False
 
     DEFAULT_CONFIGURATION = [
         {"name": "sender_name", "value": ""},

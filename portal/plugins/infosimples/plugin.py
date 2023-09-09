@@ -8,7 +8,6 @@ class InfoSimplesPlugin(BasePlugin):
     PLUGIN_ID = "portal.consult.infosimples"
     PLUGIN_NAME = "InfoSimples"
     DEFAULT_ACTIVE = True
-    CONFIGURATION_PER_CHANNEL = False
 
     DEFAULT_CONFIGURATION = [
         {"name": "token", "value": ""},
