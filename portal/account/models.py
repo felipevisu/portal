@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 
 from ..core.permissions import AccountPermissions, BasePermissionEnum, get_permissions
+from ..customer.models import Client
 
 
 class UserManager(BaseUserManager):
@@ -55,6 +56,9 @@ class User(
     date_joined = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
     jwt_token_key = models.CharField(max_length=12, default=default_jwt)
+    customer = models.ForeignKey(
+        Client, null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     USERNAME_FIELD = "email"
 

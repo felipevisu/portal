@@ -125,6 +125,12 @@ def load_user_from_request(request):
     permissions = payload.get(PERMISSIONS_FIELD, None)
 
     user = User.objects.filter(email=payload["email"], is_active=True).first()
+    if user and not (user.is_superuser or user.is_staff):
+        if not user.customer:
+            raise Exception("User is not assigned to any client")
+        if not (user.customer.schema_name == connection.schema_name):
+            raise Exception("User does not have permission to see this client")
+
     user_jwt_token = payload.get("token")
     if not user_jwt_token:
         raise jwt.InvalidTokenError(

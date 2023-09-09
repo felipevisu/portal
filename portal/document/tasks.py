@@ -45,7 +45,9 @@ def load_new_document_task(document_id, document_load_id, user_id):
         )
 
 
-def load_new_document_from_api(document_id, user_id=None, delay=True) -> DocumentLoad:
+def load_new_document_from_api(
+    document_id, user_id=None, delay=not settings.DEBUG
+) -> DocumentLoad:
     document_load = DocumentLoad.objects.create(document_id=document_id)
     loader = load_new_document_task.delay if delay else load_new_document_task
     loader(document_id, document_load.id, user_id)

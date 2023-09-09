@@ -5,7 +5,6 @@ from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
 import requests
-from django.core.exceptions import ValidationError
 from django.core.files import File
 
 from portal.document import DocumentFileStatus, DocumentLoadOptions
@@ -76,7 +75,7 @@ class LoadFileMixin(AbstractLoader):
             return document_file
         except Exception as e:
             logging.warning(str(e))
-            raise ValidationError("Erro ao processar o arquivo")
+            raise Exception("Erro ao processar o arquivo")
 
 
 class LoadAndConvertFileMixin(AbstractLoader):
@@ -97,7 +96,7 @@ class LoadAndConvertFileMixin(AbstractLoader):
             return document_file
         except Exception as e:
             logging.warning(str(e))
-            raise ValidationError("Erro ao processar o arquivo")
+            raise Exception("Erro ao processar o arquivo")
 
 
 class JUCESP(LoadFileMixin):
@@ -188,7 +187,7 @@ class SEFAZMG(LoadAndConvertFileMixin):
     def get_extra_params(self) -> str:
         consult = self.document.entry.consult.first()
         if not consult:
-            raise ValidationError(
+            raise Exception(
                 "Para solicitar este arquivo faça primeiro uma consulta do cartão CNPJ"
             )
         cep = consult.response["estabelecimento"]["cep"]
