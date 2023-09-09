@@ -5,12 +5,7 @@ import pytest
 from ..base_plugin import ConfigurationTypeField
 from ..manager import PluginsManager
 from ..models import PluginConfiguration
-from .sample_plugins import (
-    ALL_PLUGINS,
-    ChannelPluginSample,
-    PluginInactive,
-    PluginSample,
-)
+from .sample_plugins import ALL_PLUGINS, PluginInactive, PluginSample
 
 
 @pytest.fixture
@@ -40,34 +35,6 @@ def email_configuration():
         "sender_name": "test_name",
         "sender_address": "test_address",
     }
-
-
-@pytest.fixture
-def channel_plugin_configurations(channel_city_1, channel_city_2):
-    usd_configuration = copy.deepcopy(ChannelPluginSample.DEFAULT_CONFIGURATION)
-    usd_configuration[0]["value"] = channel_city_1.slug
-
-    pln_configuration = copy.deepcopy(ChannelPluginSample.DEFAULT_CONFIGURATION)
-    pln_configuration[0]["value"] = channel_city_2.slug
-
-    return PluginConfiguration.objects.bulk_create(
-        [
-            PluginConfiguration(
-                identifier=ChannelPluginSample.PLUGIN_ID,
-                channel=channel_city_1,
-                name=ChannelPluginSample.PLUGIN_NAME,
-                active=ChannelPluginSample.DEFAULT_ACTIVE,
-                configuration=usd_configuration,
-            ),
-            PluginConfiguration(
-                identifier=ChannelPluginSample.PLUGIN_ID,
-                channel=channel_city_2,
-                name=ChannelPluginSample.PLUGIN_NAME,
-                active=ChannelPluginSample.DEFAULT_ACTIVE,
-                configuration=pln_configuration,
-            ),
-        ]
-    )
 
 
 @pytest.fixture

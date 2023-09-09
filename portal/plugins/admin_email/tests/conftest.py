@@ -52,7 +52,6 @@ def admin_email_plugin(settings):
         ):
             manager.save_plugin_configuration(
                 AdminEmailPlugin.PLUGIN_ID,
-                None,
                 {
                     "active": active,
                     "configuration": [
