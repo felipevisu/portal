@@ -38,9 +38,11 @@ PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS"), "*"]
+ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.publicidadedacidade\.com\.br$",
+]
 
 INTERNAL_IPS = ["127.0.0.1"]
 
