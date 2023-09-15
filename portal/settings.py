@@ -44,6 +44,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.publicidadedacidade\.com\.br$",
 ]
 
+CORS_ORIGIN_ALLOW_ALL = DEBUG
+
 INTERNAL_IPS = ["127.0.0.1"]
 
 SHARED_APPS = [
