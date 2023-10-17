@@ -33,7 +33,6 @@ def htmlToPDF(
     driver = None
 
     binary_location = os.environ.get("GOOGLE_CHROME_BIN", "/usr/bin/google-chrome")
-    executable_path = os.environ.get("CHROMEDRIVER_PATH", "chromedriver")
 
     webdriver_options = webdriver.ChromeOptions()
     webdriver_options.binary_location = binary_location
@@ -45,9 +44,7 @@ def htmlToPDF(
 
     webdriver_prefs["profile.default_content_settings"] = {"images": 2}
 
-    driver = webdriver.Chrome(
-        options=webdriver_options, executable_path=executable_path
-    )
+    driver = webdriver.Chrome(options=webdriver_options)
     driver.get(path)
 
     try:
