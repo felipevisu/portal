@@ -4,7 +4,7 @@ from django.db.models import Exists, OuterRef
 from ..core.models import SortableModel
 from ..core.permissions import AttributePermissions
 from ..document.models import Document
-from ..entry.models import Entry
+from ..entry.models import Entry, EntryType
 from . import AttributeEntityType, AttributeInputType, AttributeType
 
 
@@ -103,6 +103,21 @@ class AssignedEntryAttribute(BaseAssignedAttribute):
         unique_together = (("entry", "attribute"),)
 
 
+class AttributeEntry(models.Model):
+    attribute = models.ForeignKey(
+        "Attribute", related_name="attributeentry", on_delete=models.CASCADE
+    )
+    entry_type = models.ForeignKey(
+        EntryType, related_name="attributeentry", on_delete=models.CASCADE
+    )
+
+    objects = AssociatedAttributeManager()
+
+    class Meta:
+        unique_together = (("attribute", "entry_type"),)
+        ordering = ("pk",)
+
+
 class AssignedDocumentAttribute(BaseAssignedAttribute):
     document = models.ForeignKey(
         Document, related_name="attributes", on_delete=models.CASCADE
@@ -133,6 +148,13 @@ class Attribute(models.Model):
     )
     entity_type = models.CharField(
         max_length=50, choices=AttributeEntityType.CHOICES, blank=True, null=True
+    )
+    entry_types = models.ManyToManyField(
+        EntryType,
+        blank=True,
+        related_name="entry_attributes",
+        through="attribute.AttributeEntry",
+        through_fields=("attribute", "entry_type"),
     )
     assigned_entries = models.ManyToManyField(
         Entry,
