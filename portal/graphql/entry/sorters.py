@@ -3,6 +3,16 @@ import graphene
 from ..core.types import SortInputObjectType
 
 
+class EntryTypeSortField(graphene.Enum):
+    NAME = ["name", "slug"]
+
+
+class EntryTypeSortingInput(SortInputObjectType):
+    class Meta:
+        sort_enum = EntryTypeSortField
+        type_name = "entry_types"
+
+
 class CategorySortField(graphene.Enum):
     NAME = ["name", "slug"]
 

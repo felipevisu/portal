@@ -7,6 +7,19 @@ from ..channel import ChannelQsContext
 from ..core.utils import from_global_id_or_error
 
 
+def resolve_entry_type(_, global_entry_type_id=None, slug=None):
+    if global_entry_type_id:
+        _, entry_type_pk = from_global_id_or_error(global_entry_type_id)
+        entry_type = models.EntryType.objects.filter(pk=entry_type_pk).first()
+    else:
+        entry_type = models.EntryType.objects.filter(slug=slug).first()
+    return entry_type
+
+
+def resolve_entry_types():
+    return models.EntryType.objects.all()
+
+
 def resolve_category(_, global_category_id=None, slug=None):
     if global_category_id:
         _, category_pk = from_global_id_or_error(global_category_id)

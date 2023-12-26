@@ -27,6 +27,7 @@ class InvestmentPermissions(BasePermissionEnum):
 class EntryPermissions(BasePermissionEnum):
     MANAGE_CATEGORIES = "entry.manage_categories"
     MANAGE_ENTRIES = "entry.manage_entries"
+    MANAGE_ENTRY_TYPES = "entry.manage_entry_types"
 
 
 class DocumentPermissions(BasePermissionEnum):

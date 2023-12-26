@@ -19,6 +19,9 @@ from .mutations import (
     EntryChannelListingUpdate,
     EntryCreate,
     EntryDelete,
+    EntryTypeCreate,
+    EntryTypeDelete,
+    EntryTypeUpdate,
     EntryUpdate,
 )
 from .resolvers import (
@@ -26,13 +29,17 @@ from .resolvers import (
     resolve_category,
     resolve_entries,
     resolve_entry,
+    resolve_entry_type,
+    resolve_entry_types,
 )
-from .sorters import CategorySortingInput, EntrySortingInput
+from .sorters import CategorySortingInput, EntrySortingInput, EntryTypeSortingInput
 from .types import (
     Category,
     CategoryCountableConnection,
     Entry,
     EntryCountableConnection,
+    EntryType,
+    EntryTypeCountableConnection,
 )
 
 
@@ -59,6 +66,15 @@ class Query(graphene.ObjectType):
         filter=EntryFilterInput(),
         channel=graphene.String(),
     )
+    entry_type = BaseField(
+        EntryType,
+        id=graphene.Argument(graphene.ID),
+        slug=graphene.String(),
+    )
+    entry_types = FilterConnectionField(
+        EntryTypeCountableConnection,
+        sort_by=EntryTypeSortingInput(),
+    )
 
     def resolve_category(self, info, id=None, slug=None):
         return resolve_category(info, id, slug)
@@ -67,6 +83,14 @@ class Query(graphene.ObjectType):
         qs = resolve_categories()
         qs = filter_connection_queryset(qs, kwargs)
         return create_connection_slice(qs, info, kwargs, CategoryCountableConnection)
+
+    def resolve_entry_type(self, info, id=None, slug=None):
+        return resolve_entry_type(info, id, slug)
+
+    def resolve_entry_types(self, info, *args, **kwargs):
+        qs = resolve_entry_types()
+        qs = filter_connection_queryset(qs, kwargs)
+        return create_connection_slice(qs, info, kwargs, EntryTypeCountableConnection)
 
     def resolve_entry(
         self,
@@ -101,3 +125,6 @@ class Mutation(graphene.ObjectType):
     entry_bulk_delete = EntryBulkDelete.Field()
     entry_channel_listing_update = EntryChannelListingUpdate.Field()
     consult_document = ConsultDocument.Field()
+    entry_type_create = EntryTypeCreate.Field()
+    entry_type_update = EntryTypeUpdate.Field()
+    entry_type_delete = EntryTypeDelete.Field()

@@ -7,6 +7,7 @@ from .categories import (
 from .channels import EntryChannelListingUpdate
 from .consults import ConsultDocument
 from .entries import EntryBulkDelete, EntryCreate, EntryDelete, EntryUpdate
+from .entry_types import EntryTypeCreate, EntryTypeDelete, EntryTypeUpdate
 
 __all__ = [
     "CategoryCreate",
@@ -19,4 +20,7 @@ __all__ = [
     "EntryDelete",
     "EntryUpdate",
     "EntryChannelListingUpdate",
+    "EntryTypeCreate",
+    "EntryTypeUpdate",
+    "EntryTypeDelete",
 ]

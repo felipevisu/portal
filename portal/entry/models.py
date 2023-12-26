@@ -5,7 +5,15 @@ from django.db.models import Exists, OuterRef, Q
 from ..channel.models import Channel
 from ..core.models import ModelWithDates, ModelWithSlug, PublishableModel
 from ..core.permissions import EntryPermissions
-from . import EntryType
+from . import EntryType as EntryTypeEnum
+
+
+class EntryType(ModelWithSlug):
+    class Meta:
+        ordering = ["slug"]
+        permissions = (
+            (EntryPermissions.MANAGE_ENTRY_TYPES.codename, "Manage entry types."),
+        )
 
 
 class EntryQueryset(models.QuerySet):
@@ -42,7 +50,14 @@ EntryManager = models.Manager.from_queryset(EntryQueryset)
 
 
 class Entry(ModelWithDates, ModelWithSlug):
-    type = models.CharField(choices=EntryType.CHOICES, max_length=24)
+    entry_type = models.ForeignKey(
+        EntryType,
+        related_name="entries",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    type = models.CharField(choices=EntryTypeEnum.CHOICES, max_length=24)
     document_number = models.CharField(max_length=256)
     document_file = models.FileField(upload_to="entry", blank=True)
     email = models.CharField(max_length=258)
@@ -80,7 +95,7 @@ class EntryChannelListing(PublishableModel):
 
 
 class Category(ModelWithDates, ModelWithSlug):
-    type = models.CharField(choices=EntryType.CHOICES, max_length=24)
+    type = models.CharField(choices=EntryTypeEnum.CHOICES, max_length=24)
     entries = models.ManyToManyField(
         Entry,
         blank=True,
