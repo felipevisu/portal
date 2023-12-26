@@ -16,9 +16,11 @@ from ..dataloaders import (
     CategoriesByEntryIdLoader,
     ConsultByEntryIdLoader,
     EntryChannelListingByEntryIdLoader,
+    EntryTypeByIdLoader,
 )
 from ..enums import EntryTypeEnum
 from .channels import EntryChannelListing
+from .entry_types import EntryType
 
 
 class Entry(ChannelContextType):
@@ -30,6 +32,7 @@ class Entry(ChannelContextType):
     email = graphene.String()
     documents = ConnectionField(DocumentCountableConnection)
     type = EntryTypeEnum()
+    entry_type = graphene.Field(lambda: EntryType)
     attributes = NonNullList(SelectedAttribute, required=True)
     created = graphene.DateTime()
     updated = graphene.DateTime()
@@ -54,6 +57,10 @@ class Entry(ChannelContextType):
     @staticmethod
     def resolve_categories(root: ChannelContext[models.Entry], info):
         return CategoriesByEntryIdLoader(info.context).load(root.node.id)
+
+    @staticmethod
+    def resolve_entry_type(root: ChannelContext[models.Entry], info):
+        return EntryTypeByIdLoader(info.context).load(root.node.entry_type_id)
 
     @staticmethod
     def resolve_documents(root: ChannelContext[models.Entry], info, **kwargs):

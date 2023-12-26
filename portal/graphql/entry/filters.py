@@ -25,12 +25,20 @@ from ..core.types import FilterInputObjectType
 from ..core.types.filter_input import ChannelFilterInputObjectType
 from ..utils import resolve_global_ids_to_primary_keys
 from .enums import EntryTypeEnum
+from .types import entry_types
 
 
 def filter_entry_type(qs, _, value):
     if not value:
         return qs
     return qs.filter(type=value)
+
+
+def filter_entry_types(qs, _, value):
+    if not value:
+        return qs
+    _, entry_type_pks = resolve_global_ids_to_primary_keys(value, entry_types.EntryType)
+    return qs.filter(entry_type_id__in=entry_type_pks)
 
 
 def filter_entries_by_categories(qs, category_pks):
@@ -115,7 +123,11 @@ def _clean_entry_attributes_filter_input(filter_value, queries):
         attributes_slug_pk_map[attr_slug] = attr_pk
         attributes_pk_slug_map[attr_pk] = attr_slug
 
-    for (attr_pk, value_pk, value_slug,) in AttributeValue.objects.filter(
+    for (
+        attr_pk,
+        value_pk,
+        value_slug,
+    ) in AttributeValue.objects.filter(
         slug__in=value_slugs, attribute_id__in=attributes_pk_slug_map.keys()
     ).values_list("attribute_id", "pk", "slug"):
         attr_slug = attributes_pk_slug_map[attr_pk]
@@ -185,6 +197,7 @@ class EntryFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
     categories = GlobalIDMultipleChoiceFilter(method=filter_categories)
     type = EnumFilter(input_class=EntryTypeEnum, method=filter_entry_type)
+    entry_types = GlobalIDMultipleChoiceFilter(method=filter_entry_types)
     attributes = ListObjectTypeFilter(
         input_class="portal.graphql.attribute.types.AttributeInput",
         method="filter_attributes",

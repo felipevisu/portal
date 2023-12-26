@@ -1,7 +1,40 @@
 from collections import defaultdict
 
-from ...entry.models import Category, CategoryEntry, Consult, Entry, EntryChannelListing
+from ...entry.models import (
+    Category,
+    CategoryEntry,
+    Consult,
+    Entry,
+    EntryChannelListing,
+    EntryType,
+)
 from ..core.dataloaders import DataLoader
+
+
+class EntryTypeByIdLoader(DataLoader):
+    context_key = "entry_type_by_id"
+
+    def batch_load(self, keys):
+        entry_types = EntryType.objects.using(self.database_connection_name).in_bulk(
+            keys
+        )
+        return [entry_types.get(entry_type_id) for entry_type_id in keys]
+
+
+class EntryTypeByProductIdLoader(DataLoader):
+    context_key = "entry_type_by_product_id"
+
+    def batch_load(self, keys):
+        def with_entries(entries):
+            entry_ids = {p.id for p in entries}
+            entry_types_map = (
+                EntryType.objects.using(self.database_connection_name)
+                .filter(entries__in=entry_ids)
+                .in_bulk()
+            )
+            return [entry_types_map[entry.entry_type_id] for entry in entries]
+
+        return EntryByIdLoader(self.context).load_many(keys).then(with_entries)
 
 
 class CategoryByIdLoader(DataLoader):
