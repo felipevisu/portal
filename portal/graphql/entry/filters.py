@@ -7,12 +7,7 @@ from django.db.models import Exists, OuterRef, Q
 from portal.graphql.channel.filters import get_channel_slug_from_filter_data
 
 from ...attribute import AttributeInputType
-from ...attribute.models import (
-    AssignedEntryAttribute,
-    AssignedEntryAttributeValue,
-    Attribute,
-    AttributeValue,
-)
+from ...attribute.models import AssignedEntryAttributeValue, Attribute, AttributeValue
 from ...channel.models import Channel
 from ...entry.models import Category, CategoryEntry, Entry, EntryChannelListing
 from ..core.filters import (
@@ -72,11 +67,8 @@ def filter_entries_by_attributes_values(qs, queries):
         assigned_entry_attribute_values = AssignedEntryAttributeValue.objects.filter(
             value_id__in=values
         )
-        assigned_entry_attributes = AssignedEntryAttribute.objects.filter(
-            Exists(assigned_entry_attribute_values.filter(assignment_id=OuterRef("pk")))
-        )
         entry_attribute_filter = Q(
-            Exists(assigned_entry_attributes.filter(entry_id=OuterRef("pk")))
+            Exists(assigned_entry_attribute_values.filter(entry_id=OuterRef("pk")))
         )
         filters.append(entry_attribute_filter)
 

@@ -3,7 +3,6 @@ from django.db.models import Exists, OuterRef
 
 from ..core.models import SortableModel
 from ..core.permissions import AttributePermissions
-from ..document.models import Document
 from ..entry.models import Entry, EntryType
 from . import AttributeEntityType, AttributeInputType, AttributeType
 
@@ -31,11 +30,18 @@ class AttributeQuerySet(BaseAttributeQuerySet):
     def get_public_attributes(self):
         return self.filter(visible_in_website=True)
 
-    def document_attributes(self):
-        return self.filter(type=AttributeType.DOCUMENT)
+    def get_unassigned_entry_type_attributes(self, entry_type_pk: int):
+        return self.entry_type_attributes().exclude(
+            attributeentry__entry_type_id=entry_type_pk
+        )
 
-    def entry_attributes(self):
-        return self.filter(type=AttributeType.ENTRY)
+    def get_assigned_entry_type_attributes(self, entry_type_pk: int):
+        return self.entry_type_attributes().filter(
+            attributeentry__entry_type_id=entry_type_pk
+        )
+
+    def entry_type_attributes(self):
+        return self.filter(type=AttributeType.ENTRY_TYPE)
 
 
 AttributeManager = models.Manager.from_queryset(AttributeQuerySet)
@@ -56,51 +62,18 @@ class AssignedEntryAttributeValue(models.Model):
         on_delete=models.CASCADE,
         related_name="entryvalueassignment",
     )
-    assignment = models.ForeignKey(
-        "AssignedEntryAttribute",
-        on_delete=models.CASCADE,
-        related_name="entryvalueassignment",
-    )
-
-    class Meta:
-        unique_together = (("value", "assignment"),)
-        ordering = ("pk",)
-
-
-class AssignedDocumentAttributeValue(models.Model):
-    value = models.ForeignKey(
-        "AttributeValue",
-        on_delete=models.CASCADE,
-        related_name="documentvalueassignment",
-    )
-    assignment = models.ForeignKey(
-        "AssignedDocumentAttribute",
-        on_delete=models.CASCADE,
-        related_name="documentvalueassignment",
-    )
-
-    class Meta:
-        unique_together = (("value", "assignment"),)
-        ordering = ("pk",)
-
-
-class AssignedEntryAttribute(BaseAssignedAttribute):
     entry = models.ForeignKey(
-        Entry, related_name="attributes", on_delete=models.CASCADE
-    )
-    attribute = models.ForeignKey(
-        "Attribute", on_delete=models.CASCADE, related_name="entryassignments"
-    )
-    values = models.ManyToManyField(
-        "AttributeValue",
+        Entry,
+        related_name="attributevalues",
+        on_delete=models.CASCADE,
+        null=True,
         blank=True,
-        related_name="entryassignments",
-        through=AssignedEntryAttributeValue,
-        through_fields=("assignment", "value"),
+        db_index=False,
     )
 
     class Meta:
-        unique_together = (("entry", "attribute"),)
+        unique_together = (("value", "entry"),)
+        ordering = ("pk",)
 
 
 class AttributeEntry(models.Model):
@@ -116,25 +89,6 @@ class AttributeEntry(models.Model):
     class Meta:
         unique_together = (("attribute", "entry_type"),)
         ordering = ("pk",)
-
-
-class AssignedDocumentAttribute(BaseAssignedAttribute):
-    document = models.ForeignKey(
-        Document, related_name="attributes", on_delete=models.CASCADE
-    )
-    attribute = models.ForeignKey(
-        "Attribute", on_delete=models.CASCADE, related_name="documentassignments"
-    )
-    values = models.ManyToManyField(
-        "AttributeValue",
-        blank=True,
-        related_name="documentassignments",
-        through=AssignedDocumentAttributeValue,
-        through_fields=("assignment", "value"),
-    )
-
-    class Meta:
-        unique_together = (("document", "attribute"),)
 
 
 class Attribute(models.Model):
@@ -155,20 +109,6 @@ class Attribute(models.Model):
         related_name="entry_attributes",
         through="attribute.AttributeEntry",
         through_fields=("attribute", "entry_type"),
-    )
-    assigned_entries = models.ManyToManyField(
-        Entry,
-        blank=True,
-        through=AssignedEntryAttribute,
-        through_fields=("attribute", "entry"),
-        related_name="attributesrelated",
-    )
-    assigned_documents = models.ManyToManyField(
-        Document,
-        blank=True,
-        through=AssignedDocumentAttribute,
-        through_fields=("attribute", "document"),
-        related_name="attributesrelated",
     )
 
     value_required = models.BooleanField(default=False, blank=True)

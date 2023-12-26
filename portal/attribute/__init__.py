@@ -35,26 +35,18 @@ class AttributeInputType:
 
 
 class AttributeType:
-    DOCUMENT = "document"
-    VEHICLE = "vehicle"
-    PROVIDER = "provider"
-    VEHICLE_AND_PROVIDER = "vehicle_and_provider"
+    ENTRY_TYPE = "entry_type"
 
     CHOICES = [
-        (DOCUMENT, "document"),
-        (VEHICLE, "vehicle"),
-        (PROVIDER, "provider"),
-        (VEHICLE_AND_PROVIDER, "vehicle and provider"),
+        (ENTRY_TYPE, "Entry Type"),
     ]
 
 
 class AttributeEntityType:
-    VEHICLE = "vehicle"
-    PROVIDER = "provider"
+    ENTRY = "entry"
 
     CHOICES = [
-        (VEHICLE, "vehicle"),
-        (PROVIDER, "provider"),
+        (ENTRY, "Entry"),
     ]
 
 

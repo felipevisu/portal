@@ -4,7 +4,6 @@ from portal.core.permissions import EntryPermissions
 from portal.graphql.channel import ChannelContext
 
 from ....entry import models
-from ...attribute.dataloaders import SelectedAttributesByEntryIdLoader
 from ...attribute.types import SelectedAttribute
 from ...channel.types import ChannelContextType
 from ...core.connection import CountableConnection, create_connection_slice
@@ -17,6 +16,7 @@ from ..dataloaders import (
     ConsultByEntryIdLoader,
     EntryChannelListingByEntryIdLoader,
     EntryTypeByIdLoader,
+    SelectedAttributesByEntryIdLoader,
 )
 from ..enums import EntryTypeEnum
 from .channels import EntryChannelListing

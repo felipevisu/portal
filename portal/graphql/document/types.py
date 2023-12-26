@@ -10,7 +10,7 @@ from ..core.connection import CountableConnection
 from ..core.fields import PermissionsField
 from ..core.types import File, ModelObjectType
 from ..core.types.common import NonNullList
-from ..entry.dataloaders import EntryByIdLoader
+from ..entry.dataloaders.entries import EntryByIdLoader
 from ..event.dataloaders import EventsByDocumentIdLoader
 from ..event.types import Event
 from .dataloaders import DocumentFileByIdLoader, DocumentFilesByDocumentIdLoader
