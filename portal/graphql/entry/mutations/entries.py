@@ -51,9 +51,7 @@ class EntryCreate(ModelMutation):
 
     @classmethod
     def clean_attributes(cls, attributes, entry_type):
-        attributes_qs = Attribute.objects.filter(
-            type__in=[AttributeType.VEHICLE_AND_PROVIDER, entry_type]
-        )
+        attributes_qs = Attribute.objects.filter(type__in=[entry_type])
         attributes = AttributeAssignmentMixin.clean_input(
             attributes, attributes_qs, is_document_attributes=False
         )

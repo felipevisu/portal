@@ -2,6 +2,7 @@ import pytest
 
 from ...investment.models import Investment
 from ..utils import associate_attribute_values_to_instance
+from .model_helper import get_entry_attribute_values, get_entry_attributes
 
 pytestmark = pytest.mark.django_db
 
@@ -35,34 +36,35 @@ def test_associate_attribute_to_entry_instance_from_different_attribute(
 
 def test_associate_attribute_to_entry_instance_without_values(provider):
     """Ensure clearing the values from a entry is properly working."""
-    old_assignment = provider.attributes.first()
-    assert old_assignment is not None, "The entry doesn't have attribute-values"
-    assert old_assignment.values.count() == 1
-
-    attribute = old_assignment.attribute
+    attribute = get_entry_attributes(provider).first()
+    assert attribute is not None, "Entry doesn't have attributes assigned"
+    value_count = get_entry_attribute_values(provider, attribute).count()
+    assert value_count == 1, "Entry doesn't have attribute-values"
 
     # Clear the values
-    new_assignment = associate_attribute_values_to_instance(provider, attribute)
+    associate_attribute_values_to_instance(provider, attribute)
 
     # Ensure the values were cleared and no new assignment entry was created
-    assert new_assignment.pk == old_assignment.pk
-    assert new_assignment.values.count() == 0
+    assert get_entry_attributes(provider).count() == 1
+    assert provider.attributevalues.count() == 0
 
 
-def test_associate_attribute_to_product_instance_multiple_values(provider):
-    """Ensure multiple values in proper order are assigned."""
-    old_assignment = provider.attributes.first()
-    assert old_assignment is not None, "The entry doesn't have attribute-values"
-    assert old_assignment.values.count() == 1
+def test_associate_attribute_to_entry_instance_multiple_values(
+    provider, attribute_value_generator
+):
+    attribute = get_entry_attributes(provider).first()
+    assert attribute is not None, "Product doesn't have attributes assigned"
+    value_count = get_entry_attribute_values(provider, attribute).count()
+    assert value_count == 1, "Product doesn't have attribute-values"
 
-    attribute = old_assignment.attribute
+    attribute_value_generator(
+        attribute=attribute,
+        slug="attr-value2",
+    )
     values = attribute.values.all()
 
     # Assign new values
-    new_assignment = associate_attribute_values_to_instance(
-        provider, attribute, values[1], values[0]
-    )
+    associate_attribute_values_to_instance(provider, attribute, values[1], values[0])
 
     # Ensure the new assignment was created and ordered correctly
-    assert new_assignment.pk == old_assignment.pk
-    assert new_assignment.values.count() == 2
+    assert provider.attributevalues.count() == 2

@@ -89,15 +89,45 @@ def admin_user(db):
 
 
 @pytest.fixture
-def color_attribute():
+def entry_type():
+    entry_type = EntryType.objects.create(name="Entry Type", slug="entry-type")
+    return entry_type
+
+
+@pytest.fixture
+def vehicle_entry_type():
+    entry_type = EntryType.objects.create(name="Vehicle", slug="vehicle")
+    return entry_type
+
+
+@pytest.fixture
+def provider_entry_type():
+    entry_type = EntryType.objects.create(name="Provider", slug="provider")
+    return entry_type
+
+
+@pytest.fixture
+def entry_type_list():
+    entry_types = EntryType.objects.bulk_create(
+        [
+            EntryType(name="Entry Type 1", slug="entry-type-1"),
+            EntryType(name="Entry Type 2", slug="entry-type-2"),
+        ]
+    )
+    return entry_types
+
+
+@pytest.fixture
+def color_attribute(vehicle_entry_type, provider_entry_type):
     attribute = Attribute.objects.create(
         slug="color",
         name="Color",
-        type=AttributeType.PROVIDER,
+        type=AttributeType.ENTRY_TYPE,
         input_type=AttributeInputType.MULTISELECT,
         filterable_in_website=True,
         filterable_in_dashboard=True,
     )
+    attribute.entry_types.add(*[vehicle_entry_type, provider_entry_type])
     AttributeValue.objects.create(attribute=attribute, name="Red", slug="red")
     AttributeValue.objects.create(attribute=attribute, name="Blue", slug="blue")
     return attribute
@@ -108,7 +138,7 @@ def color_attribute_without_values():
     return Attribute.objects.create(
         slug="color",
         name="Color",
-        type=AttributeType.PROVIDER,
+        type=AttributeType.ENTRY_TYPE,
         filterable_in_website=True,
         filterable_in_dashboard=True,
     )
@@ -119,7 +149,7 @@ def attribute_without_values():
     return Attribute.objects.create(
         slug="dropdown",
         name="Dropdown",
-        type=AttributeType.PROVIDER,
+        type=AttributeType.ENTRY_TYPE,
         filterable_in_website=True,
         filterable_in_dashboard=True,
         visible_in_website=True,
@@ -135,17 +165,65 @@ def pink_attribute_value(color_attribute):  # pylint: disable=W0613
 
 
 @pytest.fixture
-def size_attribute():
+def size_attribute(vehicle_entry_type, provider_entry_type):
     attribute = Attribute.objects.create(
         slug="size",
         name="Size",
-        type=AttributeType.DOCUMENT,
+        type=AttributeType.ENTRY_TYPE,
         filterable_in_website=True,
         filterable_in_dashboard=True,
     )
+    attribute.entry_types.add(*[vehicle_entry_type, provider_entry_type])
     AttributeValue.objects.create(attribute=attribute, name="Small", slug="small")
     AttributeValue.objects.create(attribute=attribute, name="Big", slug="big")
     return attribute
+
+
+@pytest.fixture
+def attribute_generator():
+    def create_attribute(
+        external_reference="attributeExtRef",
+        slug="attr",
+        name="Attr",
+        type=AttributeType.ENTRY_TYPE,
+        filterable_in_website=True,
+        filterable_in_dashboard=True,
+        available_in_grid=True,
+    ):
+        attribute, _ = Attribute.objects.get_or_create(
+            external_reference=external_reference,
+            slug=slug,
+            name=name,
+            type=type,
+            filterable_in_website=filterable_in_website,
+            filterable_in_dashboard=filterable_in_dashboard,
+        )
+
+        return attribute
+
+    return create_attribute
+
+
+@pytest.fixture
+def attribute_value_generator(attribute_generator):
+    def create_attribute_value(
+        attribute=None,
+        name="Attr Value",
+        slug="attr-value",
+        value="",
+    ):
+        if attribute is None:
+            attribute = attribute_generator()
+        attribute_value, _ = AttributeValue.objects.get_or_create(
+            attribute=attribute,
+            name=name,
+            slug=slug,
+            value=value,
+        )
+
+        return attribute_value
+
+    return create_attribute_value
 
 
 @pytest.fixture
@@ -202,20 +280,21 @@ def category_list():
 
 
 @pytest.fixture
-def vehicle(vehicle_category):
+def vehicle(vehicle_category, vehicle_entry_type):
     vehicle = Entry.objects.create(
         name="Vehicle",
         slug="vehicle",
         type=EntryTypeEnum.VEHICLE,
         document_number="123456789",
         email="vehicle@email.com",
+        entry_type=vehicle_entry_type,
     )
     vehicle.categories.add(vehicle_category)
     return vehicle
 
 
 @pytest.fixture
-def vehicle_list(vehicle_category):
+def vehicle_list(vehicle_category, vehicle_entry_type):
     vehicles = Entry.objects.bulk_create(
         [
             Entry(
@@ -224,6 +303,7 @@ def vehicle_list(vehicle_category):
                 type=EntryTypeEnum.VEHICLE,
                 document_number="123456789a",
                 email="vehicle@email.com",
+                entry_type=vehicle_entry_type,
             ),
             Entry(
                 name="Vehicle 2",
@@ -231,6 +311,7 @@ def vehicle_list(vehicle_category):
                 type=EntryTypeEnum.VEHICLE,
                 document_number="123456789b",
                 email="vehicle@email.com",
+                entry_type=vehicle_entry_type,
             ),
             Entry(
                 name="Vehicle 3",
@@ -238,6 +319,7 @@ def vehicle_list(vehicle_category):
                 type=EntryTypeEnum.VEHICLE,
                 document_number="123456789c",
                 email="vehicle@email.com",
+                entry_type=vehicle_entry_type,
             ),
         ]
     )
@@ -268,13 +350,14 @@ def entries_channel_listings(vehicle, provider, channel_city_1):
 
 
 @pytest.fixture
-def provider(provider_category, color_attribute):
+def provider(provider_category, provider_entry_type, color_attribute):
     provider = Entry.objects.create(
         name="Provider",
         slug="provider",
         type=EntryTypeEnum.PROVIDER,
         document_number="123456789",
         email="provider@email.com",
+        entry_type=provider_entry_type,
     )
     provider.categories.add(provider_category)
     attribute_value = color_attribute.values.first()
@@ -283,7 +366,7 @@ def provider(provider_category, color_attribute):
 
 
 @pytest.fixture
-def provider_list(provider_category):
+def provider_list(provider_category, provider_entry_type):
     providers = Entry.objects.bulk_create(
         [
             Entry(
@@ -292,6 +375,7 @@ def provider_list(provider_category):
                 type=EntryTypeEnum.PROVIDER,
                 document_number="123456789a",
                 email="provider@email.com",
+                entry_type=provider_entry_type,
             ),
             Entry(
                 name="Provider 2",
@@ -299,6 +383,7 @@ def provider_list(provider_category):
                 type=EntryTypeEnum.PROVIDER,
                 document_number="123456789b",
                 email="provider@email.com",
+                entry_type=provider_entry_type,
             ),
             Entry(
                 name="Provider 3",
@@ -306,29 +391,13 @@ def provider_list(provider_category):
                 type=EntryTypeEnum.PROVIDER,
                 document_number="123456789c",
                 email="provider@email.com",
+                entry_type=provider_entry_type,
             ),
         ]
     )
     for provider in providers:
         provider.categories.add(provider_category)
     return providers
-
-
-@pytest.fixture
-def entry_type():
-    entry_type = EntryType.objects.create(name="Entry Type", slug="entry-type")
-    return entry_type
-
-
-@pytest.fixture
-def entry_type_list():
-    entry_types = EntryType.objects.bulk_create(
-        [
-            EntryType(name="Entry Type 1", slug="entry-type-1"),
-            EntryType(name="Entry Type 2", slug="entry-type-2"),
-        ]
-    )
-    return entry_types
 
 
 @pytest.fixture

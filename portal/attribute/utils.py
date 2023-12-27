@@ -27,7 +27,19 @@ def _associate_attribute_to_instance(instance, attribute, *values):
         values_qs = AttributeValue.objects.filter(attribute_id=attribute.pk)
         AssignedEntryAttributeValue.objects.filter(
             Exists(values_qs.filter(id=OuterRef("value_id"))),
-            product_id=instance.pk,
+            entry_id=instance.pk,
         ).exclude(value_id__in=value_ids).delete()
+
+        existing_entry_values = AssignedEntryAttributeValue.objects.filter(
+            entry=instance, value_id__in=value_ids
+        ).values_list("value_id", flat=True)
+        new_values = list(set(value_ids) - set(existing_entry_values))
+
+        AssignedEntryAttributeValue.objects.bulk_create(
+            AssignedEntryAttributeValue(entry=instance, value_id=value_id)
+            for value_id in new_values
+        )
+
+        return None
 
     raise AssertionError(f"{instance.__class__.__name__} is unsupported")

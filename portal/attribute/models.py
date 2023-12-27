@@ -66,8 +66,8 @@ class AssignedEntryAttributeValue(models.Model):
         Entry,
         related_name="attributevalues",
         on_delete=models.CASCADE,
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
         db_index=False,
     )
 

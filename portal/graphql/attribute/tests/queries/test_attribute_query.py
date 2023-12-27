@@ -224,7 +224,7 @@ def test_attributes_with_choice_flag(
     attribute = Attribute.objects.create(
         slug=input_type,
         name=input_type.upper(),
-        type=AttributeType.PROVIDER,
+        type=AttributeType.ENTRY_TYPE,
         input_type=input_type,
         filterable_in_website=True,
         filterable_in_dashboard=True,

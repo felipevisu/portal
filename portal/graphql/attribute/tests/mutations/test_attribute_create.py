@@ -53,7 +53,7 @@ def test_create_attribute_and_attribute_values(
         "input": {
             "name": attribute_name,
             "values": [{"name": name}],
-            "type": AttributeTypeEnum.PROVIDER.name,
+            "type": AttributeTypeEnum.ENTRY_TYPE.name,
         }
     }
 
@@ -77,7 +77,7 @@ def test_create_attribute_and_attribute_values(
 
     # Check if the attribute values were correctly created
     assert len(data["attribute"]["choices"]) == 1
-    assert data["attribute"]["type"] == AttributeTypeEnum.PROVIDER.name
+    assert data["attribute"]["type"] == AttributeTypeEnum.ENTRY_TYPE.name
     assert data["attribute"]["choices"]["edges"][0]["node"]["name"] == name
     assert data["attribute"]["choices"]["edges"][0]["node"]["slug"] == slugify(name)
 
@@ -92,7 +92,7 @@ def test_create_attribute_with_plain_text_input_type(
     variables = {
         "input": {
             "name": attribute_name,
-            "type": AttributeTypeEnum.PROVIDER.name,
+            "type": AttributeTypeEnum.ENTRY_TYPE.name,
             "inputType": AttributeInputTypeEnum.PLAIN_TEXT.name,
         }
     }
@@ -117,5 +117,5 @@ def test_create_attribute_with_plain_text_input_type(
 
     # Check if the attribute values were correctly created
     assert len(data["attribute"]["choices"]["edges"]) == 0
-    assert data["attribute"]["type"] == AttributeTypeEnum.PROVIDER.name
+    assert data["attribute"]["type"] == AttributeTypeEnum.ENTRY_TYPE.name
     assert data["attribute"]["inputType"] == AttributeInputTypeEnum.PLAIN_TEXT.name

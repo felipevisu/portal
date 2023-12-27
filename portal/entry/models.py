@@ -57,7 +57,9 @@ class Entry(ModelWithDates, ModelWithSlug):
         null=True,
         blank=True,
     )
-    type = models.CharField(choices=EntryTypeEnum.CHOICES, max_length=24)
+    type = models.CharField(
+        choices=EntryTypeEnum.CHOICES, max_length=24, null=True, blank=True
+    )
     document_number = models.CharField(max_length=256)
     document_file = models.FileField(upload_to="entry", blank=True)
     email = models.CharField(max_length=258)

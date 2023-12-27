@@ -25,8 +25,6 @@ def filter_by_attribute_type(qs, _, value):
     if not value:
         return qs
     values = [value]
-    if value in [AttributeType.VEHICLE, AttributeType.PROVIDER]:
-        values.append(AttributeType.VEHICLE_AND_PROVIDER)
     return qs.filter(type__in=values)
 
 
