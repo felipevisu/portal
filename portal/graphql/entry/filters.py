@@ -19,8 +19,8 @@ from ..core.filters import (
 from ..core.types import FilterInputObjectType
 from ..core.types.filter_input import ChannelFilterInputObjectType
 from ..utils import resolve_global_ids_to_primary_keys
+from . import types
 from .enums import EntryTypeEnum
-from .types import entry_types
 
 
 def filter_entry_type(qs, _, value):
@@ -32,7 +32,7 @@ def filter_entry_type(qs, _, value):
 def filter_entry_types(qs, _, value):
     if not value:
         return qs
-    _, entry_type_pks = resolve_global_ids_to_primary_keys(value, entry_types.EntryType)
+    _, entry_type_pks = resolve_global_ids_to_primary_keys(value, types.EntryType)
     return qs.filter(entry_type_id__in=entry_type_pks)
 
 

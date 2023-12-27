@@ -1,7 +1,11 @@
 from .categories import Category, CategoryCountableConnection
 from .consults import Consult, ConsultCountableConnection
-from .entries import Entry, EntryCountableConnection
-from .entry_types import EntryType, EntryTypeCountableConnection
+from .entries import (
+    Entry,
+    EntryCountableConnection,
+    EntryType,
+    EntryTypeCountableConnection,
+)
 
 __all__ = [
     "Category",
