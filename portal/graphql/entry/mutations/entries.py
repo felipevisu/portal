@@ -132,7 +132,7 @@ class EntryUpdate(EntryCreate):
         if attributes:
             try:
                 cleaned_input["attributes"] = cls.clean_attributes(
-                    attributes, instance.type
+                    attributes, instance.entry_type
                 )
             except ValidationError as exc:
                 raise ValidationError({"attributes": exc})
@@ -141,11 +141,9 @@ class EntryUpdate(EntryCreate):
 
     @classmethod
     def clean_attributes(cls, attributes, entry_type):
-        attributes_qs = Attribute.objects.filter(
-            type__in=[AttributeType.VEHICLE_AND_PROVIDER, entry_type]
-        )
+        attributes_qs = entry_type.entry_attributes.all()
         attributes = AttributeAssignmentMixin.clean_input(
-            attributes, attributes_qs, creation=False, is_document_attributes=False
+            attributes, attributes_qs, creation=False
         )
         return attributes
 

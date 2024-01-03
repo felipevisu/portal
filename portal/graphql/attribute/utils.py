@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Dict, Iterable, List, Optional, Tuple, Union
 import graphene
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.db.models.expressions import Exists, OuterRef
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from django.utils.text import slugify
@@ -18,7 +19,6 @@ from portal.graphql.utils import get_nodes
 from ...attribute import AttributeInputType
 from ...attribute import models as attribute_models
 from ...core.utils import prepare_unique_slug
-from ...document import models as document_models
 from ...entry import models as entry_models
 from ..core.utils import from_global_id_or_error
 
@@ -51,7 +51,7 @@ class AttrValuesInput:
     references: Union[List[str], List[entry_models.Entry], None] = None
 
 
-T_INSTANCE = Union[entry_models.Entry, document_models.Document]
+T_INSTANCE = entry_models.Entry
 T_INPUT_MAP = List[Tuple[attribute_models.Attribute, AttrValuesInput]]
 T_ERROR_DICT = Dict[Tuple[str, str], List[str]]
 
@@ -103,14 +103,15 @@ class AttributeAssignmentMixin:
         lookup_field: str,
         value,
     ):
-        assignment = instance.attributes.filter(
-            attribute=attribute, **{f"values__{lookup_field}": value}
-        ).first()
-        return (
-            None
-            if assignment is None
-            else assignment.values.filter(**{lookup_field: value}).first()
+        assigned_values = attribute_models.AssignedEntryAttributeValue.objects.filter(
+            entry_id=instance.pk
         )
+
+        return attribute_models.AttributeValue.objects.filter(
+            Exists(assigned_values.filter(value_id=OuterRef("id"))),
+            attribute_id=attribute.pk,
+            **{lookup_field: value},
+        ).first()
 
     @classmethod
     def clean_input(
@@ -118,7 +119,6 @@ class AttributeAssignmentMixin:
         raw_input: dict,
         attributes_qs: "QuerySet",
         creation: bool = True,
-        is_document_attributes: bool = False,
     ) -> T_INPUT_MAP:
         pks = {}
         global_ids = []
@@ -163,23 +163,16 @@ class AttributeAssignmentMixin:
             cleaned_input,
             attributes_qs,
             creation=creation,
-            is_document_attributes=is_document_attributes,
         )
         return cleaned_input
 
     @classmethod
     def _validate_attributes_input(
-        cls,
-        cleaned_input: T_INPUT_MAP,
-        attribute_qs: "QuerySet",
-        *,
-        creation: bool,
-        is_document_attributes: bool,
+        cls, cleaned_input: T_INPUT_MAP, attribute_qs: "QuerySet", *, creation: bool
     ):
         if errors := validate_attributes_input(
             cleaned_input,
             attribute_qs,
-            is_document_attributes=is_document_attributes,
             creation=creation,
         ):
             raise ValidationError(errors)
@@ -214,7 +207,6 @@ class AttributeAssignmentMixin:
             AttributeInputType.PLAIN_TEXT: cls._pre_save_plain_text_values,
             AttributeInputType.REFERENCE: cls._pre_save_reference_values,
         }
-        clean_assignment = []
         for attribute, attr_values in cleaned_input:
             is_handled_by_values_field = (
                 attr_values.values
@@ -230,12 +222,6 @@ class AttributeAssignmentMixin:
             associate_attribute_values_to_instance(
                 instance, attribute, *attribute_values
             )
-            if not attribute_values:
-                clean_assignment.append(attribute.pk)
-
-        # drop attribute assignment model when values are unassigned from instance
-        if clean_assignment:
-            instance.attributes.filter(id__in=clean_assignment).delete()
 
     @classmethod
     def _pre_save_dropdown_value(
@@ -512,7 +498,6 @@ def validate_attributes_input(
     input_data: List[Tuple["Attribute", "AttrValuesInput"]],
     attribute_qs: "QuerySet",
     *,
-    is_document_attributes: bool,
     creation: bool,
 ):
     attribute_errors: T_ERROR_DICT = defaultdict(list)
