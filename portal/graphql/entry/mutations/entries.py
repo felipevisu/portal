@@ -5,7 +5,6 @@ from django.db import transaction
 from portal.graphql.channel import ChannelContext
 from portal.graphql.core import ResolveInfo
 
-from ....attribute import AttributeType
 from ....attribute.models import Attribute
 from ....core.permissions import EntryPermissions
 from ....entry import models

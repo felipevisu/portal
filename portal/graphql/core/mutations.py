@@ -213,6 +213,21 @@ class BaseMutation(graphene.Mutation):
         return pks
 
     @classmethod
+    def get_global_id_or_error(
+        cls,
+        id: str,
+        only_type: Union[ObjectType, str, None] = None,
+        field: str = "id",
+    ):
+        try:
+            _object_type, pk = from_global_id_or_error(id, only_type)
+        except GraphQLError as e:
+            raise ValidationError(
+                {field: ValidationError(str(e), code="graphql_error")}
+            )
+        return pk
+
+    @classmethod
     def get_node_or_error(cls, info, node_id, field="id", only_type=None, qs=None):
         if not node_id:
             return None

@@ -66,7 +66,7 @@ class EntryType(ModelObjectType):
 
     @staticmethod
     def resolve_available_attributes(root: models.EntryType, info, **kwargs):
-        qs = attribute_models.Attribute.objects.get_unassigned_product_type_attributes(
+        qs = attribute_models.Attribute.objects.get_unassigned_entry_type_attributes(
             root.pk
         ).using(get_database_connection_name(info.context))
         qs = resolve_attributes(info, qs=qs)

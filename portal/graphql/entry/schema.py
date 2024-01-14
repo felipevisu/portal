@@ -15,6 +15,8 @@ from .mutations import (
     CategoryDelete,
     CategoryUpdate,
     ConsultDocument,
+    EntryAttributeAssign,
+    EntryAttributeUnassign,
     EntryBulkDelete,
     EntryChannelListingUpdate,
     EntryCreate,
@@ -128,3 +130,5 @@ class Mutation(graphene.ObjectType):
     entry_type_create = EntryTypeCreate.Field()
     entry_type_update = EntryTypeUpdate.Field()
     entry_type_delete = EntryTypeDelete.Field()
+    entry_attribute_assign = EntryAttributeAssign.Field()
+    entry_attribute_unassign = EntryAttributeUnassign.Field()

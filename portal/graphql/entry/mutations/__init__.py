@@ -1,3 +1,4 @@
+from .attributes import EntryAttributeAssign, EntryAttributeUnassign
 from .categories import (
     CategoryBulkDelete,
     CategoryCreate,
@@ -23,4 +24,6 @@ __all__ = [
     "EntryTypeCreate",
     "EntryTypeUpdate",
     "EntryTypeDelete",
+    "EntryAttributeAssign",
+    "EntryAttributeUnassign",
 ]
