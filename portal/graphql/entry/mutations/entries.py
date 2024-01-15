@@ -25,7 +25,7 @@ from ..types import Entry
 class EntryInput(graphene.InputObjectType):
     name = graphene.String()
     slug = graphene.String()
-    type = EntryTypeEnum()
+    entry_type = graphene.ID()
     document_number = graphene.String()
     categories = NonNullList(graphene.ID)
     is_published = graphene.Boolean(default=False)
@@ -49,16 +49,19 @@ class EntryCreate(ModelMutation):
         error_type_class = EntryError
 
     @classmethod
-    def clean_attributes(cls, attributes, entry_type):
-        attributes_qs = Attribute.objects.filter(type__in=[entry_type])
-        attributes = AttributeAssignmentMixin.clean_input(
-            attributes, attributes_qs, is_document_attributes=False
-        )
+    def clean_attributes(cls, attributes: dict, entry_type: models.EntryType):
+        attributes_qs = entry_type.entry_attributes.all()
+        attributes = AttributeAssignmentMixin.clean_input(attributes, attributes_qs)
         return attributes
 
     @classmethod
     def clean_input(cls, info, instance, data, input_cls=None):
         cleaned_input = super().clean_input(info, instance, data, input_cls)
+        attributes = cleaned_input.get("attributes")
+        entry_type = (
+            instance.entry_type if instance.pk else cleaned_input.get("entry_type")
+        )
+
         try:
             cleaned_input = validate_slug_and_generate_if_needed(
                 instance, "name", cleaned_input
@@ -66,8 +69,6 @@ class EntryCreate(ModelMutation):
         except ValidationError as error:
             raise ValidationError({"slug": error})
 
-        attributes = cleaned_input.get("attributes")
-        entry_type = cleaned_input.get("type")
         if attributes and entry_type:
             try:
                 cleaned_input["attributes"] = cls.clean_attributes(
@@ -116,27 +117,6 @@ class EntryUpdate(EntryCreate):
         permissions = (EntryPermissions.MANAGE_ENTRIES,)
         object_type = Entry
         error_type_class = EntryError
-
-    @classmethod
-    def clean_input(cls, info, instance, data, input_cls=None):
-        cleaned_input = super().clean_input(info, instance, data, input_cls)
-        try:
-            cleaned_input = validate_slug_and_generate_if_needed(
-                instance, "name", cleaned_input
-            )
-        except ValidationError as error:
-            raise ValidationError({"slug": error})
-
-        attributes = cleaned_input.get("attributes")
-        if attributes:
-            try:
-                cleaned_input["attributes"] = cls.clean_attributes(
-                    attributes, instance.entry_type
-                )
-            except ValidationError as exc:
-                raise ValidationError({"attributes": exc})
-
-        return cleaned_input
 
     @classmethod
     def clean_attributes(cls, attributes, entry_type):

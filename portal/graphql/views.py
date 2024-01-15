@@ -79,7 +79,6 @@ class GraphQLView(View):
             parts = middleware_name.split(".")
             module_path, class_name = ".".join(parts[:-1]), parts[-1]
             module = importlib.import_module(module_path)
-            print(module)
             return getattr(module, class_name)
         except (ImportError, AttributeError):
             raise ImportError(f"Cannot import '{middleware_name}' graphene middleware!")
