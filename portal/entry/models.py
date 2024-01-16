@@ -5,7 +5,6 @@ from django.db.models import Exists, OuterRef, Q
 from ..channel.models import Channel
 from ..core.models import ModelWithDates, ModelWithSlug, PublishableModel
 from ..core.permissions import EntryPermissions
-from . import EntryType as EntryTypeEnum
 
 
 class EntryType(ModelWithSlug):
@@ -57,9 +56,6 @@ class Entry(ModelWithDates, ModelWithSlug):
         null=True,
         blank=True,
     )
-    type = models.CharField(
-        choices=EntryTypeEnum.CHOICES, max_length=24, null=True, blank=True
-    )
     document_number = models.CharField(max_length=256)
     document_file = models.FileField(upload_to="entry", blank=True)
     email = models.CharField(max_length=258)
@@ -97,7 +93,6 @@ class EntryChannelListing(PublishableModel):
 
 
 class Category(ModelWithDates, ModelWithSlug):
-    type = models.CharField(choices=EntryTypeEnum.CHOICES, max_length=24)
     entries = models.ManyToManyField(
         Entry,
         blank=True,

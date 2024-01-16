@@ -3,14 +3,12 @@ import graphene
 from ....entry import models
 from ...core.connection import CountableConnection
 from ...core.types import ModelObjectType
-from ..enums import EntryTypeEnum
 
 
 class Category(ModelObjectType):
     id = graphene.GlobalID(required=True)
     name = graphene.String(required=True)
     slug = graphene.String()
-    type = EntryTypeEnum()
     total_entries = graphene.Int()
 
     class Meta:

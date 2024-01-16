@@ -31,7 +31,6 @@ from ..dataloaders import (
     SelectedAttributesByEntryIdLoader,
 )
 from ..dataloaders.attributes import EntryAttributesByEntryTypeIdLoader
-from ..enums import EntryTypeEnum
 from .channels import EntryChannelListing
 
 
@@ -87,7 +86,6 @@ class Entry(ChannelContextType):
     document_number = graphene.String()
     email = graphene.String()
     documents = ConnectionField(DocumentCountableConnection)
-    type = EntryTypeEnum()
     entry_type = graphene.Field(lambda: EntryType)
     attributes = NonNullList(SelectedAttribute, required=True)
     created = graphene.DateTime()

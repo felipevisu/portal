@@ -18,7 +18,6 @@ from ...core.mutations import (
 from ...core.types import NonNullList
 from ...core.types.common import EntryError
 from ...core.utils import validate_slug_and_generate_if_needed
-from ..enums import EntryTypeEnum
 from ..types import Entry
 
 

@@ -4,7 +4,6 @@ from ...document import DocumentFileStatus
 from ...document.models import Document
 from ..core.filters import EnumFilter, ObjectTypeFilter, search_filter
 from ..core.types import DateRangeInput, FilterInputObjectType
-from ..entry.enums import EntryTypeEnum
 from ..utils.filters import filter_range_field
 
 
@@ -16,12 +15,6 @@ def filter_begin_date_range(qs, _, value):
     return filter_range_field(qs, "default_file__begin_date", value)
 
 
-def filter_entry_type(qs, _, value):
-    if not value:
-        return qs
-    return qs.filter(entry__type=value)
-
-
 def waiting_filter(queryset, _, value):
     if value:
         return queryset.filter(files__status=DocumentFileStatus.WAITING)
@@ -30,7 +23,6 @@ def waiting_filter(queryset, _, value):
 
 class DocumentFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
-    type = EnumFilter(input_class=EntryTypeEnum, method=filter_entry_type)
     expiration_date = ObjectTypeFilter(
         input_class=DateRangeInput, method=filter_expiration_date_range
     )

@@ -20,7 +20,6 @@ from ..core.types import FilterInputObjectType
 from ..core.types.filter_input import ChannelFilterInputObjectType
 from ..utils import resolve_global_ids_to_primary_keys
 from . import types
-from .enums import EntryTypeEnum
 
 
 def filter_entry_type(qs, _, value):
@@ -176,7 +175,6 @@ def _filter_attributes(qs, _, value):
 
 class CategoryFilter(django_filters.FilterSet):
     search = django_filters.CharFilter(method=search_filter)
-    type = EnumFilter(input_class=EntryTypeEnum, method=filter_entry_type)
     ids = GlobalIDMultipleChoiceFilter(field_name="id")
 
     class Meta:
@@ -188,7 +186,6 @@ class EntryFilter(django_filters.FilterSet):
     is_published = django_filters.BooleanFilter(method="filter_is_published")
     search = django_filters.CharFilter(method=search_filter)
     categories = GlobalIDMultipleChoiceFilter(method=filter_categories)
-    type = EnumFilter(input_class=EntryTypeEnum, method=filter_entry_type)
     entry_types = GlobalIDMultipleChoiceFilter(method=filter_entry_types)
     attributes = ListObjectTypeFilter(
         input_class="portal.graphql.attribute.types.AttributeInput",

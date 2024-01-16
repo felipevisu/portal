@@ -7,7 +7,6 @@ from portal.attribute.models import Attribute, AttributeValue
 from portal.attribute.utils import associate_attribute_values_to_instance
 from portal.channel.models import Channel
 from portal.document.models import Document, DocumentFile
-from portal.entry import EntryType as EntryTypeEnum
 from portal.entry.models import Category, Entry, EntryChannelListing, EntryType
 from portal.investment.models import Investment, Item
 
@@ -248,32 +247,26 @@ def channel_city_2():
 
 @pytest.fixture
 def category():
-    return Category.objects.create(
-        name="Category", slug="category", type=EntryTypeEnum.VEHICLE
-    )
+    return Category.objects.create(name="Category", slug="category")
 
 
 @pytest.fixture
 def vehicle_category():
-    return Category.objects.create(
-        name="Category", slug="vehicle-category", type=EntryTypeEnum.VEHICLE
-    )
+    return Category.objects.create(name="Category", slug="vehicle-category")
 
 
 @pytest.fixture
 def provider_category():
-    return Category.objects.create(
-        name="Category", slug="provider-category", type=EntryTypeEnum.PROVIDER
-    )
+    return Category.objects.create(name="Category", slug="provider-category")
 
 
 @pytest.fixture
 def category_list():
     categories = Category.objects.bulk_create(
         [
-            Category(name="Category 1", slug="category-1", type=EntryTypeEnum.VEHICLE),
-            Category(name="Category 2", slug="category-2", type=EntryTypeEnum.VEHICLE),
-            Category(name="Category 3", slug="category-3", type=EntryTypeEnum.VEHICLE),
+            Category(name="Category 1", slug="category-1"),
+            Category(name="Category 2", slug="category-2"),
+            Category(name="Category 3", slug="category-3"),
         ]
     )
     return categories
@@ -284,7 +277,6 @@ def vehicle(vehicle_category, vehicle_entry_type):
     vehicle = Entry.objects.create(
         name="Vehicle",
         slug="vehicle",
-        type=EntryTypeEnum.VEHICLE,
         document_number="123456789",
         email="vehicle@email.com",
         entry_type=vehicle_entry_type,
@@ -300,7 +292,6 @@ def vehicle_list(vehicle_category, vehicle_entry_type):
             Entry(
                 name="Vehicle 1",
                 slug="vehicle-1",
-                type=EntryTypeEnum.VEHICLE,
                 document_number="123456789a",
                 email="vehicle@email.com",
                 entry_type=vehicle_entry_type,
@@ -308,7 +299,6 @@ def vehicle_list(vehicle_category, vehicle_entry_type):
             Entry(
                 name="Vehicle 2",
                 slug="vehicle-2",
-                type=EntryTypeEnum.VEHICLE,
                 document_number="123456789b",
                 email="vehicle@email.com",
                 entry_type=vehicle_entry_type,
@@ -316,7 +306,6 @@ def vehicle_list(vehicle_category, vehicle_entry_type):
             Entry(
                 name="Vehicle 3",
                 slug="vehicle-3",
-                type=EntryTypeEnum.VEHICLE,
                 document_number="123456789c",
                 email="vehicle@email.com",
                 entry_type=vehicle_entry_type,
@@ -354,7 +343,6 @@ def provider(provider_category, provider_entry_type, color_attribute):
     provider = Entry.objects.create(
         name="Provider",
         slug="provider",
-        type=EntryTypeEnum.PROVIDER,
         document_number="123456789",
         email="provider@email.com",
         entry_type=provider_entry_type,
@@ -372,7 +360,6 @@ def provider_list(provider_category, provider_entry_type):
             Entry(
                 name="Provider 1",
                 slug="provider-1",
-                type=EntryTypeEnum.PROVIDER,
                 document_number="123456789a",
                 email="provider@email.com",
                 entry_type=provider_entry_type,
@@ -380,7 +367,6 @@ def provider_list(provider_category, provider_entry_type):
             Entry(
                 name="Provider 2",
                 slug="provider-2",
-                type=EntryTypeEnum.PROVIDER,
                 document_number="123456789b",
                 email="provider@email.com",
                 entry_type=provider_entry_type,
@@ -388,7 +374,6 @@ def provider_list(provider_category, provider_entry_type):
             Entry(
                 name="Provider 3",
                 slug="provider-3",
-                type=EntryTypeEnum.PROVIDER,
                 document_number="123456789c",
                 email="provider@email.com",
                 entry_type=provider_entry_type,

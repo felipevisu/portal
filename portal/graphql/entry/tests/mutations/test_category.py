@@ -1,7 +1,6 @@
 import graphene
 import pytest
 
-from portal.entry import EntryType
 from portal.entry.models import Category
 
 from ....tests.utils import get_graphql_content
@@ -16,7 +15,6 @@ CREATE_CATEGORY_MUTATION = """
                 id
                 name
                 slug
-                type
             }
             errors{
                 message
@@ -29,7 +27,7 @@ CREATE_CATEGORY_MUTATION = """
 
 
 def test_category_create(staff_api_client, permission_manage_categories):
-    input = {"name": "Category", "slug": "category", "type": "VEHICLE"}
+    input = {"name": "Category", "slug": "category"}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_CATEGORY_MUTATION,
@@ -44,7 +42,7 @@ def test_category_create(staff_api_client, permission_manage_categories):
 
 
 def test_category_create_without_slug(staff_api_client, permission_manage_categories):
-    input = {"name": "Category", "type": "VEHICLE"}
+    input = {"name": "Category"}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_CATEGORY_MUTATION,
@@ -61,7 +59,7 @@ def test_category_create_without_slug(staff_api_client, permission_manage_catego
 def test_category_create_with_existent_name(
     staff_api_client, category, permission_manage_categories
 ):
-    input = {"name": "Category", "type": "VEHICLE"}
+    input = {"name": "Category"}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_CATEGORY_MUTATION,
@@ -76,7 +74,7 @@ def test_category_create_with_existent_name(
 
 
 def test_category_create_without_name(staff_api_client, permission_manage_categories):
-    input = {"type": "VEHICLE"}
+    input = {}
     variables = {"input": input}
     response = staff_api_client.post_graphql(
         CREATE_CATEGORY_MUTATION,
@@ -89,20 +87,6 @@ def test_category_create_without_name(staff_api_client, permission_manage_catego
     assert data["errors"][0]["field"] == "name"
 
 
-def test_category_create_without_type(staff_api_client, permission_manage_categories):
-    input = {"name": "Category"}
-    variables = {"input": input}
-    response = staff_api_client.post_graphql(
-        CREATE_CATEGORY_MUTATION,
-        variables=variables,
-        permissions=[permission_manage_categories],
-    )
-    content = get_graphql_content(response)
-    data = content["data"]["categoryCreate"]
-    assert not data["errors"] == []
-    assert data["errors"][0]["field"] == "type"
-
-
 UPDATE_CATEGORY_MUTATION = """
     mutation CategoryUpdate($id: ID!, $input: CategoryInput!){
         categoryUpdate(id: $id, input: $input){
@@ -110,7 +94,6 @@ UPDATE_CATEGORY_MUTATION = """
                 id
                 name
                 slug
-                type
             }
             errors{
                 message
@@ -141,9 +124,7 @@ def test_category_update(staff_api_client, category, permission_manage_categorie
 def test_category_update_with_existent_slug(
     staff_api_client, category, permission_manage_categories
 ):
-    new_category = Category.objects.create(
-        name="New Category", slug="new-category", type=EntryType.VEHICLE
-    )
+    new_category = Category.objects.create(name="New Category", slug="new-category")
     input = {"slug": "category"}
     category_id = graphene.Node.to_global_id("Category", new_category.pk)
     variables = {"id": category_id, "input": input}

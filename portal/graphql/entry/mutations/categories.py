@@ -10,14 +10,12 @@ from ...core.mutations import (
 )
 from ...core.types import NonNullList
 from ...core.utils import validate_slug_and_generate_if_needed
-from ..enums import EntryTypeEnum
 from ..types import Category
 
 
 class CategoryInput(graphene.InputObjectType):
     name = graphene.String()
     slug = graphene.String()
-    type = EntryTypeEnum()
 
 
 class CategoryCreate(ModelMutation):

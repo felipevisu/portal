@@ -3,7 +3,15 @@
 from django.db import migrations
 from django_tenants.utils import schema_context
 
-from portal.entry import EntryType as EntryTypeEnum
+
+class EntryTypeEnum:
+    VEHICLE = "vehicle"
+    PROVIDER = "provider"
+
+    CHOICES = [
+        (VEHICLE, "A communitation vehicle"),
+        (PROVIDER, "A service provider"),
+    ]
 
 
 def migrate_to_entry_type_model(apps, schema_editor):

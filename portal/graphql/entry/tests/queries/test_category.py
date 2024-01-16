@@ -14,7 +14,6 @@ QUERY_CATEGORY = """
             id
             name
             slug
-            type
             totalEntries
         }
     }
