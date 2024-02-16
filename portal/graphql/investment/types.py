@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import graphene
 
 from ...investment import models
@@ -44,7 +46,8 @@ class Investment(ModelObjectType):
     @staticmethod
     def resolve_total(root, info):
         def _resolve(items):
-            return sum([item.value for item in items])
+            total = sum([Decimal(item.value) for item in items])
+            return total if total else Decimal(0.0)
 
         return ItemsByInvestmentIdLoader(info.context).load(root.id).then(_resolve)
 
