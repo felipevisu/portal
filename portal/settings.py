@@ -44,6 +44,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.publicidadedacidade\.com\.br$",
 ]
 
+CORS_ALLOWED_ORIGINS = [os.environ.get("CORS_ALLOWED_ORIGINS")]
+
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 
 INTERNAL_IPS = ["127.0.0.1"]
@@ -137,7 +139,7 @@ WSGI_APPLICATION = "portal.wsgi.application"
 
 DATABASE_CONNECTION_DEFAULT_NAME = "default"
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://portal:portal@db:5432/portal")
 
 DATABASES = {
     DATABASE_CONNECTION_DEFAULT_NAME: dj_database_url.config(
@@ -267,12 +269,12 @@ EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 
 # CELERY SETTINGS
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "")
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
 CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", None)
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "django-db")
 
 
 ENABLE_DEBUG_TOOLBAR = DEBUG
