@@ -2,9 +2,11 @@ FROM python:3.11
 
 RUN apt-get update && apt-get install -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
+ARG REQUIREMENTS=requirements.txt
+
 WORKDIR /usr/src/app
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
+COPY $REQUIREMENTS ./
+RUN pip install -r $REQUIREMENTS
 COPY . .
 
 EXPOSE 8000
