@@ -16,7 +16,7 @@ services:
   db:
     image: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - portal-db:/var/lib/postgresql/data/
     ports:
       - 1234:5432
     environment:
@@ -24,5 +24,14 @@ services:
       - POSTGRES_PASSWORD=portal
       - POSTGRES_DB=portal
 
+  redis:
+    image: library/redis:7.0-alpine
+    restart: unless-stopped
+    volumes:
+      - portal-redis:/data
+
 volumes:
-  postgres_data:
+  portal-db:
+    driver: local
+  portal-redis:
+    driver: local

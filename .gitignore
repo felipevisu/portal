@@ -20,6 +20,7 @@
 *.log
 *.pot
 *.pyc
+.pytest_cache
 local_settings.py
 __pycache__/
 build/
