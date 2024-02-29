@@ -4,13 +4,17 @@
     "Bucket": "portal-docker-config",
     "Key": "dockercfg"
   },
-  "Image": {
-    "Name": "felipehf25/portal-backend:latest",
-    "Update": "true"
-  },
-  "Ports": [
+  "containerDefinitions": [
     {
-      "ContainerPort": "8000"
+      "name": "django",
+      "image": "felipehf25/ebtestdocker",
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 8000
+        }
+      ],
+      "essential": true
     }
   ]
 }
