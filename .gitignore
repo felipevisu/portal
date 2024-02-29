@@ -44,3 +44,7 @@ venv.bak/
 # Exported results file
 django-queries-results.html
 *.graphql
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
