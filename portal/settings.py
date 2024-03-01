@@ -15,6 +15,10 @@ from sentry_sdk.integrations.django import DjangoIntegration
 load_dotenv()
 
 
+def get_list(text):
+    return [item.strip() for item in text.split(",")]
+
+
 def get_bool_from_env(name, default_value):
     if name in os.environ:
         value = os.environ[name]
@@ -38,13 +42,15 @@ PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
+ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1"))
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.publicidadedacidade\.com\.br$",
 ]
 
-CORS_ALLOWED_ORIGINS = [os.environ.get("CORS_ALLOWED_ORIGINS")]
+CORS_ALLOWED_ORIGINS = get_list(
+    os.environ.get("CORS_ALLOWED_ORIGINS", "localhost,127.0.0.1")
+)
 
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 
