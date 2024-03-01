@@ -1,7 +1,13 @@
-name: test_portal
-on: [pull_request, push] # activates the workflow when there is a push or pull request in the repo
+name: Test
+
+on:
+  push:
+    branches: ["*", "!main"]
+  pull_request:
+    branches: ["*", "!main"]
+
 jobs:
-  test_project:
+  test:
     runs-on: ubuntu-latest # operating system your code will run on
     services:
       postgres:

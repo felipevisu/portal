@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Build Image and deploy Elastic Beanstalk
 
 on:
   push:
@@ -7,8 +7,35 @@ on:
     branches: ["main"]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest # operating system your code will run on
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v3
+      - name: Set up Python 3.10.12
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.10.12
+      - run: pip install -r requirements-dev.txt
+
+      - name: Test with pytest
+        env:
+          DATABASE_URL: "postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres"
+        run: pytest
+
   build:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
