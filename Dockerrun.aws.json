@@ -1,16 +1,17 @@
 {
   "AWSEBDockerrunVersion": "1",
-  "containerDefinitions": [
+  "authentication": {
+    "bucket": "portal-docker-config",
+    "key": "dockercfg"
+  },
+  "image": {
+    "name": "felipehf25/portal-backend",
+    "update": "true"
+  },
+  "ports": [
     {
-      "name": "django",
-      "image": "felipehf25/portal-backend",
-      "portMappings": [
-        {
-          "hostPort": 80,
-          "containerPort": 8000
-        }
-      ],
-      "essential": true
+      "containerPort": 8000,
+      "hostPort": 80
     }
   ]
 }
