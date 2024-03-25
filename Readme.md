@@ -2,16 +2,16 @@
 
 ### Run in localhost
 
-1. Create a virtual environment with python:
+1. Install the Poetry package manager
 
 ```console
-virtualenv -v venv
+sudo apt-get install python3-poetry
 ```
 
 2. Install the dev dependencies:
 
 ```console
-pip install -r requirements-dev.txt
+poetry install
 ```
 
 3. Setup a `.env` file accordingly with `.env.example`
@@ -19,13 +19,13 @@ pip install -r requirements-dev.txt
 4. Run the migrations:
 
 ```console
-python manage.py migrate
+poetry run python manage.py migrate
 ```
 
 5. Start the server:
 
 ```console
-python manage.py runserver
+poetry run python manage.py runserver
 ```
 
 ### Run with Dockerfile
@@ -36,13 +36,7 @@ python manage.py runserver
 docker build -t portal-backend:latest .
 ```
 
-2. You can optionaly run the docker with localhost setup passing the `requirements-dev.txt` as argument to the buuild:
-
-```console
-docker build --build-arg REQUIREMENTS=requirements-dev.txt -t portal-backend-dev .
-```
-
-3. Run the image using the `.env` file to set the environment variables:
+2. Run the image using the `.env` file to set the environment variables:
 
 ```console
 docker run -d -p 8000:8000 --env-file=.env portal-backend:latest

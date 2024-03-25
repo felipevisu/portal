@@ -7,13 +7,17 @@ ENV PYTHONUNBUFFERED 1
 ENV DJANGO_SETTINGS_MODULE "portal.settings"
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Install dependencies
-ARG REQUIREMENTS=requirements.txt
-COPY $REQUIREMENTS ./
-RUN pip install -r $REQUIREMENTS
-COPY . .
+WORKDIR /app
+RUN --mount=type=cache,mode=0755,target=/root/.cache/pip pip install poetry==1.7.0
+RUN poetry config virtualenvs.create false
+COPY poetry.lock pyproject.toml /app/
+RUN --mount=type=cache,mode=0755,target=/root/.cache/pypoetry poetry install --no-root
+
+# Copy folder
+COPY . /app
 
 # Expose port 8000 to allow communication to/from server
 EXPOSE 8000
