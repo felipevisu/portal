@@ -40,9 +40,9 @@ jobs:
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
-            --cluster PortalBackendCluster \
-            --service PortalBackendService \
-            --task-definition arn:aws:ecs:us-east-1:330890114384:task-definition/PortalBackendTaskDefinition:2 \
+            --cluster ${{ secrets.AWS_ECS_CLUSTER }} \
+            --service ${{ secrets.AWS_ECS_SERVICE }} \
+            --task-definition ${{ secrets.AWS_ECS_TASK_DEFINITION_ARN }} \
             --force-new-deployment
         env:
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
