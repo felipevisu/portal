@@ -30,8 +30,8 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: portal-backend
-          IMAGE_TAG: latest
+          ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ secrets.AWS_ECR_IMAGE_TAG}}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
