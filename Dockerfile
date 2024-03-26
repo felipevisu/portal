@@ -19,6 +19,11 @@ RUN --mount=type=cache,mode=0755,target=/root/.cache/pypoetry poetry install --n
 # Copy folder
 COPY . /app
 
+# Run migrations
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Expose port 8000 to allow communication to/from server
 EXPOSE 8000
 
