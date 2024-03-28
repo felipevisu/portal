@@ -46,10 +46,6 @@ ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1"))
 
 CSRF_TRUSTED_ORIGINS = get_list(os.environ.get("CSRF_TRUSTED_ORIGINS", ""))
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.publicidadedacidade\.com\.br$",
-]
-
 CORS_ALLOWED_ORIGINS = get_list(
     os.environ.get("CORS_ALLOWED_ORIGINS", "localhost,127.0.0.1")
 )
@@ -101,6 +97,7 @@ AUTH_USER_MODEL = "account.User"
 TENANT_SUBFOLDER_PREFIX = "clientes"
 
 MIDDLEWARE = [
+    "allow_cidr.middleware.AllowCIDRMiddleware",
     "django_tenants.middleware.TenantSubfolderMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",

@@ -1,13 +1,9 @@
-from tempfile import NamedTemporaryFile
-
-import weasyprint
-from django.core.files import File
 from django.template.loader import render_to_string
 
 from ...document import DocumentFileStatus, DocumentLoadOptions
 from ...document.models import Document, DocumentFile
 from ..base_plugin import BasePlugin, ConfigurationTypeField
-from .lib import fetch_document
+from .lib import fetch_document, save_file
 
 
 class CNPJWSPlugin(BasePlugin):
@@ -48,14 +44,12 @@ class CNPJWSPlugin(BasePlugin):
 
         response = fetch_document(document.entry.document_number)
         html = render_to_string("documents/cnpj.html", response)
-        pdf = weasyprint.HTML(string=html).write_pdf()
-        file_temp = NamedTemporaryFile(delete=True)
-        file_temp.write(pdf)
-        file_name = "cnpj.pdf"
+        response, path = save_file(html, document)
         document_file = DocumentFile.objects.create(
             document=document, status=DocumentFileStatus.APPROVED
         )
-        document_file.file.save(file_name, File(file_temp))
+        document_file.file.name = path
+        document_file.save()
         document.default_file = document_file
         document.save()
         return document_file

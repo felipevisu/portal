@@ -135,25 +135,6 @@ urllib3 = ">=1.25.4,<1.27"
 crt = ["awscrt (==0.16.9)"]
 
 [[package]]
-name = "brotli"
-version = "1.1.0"
-description = "Python bindings for the Brotli compression library"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
-name = "brotlicffi"
-version = "1.1.0.0"
-description = "Python CFFI bindings to the Brotli library"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-cffi = ">=1.0.0"
-
-[[package]]
 name = "celery"
 version = "5.2.7"
 description = "Distributed Task Queue."
@@ -289,22 +270,6 @@ description = "Cross-platform colored terminal text."
 category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
-
-[[package]]
-name = "cssselect2"
-version = "0.7.0"
-description = "CSS selectors for Python ElementTree"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-tinycss2 = "*"
-webencodings = "*"
-
-[package.extras]
-doc = ["sphinx", "sphinx-rtd-theme"]
-test = ["pytest", "isort", "flake8"]
 
 [[package]]
 name = "dill"
@@ -478,33 +443,6 @@ python-versions = ">=3.7"
 test = ["pytest (>=6)"]
 
 [[package]]
-name = "fonttools"
-version = "4.50.0"
-description = "Tools to manipulate font files"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-brotli = {version = ">=1.0.1", optional = true, markers = "platform_python_implementation == \"CPython\" and extra == \"woff\""}
-brotlicffi = {version = ">=0.8.0", optional = true, markers = "platform_python_implementation != \"CPython\" and extra == \"woff\""}
-zopfli = {version = ">=0.1.4", optional = true, markers = "extra == \"woff\""}
-
-[package.extras]
-all = ["fs (>=2.2.0,<3)", "lxml (>=4.0)", "zopfli (>=0.1.4)", "lz4 (>=1.7.4.2)", "pycairo", "matplotlib", "sympy", "skia-pathops (>=0.5.0)", "uharfbuzz (>=0.23.0)", "brotlicffi (>=0.8.0)", "scipy", "brotli (>=1.0.1)", "munkres", "unicodedata2 (>=15.1.0)", "xattr"]
-graphite = ["lz4 (>=1.7.4.2)"]
-interpolatable = ["pycairo", "scipy", "munkres"]
-lxml = ["lxml (>=4.0)"]
-pathops = ["skia-pathops (>=0.5.0)"]
-plot = ["matplotlib"]
-repacker = ["uharfbuzz (>=0.23.0)"]
-symfont = ["sympy"]
-type1 = ["xattr"]
-ufo = ["fs (>=2.2.0,<3)"]
-unicode = ["unicodedata2 (>=15.1.0)"]
-woff = ["zopfli (>=0.1.4)", "brotlicffi (>=0.8.0)", "brotli (>=1.0.1)"]
-
-[[package]]
 name = "freezegun"
 version = "1.2.2"
 description = "Let your Python tests travel through time"
@@ -614,24 +552,6 @@ description = "Turn HTML into equivalent Markdown-structured text."
 category = "main"
 optional = false
 python-versions = ">=3.5"
-
-[[package]]
-name = "html5lib"
-version = "1.1"
-description = "HTML parser based on the WHATWG HTML specification"
-category = "main"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-
-[package.dependencies]
-six = ">=1.9"
-webencodings = "*"
-
-[package.extras]
-all = ["genshi", "chardet (>=2.2)", "lxml"]
-chardet = ["chardet (>=2.2)"]
-genshi = ["genshi"]
-lxml = ["lxml"]
 
 [[package]]
 name = "idna"
@@ -841,18 +761,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
-name = "pydyf"
-version = "0.9.0"
-description = "A low-level PDF generator."
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.extras]
-doc = ["sphinx", "sphinx-rtd-theme"]
-test = ["pytest", "isort", "flake8", "pillow"]
-
-[[package]]
 name = "pyjwt"
 version = "2.4.0"
 description = "JSON Web Token implementation in Python"
@@ -898,18 +806,6 @@ description = "Pattern-matching language based on OMeta for Python 3 and 2"
 category = "main"
 optional = false
 python-versions = "*"
-
-[[package]]
-name = "pyphen"
-version = "0.14.0"
-description = "Pure Python module to hyphenate text"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.extras]
-doc = ["sphinx", "sphinx-rtd-theme"]
-test = ["pytest", "isort", "flake8"]
 
 [[package]]
 name = "pysocks"
@@ -1204,21 +1100,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "tinycss2"
-version = "1.2.1"
-description = "A tiny CSS parser"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-webencodings = ">=0.4"
-
-[package.extras]
-doc = ["sphinx", "sphinx-rtd-theme"]
-test = ["pytest", "isort", "flake8"]
-
-[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -1313,28 +1194,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "weasyprint"
-version = "58.1"
-description = "The Awesome Document Factory"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-cffi = ">=0.6"
-cssselect2 = ">=0.1"
-fonttools = {version = ">=4.0.0", extras = ["woff"]}
-html5lib = ">=1.1"
-Pillow = ">=9.1.0"
-pydyf = ">=0.5.0"
-Pyphen = ">=0.9.1"
-tinycss2 = ">=1.0.0"
-
-[package.extras]
-doc = ["sphinx", "sphinx-rtd-theme"]
-test = ["pytest", "isort", "flake8"]
-
-[[package]]
 name = "webdriver-manager"
 version = "4.0.1"
 description = "Library provides the way to automatically manage drivers for different browsers"
@@ -1346,14 +1205,6 @@ python-versions = ">=3.7"
 packaging = "*"
 python-dotenv = "*"
 requests = "*"
-
-[[package]]
-name = "webencodings"
-version = "0.5.1"
-description = "Character encoding aliases for legacy web content"
-category = "main"
-optional = false
-python-versions = "*"
 
 [[package]]
 name = "whitenoise"
@@ -1385,21 +1236,10 @@ python-versions = ">=3.7.0"
 [package.dependencies]
 h11 = ">=0.9.0,<1"
 
-[[package]]
-name = "zopfli"
-version = "0.2.3"
-description = "Zopfli module for python"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[package.extras]
-test = ["pytest"]
-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "693b437eff48296021bb8117eb34d8d1daccec87e6be2171e5548e3913c49f49"
+content-hash = "db3ae2b9d7faf89a297a6e6dd81f221e4b170b382e37e646d2bf02c22b61236c"
 
 [metadata.files]
 amqp = []
@@ -1412,8 +1252,6 @@ billiard = []
 black = []
 boto3 = []
 botocore = []
-brotli = []
-brotlicffi = []
 celery = []
 certifi = []
 cffi = []
@@ -1423,7 +1261,6 @@ click-didyoumean = []
 click-plugins = []
 click-repl = []
 colorama = []
-cssselect2 = []
 dill = []
 dj-database-url = []
 dj-email-url = []
@@ -1438,7 +1275,6 @@ django-storages = []
 django-tenants = []
 django-timezone-field = []
 exceptiongroup = []
-fonttools = []
 freezegun = []
 graphene = []
 graphene-django = []
@@ -1447,7 +1283,6 @@ graphql-relay = []
 gunicorn = []
 h11 = []
 html2text = []
-html5lib = []
 idna = []
 iniconfig = []
 isort = []
@@ -1467,11 +1302,9 @@ prompt-toolkit = []
 psycopg2 = []
 pybars3 = []
 pycparser = []
-pydyf = []
 pyjwt = []
 pylint = []
 pymeta3 = []
-pyphen = []
 pysocks = []
 pytest = []
 pytest-django = []
@@ -1495,7 +1328,6 @@ sqlparse = []
 starkbank-ecdsa = []
 tenant-schemas-celery = []
 text-unidecode = []
-tinycss2 = []
 tomli = []
 tomlkit = []
 trio = []
@@ -1505,10 +1337,7 @@ tzdata = []
 urllib3 = []
 vine = []
 wcwidth = []
-weasyprint = []
 webdriver-manager = []
-webencodings = []
 whitenoise = []
 wrapt = []
 wsproto = []
-zopfli = []
