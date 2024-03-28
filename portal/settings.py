@@ -46,9 +46,9 @@ ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1"))
 
 CSRF_TRUSTED_ORIGINS = get_list(os.environ.get("CSRF_TRUSTED_ORIGINS", ""))
 
-CORS_ALLOWED_ORIGINS = get_list(
-    os.environ.get("CORS_ALLOWED_ORIGINS", "localhost,127.0.0.1")
-)
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.publicidadedacidade\.com\.br$",
+]
 
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 
@@ -97,7 +97,6 @@ AUTH_USER_MODEL = "account.User"
 TENANT_SUBFOLDER_PREFIX = "clientes"
 
 MIDDLEWARE = [
-    "allow_cidr.middleware.AllowCIDRMiddleware",
     "django_tenants.middleware.TenantSubfolderMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -273,8 +272,23 @@ EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
 EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 
 # CELERY SETTINGS
+USE_AWS_SQS = get_bool_from_env("USE_AWS_SQS", True)
+if USE_AWS_SQS:
+    CELERY_BROKER_URL = f"sqs://{AWS_ACCESS_KEY_ID}:{AWS_SECRET_ACCESS_KEY}@"
+    AWS_SQS_URL = os.environ.get("AWS_SQS_URL")
+    CELERY_BROKER_TRANSPORT_OPTIONS = {
+        "region": "us-east-1",  # your AWS SQS region
+        "predefined_queues": {
+            "celery": {  ## the name of the SQS queue
+                "url": AWS_SQS_URL,
+                "access_key_id": AWS_ACCESS_KEY_ID,
+                "secret_access_key": AWS_SECRET_ACCESS_KEY,
+            }
+        },
+    }
+else:
+    CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis:127.0.0.1:6379/0")
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
 CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
