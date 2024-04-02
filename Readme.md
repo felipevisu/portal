@@ -42,6 +42,15 @@ docker build -t portal-backend:latest .
 docker run -d -p 8000:8000 --env-file=.env portal-backend:latest
 ```
 
+Warning: to run the container in localhost with a local database it's necessary to setup
+the host as `host.docker.internal` in order to enable docker to access the local resourses.
+
+Example:
+
+```console
+DATABASE_URL=postgres://postgres:V@visual582@host.docker.internal:5432/portal
+```
+
 ### Run with docker-compose
 
 1. Setup your `.env` file with the docker database and redis:
@@ -56,5 +65,11 @@ REDIS_URL=redis:6379
 2. Run the build:
 
 ```console
-docker compose -f .devcontainer/docker-compose.yml up -d --build
+docker compose -f .devcontainer/docker-compose.yml build
+```
+
+3. Create the containers:
+
+```console
+docker compose -f .devcontainer/docker-compose.yml up -d
 ```

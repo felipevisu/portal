@@ -1,5 +1,6 @@
 import ast
 import os.path
+import re
 from datetime import timedelta
 from typing import List
 
@@ -47,10 +48,13 @@ ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1"))
 CSRF_TRUSTED_ORIGINS = get_list(os.environ.get("CSRF_TRUSTED_ORIGINS", ""))
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.publicidadedacidade\.com\.br$",
+    re.compile(regex_pattern)
+    for regex_pattern in get_list(
+        os.environ.get("CORS_ALLOWED_ORIGIN_REGEXES", "^http://\w+\.localhost\:\d{4}$")
+    )
 ]
 
-CORS_ORIGIN_ALLOW_ALL = DEBUG
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 INTERNAL_IPS = ["127.0.0.1"]
 
