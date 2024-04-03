@@ -2,6 +2,7 @@ import ast
 import os.path
 import re
 from datetime import timedelta
+from socket import gethostbyname, gethostname
 from typing import List
 
 import dj_database_url
@@ -43,20 +44,21 @@ PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1"))
+ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost, 127.0.0.1"))
+ALLOWED_HOSTS.append(gethostbyname(gethostname()))
 
 CSRF_TRUSTED_ORIGINS = get_list(os.environ.get("CSRF_TRUSTED_ORIGINS", ""))
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    re.compile(regex_pattern)
-    for regex_pattern in get_list(
-        os.environ.get("CORS_ALLOWED_ORIGIN_REGEXES", "^http://\w+\.localhost\:\d{4}$")
+CORS_ALLOWED_ORIGIN_REGEXES_LIST = get_list(
+    os.environ.get(
+        "CORS_ALLOWED_ORIGIN_REGEXES", "^http://\w+\.{localhost|127.0.0.1}\:\d{4}$"
     )
+)
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    re.compile(regex_pattern) for regex_pattern in CORS_ALLOWED_ORIGIN_REGEXES_LIST
 ]
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG
-
-INTERNAL_IPS = ["127.0.0.1"]
 
 SHARED_APPS = [
     "storages",
