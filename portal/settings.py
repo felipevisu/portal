@@ -2,7 +2,6 @@ import ast
 import os.path
 import re
 from datetime import timedelta
-from socket import gethostbyname, gethostname
 from typing import List
 
 import dj_database_url
@@ -44,8 +43,7 @@ PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
 SITE_ID = 1
 
-ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost, 127.0.0.1"))
-ALLOWED_HOSTS.append(gethostbyname(gethostname()))
+ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "*"))
 
 CSRF_TRUSTED_ORIGINS = get_list(
     os.environ.get(
