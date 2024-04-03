@@ -47,13 +47,18 @@ SITE_ID = 1
 ALLOWED_HOSTS = get_list(os.environ.get("ALLOWED_HOSTS", "localhost, 127.0.0.1"))
 ALLOWED_HOSTS.append(gethostbyname(gethostname()))
 
-CSRF_TRUSTED_ORIGINS = get_list(os.environ.get("CSRF_TRUSTED_ORIGINS", ""))
+CSRF_TRUSTED_ORIGINS = get_list(
+    os.environ.get(
+        "CSRF_TRUSTED_ORIGINS", "http://*.localhost:5173, http://localhost:8000"
+    )
+)
 
 CORS_ALLOWED_ORIGIN_REGEXES_LIST = get_list(
     os.environ.get(
         "CORS_ALLOWED_ORIGIN_REGEXES", "^http://\w+\.{localhost|127.0.0.1}\:\d{4}$"
     )
 )
+
 CORS_ALLOWED_ORIGIN_REGEXES = [
     re.compile(regex_pattern) for regex_pattern in CORS_ALLOWED_ORIGIN_REGEXES_LIST
 ]
