@@ -71,5 +71,5 @@ docker compose -f .devcontainer/docker-compose.yml build
 3. Create the containers:
 
 ```console
-docker compose --env-file .devcontainer/backend.env  -f .devcontainer/docker-compose.yml up -d
+docker compose -f .devcontainer/docker-compose.yml up -d
 ```

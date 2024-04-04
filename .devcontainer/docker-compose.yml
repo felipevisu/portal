@@ -28,6 +28,8 @@ services:
       - 8000:8000
     depends_on:
       - db
+    env_file:
+      - ./backend.env
 
   celery:
     build:
@@ -38,6 +40,8 @@ services:
     depends_on:
       - django
       - redis
+    env_file:
+      - ./backend.env
 
 volumes:
   app:
