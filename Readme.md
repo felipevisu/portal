@@ -42,6 +42,12 @@ docker build -t portal-backend:latest .
 docker run -d -p 8000:8000 --env-file=.env portal-backend:latest
 ```
 
+3. The same container can be used to run the celery worker just celery `celery` at the end of the command
+
+```console
+docker run -d -p 8000:8000 --env-file=.env portal-backend:latest celery
+```
+
 Warning: to run the container in localhost with a local database it's necessary to setup
 the host as `host.docker.internal` in order to enable docker to access the local resourses.
 
