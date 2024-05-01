@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from portal.document import DocumentLoadStatus
 
-from ..celeryconf import app
+from ..celery import app
 from ..plugins.manager import get_plugins_manager
 from .events import event_document_loaded_fail, event_document_loaded_from_api
 from .models import Document, DocumentLoad
@@ -49,7 +49,7 @@ def load_new_document_from_api(
     document_id, user_id=None, delay=not settings.DEBUG
 ) -> DocumentLoad:
     document_load = DocumentLoad.objects.create(document_id=document_id)
-    loader = load_new_document_task.delay if delay else load_new_document_task
-    loader(document_id, document_load.id, user_id)
+    parameters = (document_id, document_load.id, user_id)
+    load_new_document_task.delay(*parameters)
     document_load.refresh_from_db()
     return document_load

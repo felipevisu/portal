@@ -1,4 +1,4 @@
-from ...celeryconf import app
+from ...celery import app
 from ..email_common import EmailConfig, send_email
 
 

@@ -76,14 +76,16 @@ SHARED_APPS = [
     "django.contrib.postgres",
     "django.contrib.auth",
     "django.contrib.admin",
-    "django_celery_beat",
-    "django_celery_results",
     "portal.account",
     "portal.customer",
     "portal.plugins",
 ]
 
 TENANT_APPS = [
+    # libs
+    "django_celery_beat",
+    "django_celery_results",
+    # apps
     "portal.attribute",
     "portal.channel",
     "portal.core",
@@ -282,6 +284,14 @@ EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
 EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 
 # CELERY SETTINGS
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
 USE_AWS_SQS = get_bool_from_env("USE_AWS_SQS", True)
 if USE_AWS_SQS:
     CELERY_BROKER_URL = f"sqs://{AWS_ACCESS_KEY_ID}:{AWS_SECRET_ACCESS_KEY}@"
@@ -296,14 +306,6 @@ if USE_AWS_SQS:
             }
         },
     }
-else:
-    CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis:127.0.0.1:6379/0")
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "django-db")
 
 
 ENABLE_DEBUG_TOOLBAR = DEBUG
