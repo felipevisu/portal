@@ -76,6 +76,8 @@ SHARED_APPS = [
     "django.contrib.postgres",
     "django.contrib.auth",
     "django.contrib.admin",
+    "django_celery_beat",
+    "django_celery_results",
     "portal.account",
     "portal.customer",
     "portal.plugins",
@@ -90,7 +92,6 @@ TENANT_APPS = [
     "portal.event",
     "portal.investment",
     "portal.session",
-    "django_celery_results",
 ]
 
 INSTALLED_APPS = list(SHARED_APPS) + [
