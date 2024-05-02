@@ -2,16 +2,14 @@ import ast
 import os.path
 import re
 from datetime import timedelta
+from pathlib import Path
 from typing import List
 
 import dj_database_url
 import dj_email_url
 import pkg_resources
-import sentry_sdk
 from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
-from sentry_sdk.integrations.celery import CeleryIntegration
-from sentry_sdk.integrations.django import DjangoIntegration
 
 load_dotenv()
 
@@ -30,7 +28,7 @@ def get_bool_from_env(name, default_value):
     return default_value
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -38,8 +36,6 @@ DEBUG = get_bool_from_env("DEBUG", True)
 
 if not SECRET_KEY and DEBUG:
     SECRET_KEY = get_random_secret_key()
-
-PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
 SITE_ID = 1
 
@@ -64,10 +60,14 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 SHARED_APPS = [
+    # libs
+    "django_celery_beat",
+    "django_celery_results",
     "storages",
     "corsheaders",
     "django_filters",
     "django_tenants",
+    # default
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -76,15 +76,13 @@ SHARED_APPS = [
     "django.contrib.postgres",
     "django.contrib.auth",
     "django.contrib.admin",
+    # app
     "portal.account",
     "portal.customer",
     "portal.plugins",
 ]
 
 TENANT_APPS = [
-    # libs
-    "django_celery_beat",
-    "django_celery_results",
     # apps
     "portal.attribute",
     "portal.channel",
@@ -127,7 +125,7 @@ ROOT_URLCONF = "portal.urls"
 ROOT_URLCONF = "portal.urls_tenants"
 PUBLIC_SCHEMA_URLCONF = "portal.urls_public"
 
-TEMPLATES_DIR = os.path.join(PROJECT_ROOT, "templates")
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
 TEMPLATES = [
     {
@@ -176,7 +174,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-LANGUAGE_CODE = "pt-br"
+LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "America/Sao_Paulo"
 
@@ -206,14 +204,6 @@ GRAPHQL_MIDDLEWARE: List[str] = []
 GRAPHQL_PAGINATION_LIMIT = 100
 PLAYGROUND_ENABLED = DEBUG
 
-SENTRY_DNS = os.environ.get("SENTRY_DNS", None)
-if SENTRY_DNS and not DEBUG:
-    sentry_sdk.init(
-        dsn=SENTRY_DNS,
-        integrations=[DjangoIntegration(), CeleryIntegration()],
-        traces_sample_rate=1.0,
-        send_default_pii=True,
-    )
 
 AUTHENTICATION_BACKENDS = [
     "portal.core.auth_backend.JSONWebTokenBackend",
@@ -237,11 +227,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 
-STATIC_ROOT: str = os.path.join(PROJECT_ROOT, "static")
+STATIC_ROOT: str = os.path.join(BASE_DIR, "static")
 STATIC_URL: str = os.environ.get("STATIC_URL", "/static/")
-STATICFILES_DIRS = [
-    ("images", os.path.join(PROJECT_ROOT, "portal", "static", "images"))
-]
+STATICFILES_DIRS = [("images", os.path.join(BASE_DIR, "portal", "static", "images"))]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -251,7 +239,6 @@ if not DEBUG:
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DATABASE_CONNECTION_DEFAULT_NAME = "default"
 DATABASE_CONNECTION_REPLICA_NAME = "default"
 
 JWT_EXPIRE = False
@@ -286,13 +273,13 @@ EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 # CELERY SETTINGS
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
 CELERY_RESULT_BACKEND = "django-db"
-CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-USE_AWS_SQS = get_bool_from_env("USE_AWS_SQS", True)
+USE_AWS_SQS = get_bool_from_env("USE_AWS_SQS", False)
 if USE_AWS_SQS:
     CELERY_BROKER_URL = f"sqs://{AWS_ACCESS_KEY_ID}:{AWS_SECRET_ACCESS_KEY}@"
     AWS_SQS_URL = os.environ.get("AWS_SQS_URL")

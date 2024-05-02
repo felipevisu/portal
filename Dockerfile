@@ -12,10 +12,10 @@ RUN apt-get -y update \
 WORKDIR /app
 
 # Install dependencies
-RUN --mount=type=cache,mode=0755,target=/root/.cache/pip pip install poetry==1.7.0
+RUN --mount=type=cache,mode=0755,target=/root/.cache/pip pip install poetry==1.8.2
 RUN poetry config virtualenvs.create false
 COPY poetry.lock pyproject.toml /app/
-RUN --mount=type=cache,mode=0755,target=/root/.cache/pypoetry poetry install --no-root
+RUN --mount=type=cache,mode=0755,target=/root/.cache/pypoetry poetry install
 
 ### Final image
 FROM python:3.11-slim

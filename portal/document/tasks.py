@@ -49,7 +49,6 @@ def load_new_document_from_api(
     document_id, user_id=None, delay=not settings.DEBUG
 ) -> DocumentLoad:
     document_load = DocumentLoad.objects.create(document_id=document_id)
-    parameters = (document_id, document_load.id, user_id)
-    load_new_document_task.delay(*parameters)
+    load_new_document_task.delay(document_id, document_load.id, user_id)
     document_load.refresh_from_db()
     return document_load

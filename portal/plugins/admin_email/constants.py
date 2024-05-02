@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 
 DEFAULT_EMAIL_TEMPLATES_PATH = os.path.join(
-    settings.PROJECT_ROOT, "portal/plugins/admin_email/default_email_templates"
+    settings.BASE_DIR, "portal/plugins/admin_email/default_email_templates"
 )
 
 SET_STAFF_PASSWORD_TEMPLATE_FIELD = "set_staff_password_template"
