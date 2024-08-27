@@ -1,17 +1,6 @@
 version: "3.8"
 
 services:
-  db:
-    image: postgres:16.2-alpine3.19
-    volumes:
-      - portal-db:/var/lib/postgresql/data/
-    ports:
-      - 1234:5432
-    environment:
-      - POSTGRES_USER=portal
-      - POSTGRES_PASSWORD=portal
-      - POSTGRES_DB=portal
-
   redis:
     image: redis:7.2.4-alpine3.19
     restart: unless-stopped
@@ -20,20 +9,18 @@ services:
 
   django:
     build:
-      context: ..
+      context: .
       dockerfile: ./Dockerfile
     volumes:
       - app:/app
     ports:
       - 8000:8000
-    depends_on:
-      - db
     env_file:
-      - ./backend.env
+      - ./.env
 
   celery-worker:
     build:
-      context: ..
+      context: .
     command: celery -A portal worker --loglevel=info
     volumes:
       - app:/app
@@ -41,11 +28,11 @@ services:
       - django
       - redis
     env_file:
-      - ./backend.env
+      - ./.env
 
   celery-beat:
     build:
-      context: ..
+      context: .
     command: celery -A portal beat --loglevel=info
     volumes:
       - app:/app
@@ -53,12 +40,10 @@ services:
       - django
       - redis
     env_file:
-      - ./backend.env
+      - ./.env
 
 volumes:
   app:
-    driver: local
-  portal-db:
     driver: local
   portal-redis:
     driver: local

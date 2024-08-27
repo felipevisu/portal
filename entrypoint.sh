@@ -13,6 +13,10 @@ elif [ "$1" = 'celery' ]; then
     # Start the Celery worker
     echo "Starting Celery worker..."
     exec celery -A portal worker -l info
+elif [ "$1" = 'beat' ]; then
+    # Start the Celery beat
+    echo "Starting Celery beat..."
+    exec celery -A portal beat -l info
 else
     # Default action or custom command
     exec "$@"
