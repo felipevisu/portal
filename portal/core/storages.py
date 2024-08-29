@@ -10,3 +10,8 @@ class S3MediaStorage(S3Boto3Storage):
     def location(self):
         _location = parse_tenant_config_path("media")
         return _location
+
+
+class S3StaticStorage(S3Boto3Storage):
+    file_overwrite = False
+    location = "static"

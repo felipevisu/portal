@@ -221,21 +221,26 @@ AWS_HEADERS = {"Access-Control-Allow-Origin": "*"}
 AWS_DEFAULT_ACL = "public-read"
 AWS_LOCATION = "static"
 
-DEFAULT_FILE_STORAGE = "portal.core.storages.S3MediaStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "portal.core.storages.S3MediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "portal.core.storages.S3StaticStorage",
+    },
+}
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 
 STATIC_ROOT: str = os.path.join(BASE_DIR, "static")
-STATIC_URL: str = os.environ.get("STATIC_URL", "/static/")
+STATIC_URL: str = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
 STATICFILES_DIRS = [("images", os.path.join(BASE_DIR, "portal", "static", "images"))]
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-if not DEBUG:
-    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
